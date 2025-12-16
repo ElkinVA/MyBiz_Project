@@ -36,10 +36,8 @@
                         {% endfor %}
                     </div>
                 </div>
-                <a href="{% url 'pages:page_detail' slug='about' %}" class="text-gray-700 hover:text-blue-600 font-medium transition">О компании</a>
-<a href="{% url 'pages:page_detail' slug='contacts' %}" class="text-gray-700 hover:text-blue-600 font-medium transition">Контакты</a>
-
-                <a href="#contact" class="text-gray-700 hover:text-blue-600 font-medium transition">Контакты</a>
+                <a href="{% url 'pages:page_detail' page_slug='about' %}" class="text-gray-700 hover:text-blue-600 font-medium transition">О компании</a>
+<a href="{% url 'pages:page_detail' page_slug='contacts' %}" class="text-gray-700 hover:text-blue-600 font-medium transition">Контакты</a>
             </div>
 
             <!-- Mobile Menu Button -->
