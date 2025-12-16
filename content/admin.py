@@ -3,6 +3,7 @@ from django.utils.html import format_html
 from ckeditor.widgets import CKEditorWidget
 from django import forms
 from .models import Promotion, SiteSettings
+from .widgets import ColorPickerWidget  # Этот импорт должен работать
 
 
 class PromotionForm(forms.ModelForm):
@@ -29,24 +30,65 @@ class PromotionAdmin(admin.ModelAdmin):
     image_preview.short_description = 'Превью изображения'
 
 
+class SiteSettingsForm(forms.ModelForm):
+    class Meta:
+        model = SiteSettings
+        fields = '__all__'
+        widgets = {
+            'meta_description': forms.Textarea(attrs={'rows': 3}),
+            'meta_keywords': forms.Textarea(attrs={'rows': 3}),
+            'primary_color': ColorPickerWidget(),
+            'secondary_color': ColorPickerWidget(),
+            'accent_color': ColorPickerWidget(),
+            'text_color': ColorPickerWidget(),
+            'background_color': ColorPickerWidget(),
+            'header_bg_color': ColorPickerWidget(),
+            'footer_bg_color': ColorPickerWidget(),
+        }
+
+
 @admin.register(SiteSettings)
 class SiteSettingsAdmin(admin.ModelAdmin):
-    list_display = ('site_name', 'contact_email', 'contact_phone')
-    fieldsets = (
-        ('Основные настройки', {
-            'fields': ('site_name', 'site_tagline', 'logo', 'favicon', 'hero_image')
-        }),
-        ('Контактная информация', {
-            'fields': ('contact_email', 'contact_phone', 'contact_address', 'working_hours')
-        }),
-        ('Социальные сети', {
-            'fields': ('facebook_url', 'instagram_url', 'twitter_url')
-        }),
-        ('SEO', {
-            'fields': ('meta_title', 'meta_description', 'meta_keywords')
-        }),
-    )
+    form = SiteSettingsForm
+
+    def get_fieldsets(self, request, obj=None):
+        return (
+            ('Основные настройки', {
+                'fields': ('site_name', 'site_tagline', 'logo', 'favicon', 'hero_image')
+            }),
+            ('Цветовая палитра', {
+                'fields': (
+                    'primary_color',
+                    'secondary_color',
+                    'accent_color',
+                    'text_color',
+                    'background_color',
+                    'header_bg_color',
+                    'footer_bg_color',
+                ),
+                'classes': ('wide',),
+                'description': '''
+                    <div style="background: #f5f5f5; padding: 10px; border-radius: 4px; margin-bottom: 10px; font-size: 13px;">
+                        <strong>🎨 Настройка цветов сайта:</strong><br>
+                    </div>
+                '''
+            }),
+            ('Контактная информация', {
+                'fields': ('contact_email', 'contact_phone', 'contact_address', 'working_hours')
+            }),
+            ('Социальные сети', {
+                'fields': ('facebook_url', 'instagram_url', 'twitter_url')
+            }),
+            ('SEO', {
+                'fields': ('meta_title', 'meta_description', 'meta_keywords')
+            }),
+        )
 
     def has_add_permission(self, request):
-        # Разрешаем только один объект настроек
         return not SiteSettings.objects.exists()
+
+    class Media:
+        css = {
+            'all': ('admin/css/color-picker.css',)
+        }
+        js = ('admin/js/color-picker.js',)

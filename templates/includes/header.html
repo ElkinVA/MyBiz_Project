@@ -8,41 +8,44 @@
                         <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.site_name }}" class="h-10 w-auto">
                     </a>
                 {% endif %}
-                <a href="/" class="text-2xl font-bold text-gradient">{{ site_settings.site_name }}</a>
+                <a href="/" class="text-2xl font-bold text-primary">{{ site_settings.site_name }}</a>
             </div>
 
             <!-- Navigation Menu -->
             <div class="hidden md:flex items-center space-x-8">
-    <a href="/" class="text-gray-700 hover:text-blue-600 font-medium transition">Главная</a>
+                <a href="/" class="text-gray-700 hover:text-primary font-medium transition">Главная</a>
 
-    {% for page in header_pages %}
-    <a href="{% url 'pages:page_detail' page_slug=page.slug %}"
-       class="text-gray-700 hover:text-blue-600 font-medium transition">
-        {{ page.title }}
-    </a>
-    {% endfor %}
-</div>
                 <!-- Categories Dropdown -->
                 <div x-data="{ open: false }" class="relative">
-        <button @click="open = !open" class="text-gray-700 hover:text-blue-600 font-medium flex items-center transition">
-            Категории
-            <svg class="w-4 h-4 ml-1" :class="{ 'transform rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
-        </button>
+                    <button @click="open = !open" class="text-gray-700 hover:text-primary font-medium flex items-center transition">
+                        Категории
+                        <svg class="w-4 h-4 ml-1" :class="{ 'transform rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
 
-        <div x-show="open" @click.away="open = false"
-             class="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-10">
-            {% for category in categories %}
-                {% if category.is_active %}
-                    <a href="{{ category.get_absolute_url }}"
-                       class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition">
-                        {{ category.name }}
-                    </a>
-                {% endif %}
-            {% endfor %}
-        </div>
-    </div>
+                    <div x-show="open" @click.away="open = false"
+                         class="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-10">
+                        {% for category in categories %}
+                            {% if category.is_active %}
+                                <a href="{{ category.get_absolute_url }}"
+                                   class="block px-4 py-2 text-gray-700 hover:bg-primary hover:text-white transition">
+                                    {{ category.name }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- SEO страницы для шапки -->
+                {% for page in header_pages %}
+                <a href="{% url 'pages:page_detail' page_slug=page.slug %}"
+                   class="text-gray-700 hover:text-primary font-medium transition">
+                    {{ page.title }}
+                </a>
+                {% endfor %}
+            </div>
+
             <!-- Mobile Menu Button -->
             <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-gray-700">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -53,42 +56,37 @@
         </div>
 
         <!-- Mobile Menu -->
-      <div x-show="mobileMenuOpen" x-cloak class="md:hidden mt-4 pb-4">
-    <div class="flex flex-col space-y-4">
-        <a href="/" class="text-gray-700 hover:text-blue-600 font-medium transition">Главная</a>
+        <div x-show="mobileMenuOpen" x-cloak class="md:hidden mt-4 pb-4">
+            <div class="flex flex-col space-y-4">
+                <a href="/" class="text-gray-700 hover:text-primary font-medium transition">Главная</a>
 
-        <div x-data="{ open: false }" class="relative">
-            <button @click="open = !open" class="text-gray-700 hover:text-blue-600 font-medium flex items-center justify-between w-full">
-                Категории
-                <svg class="w-4 h-4" :class="{ 'transform rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
-            </button>
+                <div x-data="{ open: false }" class="relative">
+                    <button @click="open = !open" class="text-gray-700 hover:text-primary font-medium flex items-center justify-between w-full">
+                        Категории
+                        <svg class="w-4 h-4" :class="{ 'transform rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
 
-            <div x-show="open" class="mt-2 ml-4 space-y-2">
-                {% for category in categories %}
-                    {% if category.is_active %}
-                        <a href="{{ category.get_absolute_url }}"
-                           class="block py-2 text-gray-600 hover:text-blue-600 transition">
-                            {{ category.name }}
-                        </a>
-                    {% endif %}
+                    <div x-show="open" class="mt-2 ml-4 space-y-2">
+                        {% for category in categories %}
+                            {% if category.is_active %}
+                                <a href="{{ category.get_absolute_url }}"
+                                   class="block py-2 text-gray-600 hover:text-primary transition">
+                                    {{ category.name }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- SEO страницы для мобильного меню -->
+                {% for page in header_pages %}
+                <a href="{% url 'pages:page_detail' page_slug=page.slug %}"
+                   class="text-gray-700 hover:text-primary font-medium transition">
+                    {{ page.title }}
+                </a>
                 {% endfor %}
-            </div>
-        </div>
-
-        <!-- SEO страницы для мобильного меню -->
-        {% for page in header_pages %}
-        <a href="{% url 'pages:page_detail' page_slug=page.slug %}"
-           class="text-gray-700 hover:text-blue-600 font-medium transition">
-            {{ page.title }}
-        </a>
-        {% endfor %}
-    </div>
-</div>
-
-                <a href="{% url 'pages:page_detail' page_slug='about' %}" class="text-gray-700 hover:text-blue-600 font-medium transition">О компании</a>
-<a href="{% url 'pages:page_detail' page_slug='contacts' %}" class="text-gray-700 hover:text-blue-600 font-medium transition">Контакты</a>
             </div>
         </div>
     </nav>

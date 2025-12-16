@@ -1,0 +1,4763 @@
+=== ПОЛНЫЙ СНИМОК ПРОЕКТА MYBIZ ===
+Дата создания: Tue Dec 16 16:06:42 MSK 2025
+Полная рекурсивная коллекция всех файлов
+
+================================================================================
+ФАЙЛ: ./.gitignore
+================================================================================
+
+# Django
+__pycache__/
+*.pyc
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+
+================================================================================
+ФАЙЛ: ./.env.example
+================================================================================
+
+[БИНАРНЫЙ ФАЙЛ - содержимое не показано]
+
+
+================================================================================
+ФАЙЛ: ./templates/includes/footer.html
+================================================================================
+
+<footer class="bg-gray-900 text-white">
+    <div class="container mx-auto px-4 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Company Info -->
+            <div>
+                <div class="flex items-center space-x-3 mb-4">
+                    {% if site_settings.logo %}
+                        <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.site_name }}" class="h-8 w-auto">
+                    {% endif %}
+                    <h3 class="text-2xl font-bold">{{ site_settings.site_name }}</h3>
+                </div>
+                <p class="text-gray-400 mb-6">
+                    {{ site_settings.site_tagline|default:'Мы создаем лучшие продукты для наших клиентов с заботой и вниманием к деталям.' }}
+                </p>
+
+                <!-- Social Links -->
+                <div class="flex space-x-4">
+                    {% if site_settings.facebook_url %}
+                        <a href="{{ site_settings.facebook_url }}" target="_blank" class="text-gray-400 hover:text-white transition">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                        </a>
+                    {% endif %}
+
+                    {% if site_settings.instagram_url %}
+                        <a href="{{ site_settings.instagram_url }}" target="_blank" class="text-gray-400 hover:text-white transition">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM5.838 12a6.162 6.162 0 1112.324 0 6.162 6.162 0 01-12.324 0zM12 16a4 4 0 110-8 4 4 0 010 8zm4.965-10.405a1.44 1.44 0 112.881.001 1.44 1.44 0 01-2.881-.001z"/>
+                            </svg>
+                        </a>
+                    {% endif %}
+
+                    {% if site_settings.twitter_url %}
+                        <a href="{{ site_settings.twitter_url }}" target="_blank" class="text-gray-400 hover:text-white transition">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.213c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                            </svg>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Быстрые ссылки (без заголовка) -->
+            <div>
+                <ul class="space-y-3">
+                    <li><a href="/" class="text-gray-400 hover:text-white transition">Главная</a></li>
+                    <li><a href="{% url 'mybiz_core:product_list' %}" class="text-gray-400 hover:text-white transition">Товары</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact Info -->
+            <div id="contact">
+                <h4 class="text-xl font-bold mb-6">Контакты</h4>
+                <ul class="space-y-4">
+                    {% if site_settings.contact_address %}
+                        <li class="flex items-start space-x-3">
+                            <svg class="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            <span class="text-gray-400">{{ site_settings.contact_address }}</span>
+                        </li>
+                    {% endif %}
+
+                    {% if site_settings.contact_phone %}
+                        <li class="flex items-center space-x-3">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                            </svg>
+                            <a href="tel:{{ site_settings.contact_phone }}" class="text-gray-400 hover:text-white transition">
+                                {{ site_settings.contact_phone }}
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% if site_settings.contact_email %}
+                        <li class="flex items-center space-x-3">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                            <a href="mailto:{{ site_settings.contact_email }}" class="text-gray-400 hover:text-white transition">
+                                {{ site_settings.contact_email }}
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% if site_settings.working_hours %}
+                        <li class="flex items-start space-x-3">
+                            <svg class="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span class="text-gray-400">{{ site_settings.working_hours }}</span>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Copyright -->
+        <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500">
+            <p>&copy; {{ now|date:"Y" }} {{ site_settings.site_name }}. Все права защищены.</p>
+        </div>
+    </div>
+</footer>
+
+
+================================================================================
+ФАЙЛ: ./templates/includes/header.html
+================================================================================
+
+<header class="bg-white/90 backdrop-blur-sm shadow-sm">
+    <nav class="container mx-auto px-4 py-4">
+        <div class="flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center space-x-3">
+                {% if site_settings.logo %}
+                    <a href="/" class="flex items-center">
+                        <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.site_name }}" class="h-10 w-auto">
+                    </a>
+                {% endif %}
+                <a href="/" class="text-2xl font-bold text-primary">{{ site_settings.site_name }}</a>
+            </div>
+
+            <!-- Navigation Menu -->
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="/" class="text-gray-700 hover:text-primary font-medium transition">Главная</a>
+
+                <!-- Categories Dropdown -->
+                <div x-data="{ open: false }" class="relative">
+                    <button @click="open = !open" class="text-gray-700 hover:text-primary font-medium flex items-center transition">
+                        Категории
+                        <svg class="w-4 h-4 ml-1" :class="{ 'transform rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+
+                    <div x-show="open" @click.away="open = false"
+                         class="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-10">
+                        {% for category in categories %}
+                            {% if category.is_active %}
+                                <a href="{{ category.get_absolute_url }}"
+                                   class="block px-4 py-2 text-gray-700 hover:bg-primary hover:text-white transition">
+                                    {{ category.name }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- SEO страницы для шапки -->
+                {% for page in header_pages %}
+                <a href="{% url 'pages:page_detail' page_slug=page.slug %}"
+                   class="text-gray-700 hover:text-primary font-medium transition">
+                    {{ page.title }}
+                </a>
+                {% endfor %}
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-gray-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          :d="mobileMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div x-show="mobileMenuOpen" x-cloak class="md:hidden mt-4 pb-4">
+            <div class="flex flex-col space-y-4">
+                <a href="/" class="text-gray-700 hover:text-primary font-medium transition">Главная</a>
+
+                <div x-data="{ open: false }" class="relative">
+                    <button @click="open = !open" class="text-gray-700 hover:text-primary font-medium flex items-center justify-between w-full">
+                        Категории
+                        <svg class="w-4 h-4" :class="{ 'transform rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+
+                    <div x-show="open" class="mt-2 ml-4 space-y-2">
+                        {% for category in categories %}
+                            {% if category.is_active %}
+                                <a href="{{ category.get_absolute_url }}"
+                                   class="block py-2 text-gray-600 hover:text-primary transition">
+                                    {{ category.name }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- SEO страницы для мобильного меню -->
+                {% for page in header_pages %}
+                <a href="{% url 'pages:page_detail' page_slug=page.slug %}"
+                   class="text-gray-700 hover:text-primary font-medium transition">
+                    {{ page.title }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </nav>
+</header>
+
+<script>
+    // Инициализация Alpine.js для хедера
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('header', () => ({
+            mobileMenuOpen: false,
+            categoriesOpen: false
+        }))
+    })
+</script>
+
+
+================================================================================
+ФАЙЛ: ./templates/includes/navigation.html
+================================================================================
+
+[БИНАРНЫЙ ФАЙЛ - содержимое не показано]
+
+
+================================================================================
+ФАЙЛ: ./templates/base.html
+================================================================================
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ site_settings.site_name }}{% endblock %}</title>
+
+    <!-- Meta tags -->
+    {% block meta %}
+        <meta name="description" content="{{ site_settings.meta_description }}">
+        {% if site_settings.meta_keywords %}
+        <meta name="keywords" content="{{ site_settings.meta_keywords }}">
+        {% endif %}
+    {% endblock %}
+
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+    <!-- Alpine.js CDN -->
+    <script src="https://unpkg.com/alpinejs@3.13.5/dist/cdn.min.js" defer></script>
+
+    <!-- Favicon -->
+    {% if site_settings.favicon %}
+        <link rel="icon" href="{{ site_settings.favicon.url }}" type="image/x-icon">
+    {% endif %}
+
+    <!-- Custom styles with dynamic colors -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap');
+
+        :root {
+            --primary-color: {{ site_settings.primary_color|default:'#3b82f6' }};
+            --secondary-color: {{ site_settings.secondary_color|default:'#8b5cf6' }};
+            --accent-color: {{ site_settings.accent_color|default:'#10b981' }};
+            --text-color: {{ site_settings.text_color|default:'#1f2937' }};
+            --background-color: {{ site_settings.background_color|default:'#f9fafb' }};
+            --header-bg-color: {{ site_settings.header_bg_color|default:'#ffffff' }};
+            --footer-bg-color: {{ site_settings.footer_bg_color|default:'#111827' }};
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-color);
+            background-color: var(--background-color);
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Динамические классы для цветов */
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+            font-weight: 500;
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-color);
+        }
+
+        .text-primary {
+            color: var(--primary-color);
+        }
+
+        .text-secondary {
+            color: var(--secondary-color);
+        }
+
+        .text-accent {
+            color: var(--accent-color);
+        }
+
+        .bg-primary {
+            background-color: var(--primary-color);
+        }
+
+        .bg-secondary {
+            background-color: var(--secondary-color);
+        }
+
+        .bg-accent {
+            background-color: var(--accent-color);
+        }
+
+        .border-primary {
+            border-color: var(--primary-color);
+        }
+
+        .border-accent {
+            border-color: var(--accent-color);
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: box-shadow 0.3s;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .text-gradient {
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Header with dynamic background -->
+    <header style="background-color: var(--header-bg-color);">
+        {% include 'includes/header.html' %}
+    </header>
+
+    <!-- Main Content -->
+    <main class="min-h-screen">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer with dynamic background -->
+    <footer style="background-color: var(--footer-bg-color);">
+        {% include 'includes/footer.html' %}
+    </footer>
+
+    <!-- Кнопка "Наверх" -->
+    <div x-data="{ showScrollTop: false }"
+         x-init="window.addEventListener('scroll', () => { showScrollTop = window.scrollY > 300 })"
+         class="fixed bottom-8 right-8 z-50">
+        <button x-show="showScrollTop"
+                @click="window.scrollTo({ top: 0, behavior: 'smooth' })"
+                class="bg-accent hover:bg-primary text-white p-3 rounded-full shadow-lg transition-all duration-300 transform hover:scale-110"
+                style="display: none;"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 transform scale-90"
+                x-transition:enter-end="opacity-100 transform scale-100"
+                x-transition:leave="transition ease-in duration-300"
+                x-transition:leave-start="opacity-100 transform scale-100"
+                x-transition:leave-end="opacity-0 transform scale-90">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+            </svg>
+        </button>
+    </div>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
+
+
+================================================================================
+ФАЙЛ: ./templates/pages/page_detail.html
+================================================================================
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page.meta_title|default:page.title }} - {{ site_settings.site_name }}{% endblock %}
+
+{% block meta %}
+<meta name="description" content="{{ page.meta_description }}">
+{% if page.meta_keywords %}
+<meta name="keywords" content="{{ page.meta_keywords }}">
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Хлебные крошки -->
+    <nav class="flex mb-6" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a href="{% url 'mybiz_core:home' %}" class="text-gray-700 hover:text-gray-900">
+                    Главная
+                </a>
+            </li>
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="ml-1 text-gray-400">{{ page.title }}</span>
+                </div>
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Контент страницы -->
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl md:text-4xl font-bold mb-6">{{ page.title }}</h1>
+
+        {% if page.excerpt %}
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-8">
+            <p class="text-gray-700 italic">{{ page.excerpt }}</p>
+        </div>
+        {% endif %}
+
+        <div class="prose prose-lg max-w-none">
+            {{ page.content|safe }}
+        </div>
+
+        <!-- Мета-информация -->
+        <div class="mt-12 pt-8 border-t border-gray-200">
+            <p class="text-gray-500 text-sm">
+                Обновлено: {{ page.updated_at|date:"d.m.Y" }}
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+================================================================================
+ФАЙЛ: ./templates/home.html
+================================================================================
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Главная - {{ site_settings.site_name }}{% endblock %}
+
+{% block meta %}
+<meta name="description" content="{{ site_settings.meta_description|default:'Добро пожаловать в наш интернет-магазин' }}">
+{% endblock %}
+
+{% block content %}
+<!-- Герой секция -->
+<section class="relative bg-gradient-to-r from-blue-50 to-gray-100 py-16 md:py-24">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-12 md:mb-0">
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                    {{ site_settings.site_name|default:'MyBiz' }}
+                </h1>
+                <p class="text-xl text-gray-600 mb-8">
+                    {{ site_settings.site_tagline|default:'Лучшие товары по доступным ценам' }}
+                </p>
+                <a href="{% url 'mybiz_core:product_list' %}"
+   class="inline-block btn-primary font-semibold hover:bg-primary transition duration-300">
+    Смотреть товары
+</a>
+            </div>
+            <div class="md:w-1/2">
+                {% if site_settings.hero_image %}
+                <img src="{{ site_settings.hero_image.url }}"
+                     alt="{{ site_settings.site_name }}"
+                     class="rounded-lg shadow-xl w-full">
+                {% else %}
+                <div class="bg-gray-200 rounded-lg shadow-xl w-full h-64 md:h-96 flex items-center justify-center">
+                    <span class="text-gray-400 text-lg">Главное изображение</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Промо-акции -->
+{% if promotions %}
+<section class="py-12 md:py-16">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-8">Специальные предложения</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {% for promo in promotions %}
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300">
+                {% if promo.image %}
+                <img src="{{ promo.image.url }}" alt="{{ promo.title }}" class="w-full h-48 object-cover">
+                {% endif %}
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold mb-3">{{ promo.title }}</h3>
+                    <div class="prose prose-sm mb-4">
+                        {{ promo.description|safe|truncatewords:30 }}
+                    </div>
+                    {% if promo.button_url %}
+                    <a href="{{ promo.button_url }}" class="text-accent font-medium hover:text-accent-dark">
+                        {{ promo.button_text|default:'Подробнее →' }}
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Популярные товары -->
+<section class="py-12 md:py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-8">Популярные товары</h2>
+
+        {% if featured_products %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {% for product in featured_products %}
+            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300 group">
+                <a href="{{ product.get_absolute_url }}" class="block">
+                    <div class="relative overflow-hidden">
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}"
+                             alt="{{ product.name }}"
+                             class="w-full h-48 object-cover group-hover:scale-105 transition duration-300">
+                        {% else %}
+                        <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+                            <span class="text-gray-400">Нет изображения</span>
+                        </div>
+                        {% endif %}
+
+                        {% if product.is_new %}
+                        <span class="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
+                            NEW
+                        </span>
+                        {% endif %}
+
+                        {% if product.discount_price %}
+                        <span class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                            -{{ product.get_discount_percentage }}%
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-2 group-hover:text-accent transition">
+                            {{ product.name }}
+                        </h3>
+
+                        <div class="flex items-center mb-2">
+                            <span class="text-gray-600 text-sm">
+                                {{ product.category.name }}
+                            </span>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div>
+                                {% if product.discount_price %}
+                                <span class="text-xl font-bold text-accent">
+                                    {{ product.discount_price }} ₽
+                                </span>
+                                <span class="text-gray-400 line-through ml-2">
+                                    {{ product.price }} ₽
+                                </span>
+                                {% else %}
+                                <span class="text-xl font-bold text-gray-900">
+                                    {{ product.price }} ₽
+                                </span>
+                                {% endif %}
+                            </div>
+
+                            {% comment %} <button class="bg-gray-800 text-white p-2 rounded-full hover:bg-gray-900 transition"
+                                    onclick="event.preventDefault(); addToCart({{ product.id }})">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                            </button>  {% endcomment %}
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mt-10">
+            <a href="{% url 'mybiz_core:product_list' %}"
+   class="inline-block btn-primary font-medium hover:bg-primary transition duration-300">
+    Все товары
+</a>
+        </div>
+        {% else %}
+        <div class="text-center py-12">
+            <p class="text-gray-500 text-lg">Товары скоро появятся</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- SEO текстовый блок -->
+<section class="py-12 md:py-16">
+    <div class="container mx-auto px-4">
+        <div class="max-w-3xl mx-auto text-center">
+            <h2 class="text-3xl font-bold mb-6">Добро пожаловать в {{ site_settings.site_name }}</h2>
+            <div class="prose prose-lg mx-auto">
+                <p class="text-gray-600 mb-6">
+                    Мы предлагаем широкий ассортимент качественных товаров по доступным ценам.
+                    Наша команда стремится обеспечить лучший сервис для каждого клиента.
+                </p>
+                <p class="text-gray-600">
+                    Используйте удобную навигацию по категориям, чтобы найти нужный товар,
+                    или свяжитесь с нами для получения дополнительной информации.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function addToCart(productId) {
+    // Заглушка для функции добавления в корзину
+    alert('Товар добавлен в корзину!');
+    // В реальном проекте здесь будет AJAX-запрос
+}
+</script>
+{% endblock %}
+
+
+================================================================================
+ФАЙЛ: ./templates/products/product_items.html
+================================================================================
+
+{% for product in products %}
+<div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300 group">
+    <a href="{{ product.get_absolute_url }}" class="block">
+        <div class="relative overflow-hidden">
+            {% if product.image %}
+            <img src="{{ product.image.url }}"
+                 alt="{{ product.name }}"
+                 class="w-full h-48 object-cover group-hover:scale-105 transition duration-300">
+            {% else %}
+            <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+                <span class="text-gray-400">Нет изображения</span>
+            </div>
+            {% endif %}
+
+            {% if product.is_new %}
+            <span class="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
+                NEW
+            </span>
+            {% endif %}
+
+            {% if product.discount_price %}
+            <span class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                -{{ product.get_discount_percentage }}%
+            </span>
+            {% endif %}
+        </div>
+
+        <div class="p-4">
+            <h3 class="font-semibold text-lg mb-2 group-hover:text-accent transition">
+                {{ product.name }}
+            </h3>
+
+            <div class="flex items-center mb-2">
+                <span class="text-gray-600 text-sm">
+                    {{ product.category.name }}
+                </span>
+            </div>
+
+            <p class="text-gray-500 text-sm mb-3 line-clamp-2">
+                {{ product.short_description|default:'' }}
+            </p>
+
+            <div class="flex items-center justify-between">
+                <div>
+                    {% if product.discount_price %}
+                    <span class="text-xl font-bold text-accent">
+                        {{ product.discount_price }} ₽
+                    </span>
+                    <span class="text-gray-400 line-through ml-2">
+                        {{ product.price }} ₽
+                    </span>
+                    {% else %}
+                    <span class="text-xl font-bold text-gray-900">
+                        {{ product.price }} ₽
+                    </span>
+                    {% endif %}
+                </div>
+
+                {% comment %} <button class="bg-gray-800 text-white p-2 rounded-full hover:bg-gray-900 transition"
+                        onclick="event.preventDefault(); addToCart({{ product.id }})">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                </button> {% endcomment %}
+            </div>
+        </div>
+    </a>
+</div>
+{% endfor %}
+
+
+================================================================================
+ФАЙЛ: ./templates/products/product_list.html
+================================================================================
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if category %}{{ category.name }} - {% endif %}Товары - {{ site_settings.site_name }}
+{% endblock %}
+
+{% block meta %}
+{% if category %}
+<meta name="description" content="{{ category.meta_description|default:category.description }}">
+{% else %}
+<meta name="description" content="Каталог товаров {{ site_settings.site_name }}">
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Хлебные крошки -->
+    <nav class="flex mb-6" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a href="{% url 'mybiz_core:home' %}" class="text-gray-700 hover:text-gray-900">
+                    Главная
+                </a>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    <a href="{% url 'mybiz_core:product_list' %}" class="ml-1 text-gray-700 hover:text-gray-900">
+                        Товары
+                    </a>
+                </div>
+            </li>
+            {% if category %}
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="ml-1 text-gray-400">{{ category.name }}</span>
+                </div>
+            </li>
+            {% endif %}
+        </ol>
+    </nav>
+
+    <!-- Заголовок и фильтры -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+        <h1 class="text-3xl font-bold mb-4 md:mb-0">
+            {% if category %}
+                {{ category.name }}
+            {% else %}
+                Все товары
+            {% endif %}
+            <span class="text-gray-500 text-lg ml-2">({{ products.paginator.count|default:0 }})</span>
+        </h1>
+
+        <div class="flex space-x-4">
+            <select class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent">
+                <option>Сортировать по</option>
+                <option value="price_asc">Цена (по возрастанию)</option>
+                <option value="price_desc">Цена (по убыванию)</option>
+                <option value="name_asc">Название (А-Я)</option>
+                <option value="name_desc">Название (Я-А)</option>
+                <option value="newest">Сначала новые</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Категории (для мобильной фильтрации) -->
+    <div class="mb-8 md:hidden">
+        <details class="border border-gray-300 rounded-lg">
+            <summary class="px-4 py-3 font-medium cursor-pointer">Категории</summary>
+            <div class="p-4 border-t">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="{% url 'mybiz_core:product_list' %}"
+                           class="block py-2 px-3 rounded {% if not category %}bg-gray-100{% endif %}">
+                            Все товары
+                        </a>
+                    </li>
+                    {% for cat in categories %}
+                    <li>
+                        <a href="{{ cat.get_absolute_url }}"
+                           class="block py-2 px-3 rounded {% if category and category.slug == cat.slug %}bg-gray-100{% endif %}">
+                            {{ cat.name }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="flex flex-col md:flex-row">
+        <!-- Сайдбар с категориями -->
+        <aside class="md:w-1/4 mb-8 md:mb-0 md:mr-8">
+            <div class="hidden md:block sticky top-4">
+                <h3 class="font-bold text-lg mb-4">Категории</h3>
+                <ul class="space-y-2">
+                    <li>
+                        <a href="{% url 'mybiz_core:product_list' %}"
+                           class="block py-2 px-3 rounded-lg hover:bg-gray-100 {% if not category %}bg-gray-100 font-medium{% endif %}">
+                            Все товары
+                        </a>
+                    </li>
+                    {% for cat in categories %}
+                    <li>
+                        <a href="{{ cat.get_absolute_url }}"
+                           class="block py-2 px-3 rounded-lg hover:bg-gray-100 {% if category and category.slug == cat.slug %}bg-gray-100 font-medium{% endif %}">
+                            {{ cat.name }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Сетка товаров -->
+        <div class="md:w-3/4">
+            {% if products %}
+            <!-- Alpine компонент для кнопки "Показать ещё" -->
+            <div x-data="productLoader"
+                 x-init="init('{{ category.slug|default:"all" }}')">
+
+                <!-- Сетка товаров -->
+                <div id="product-grid"
+                     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% include 'products/product_items.html' with products=products %}
+                </div>
+
+                <!-- Кнопка "Показать ещё" -->
+                {% if products.has_next %}
+                <div class="text-center mt-12">
+                    <button @click="loadMore()"
+        :disabled="loading"
+        class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center">
+                        <template x-if="!loading">
+                            <span class="flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                Показать ещё
+                            </span>
+                        </template>
+                        <template x-if="loading">
+                            <span class="flex items-center">
+                                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Загрузка...
+                            </span>
+                        </template>
+                    </button>
+
+                    <p class="text-gray-500 text-sm mt-3">
+                        Показано <span x-text="loadedCount">{{ products|length }}</span> из {{ products.paginator.count }} товаров
+                        <span x-show="!hasNext" x-cloak class="text-green-600 font-medium ml-2">• Все товары загружены</span>
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+            <!-- Конец Alpine компонента -->
+
+            {% else %}
+            <div class="text-center py-16">
+                <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                </svg>
+                <h3 class="text-xl font-medium text-gray-900 mb-2">Товары не найдены</h3>
+                <p class="text-gray-500">
+                    {% if category %}
+                        В категории "{{ category.name }}" пока нет товаров.
+                    {% else %}
+                        В каталоге пока нет товаров.
+                    {% endif %}
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Alpine.js компонент для кнопки "Показать ещё"
+document.addEventListener('alpine:init', () => {
+    Alpine.data('productLoader', () => ({
+        loading: false,
+        nextPage: {% if products.has_next %}{{ products.next_page_number }}{% else %}null{% endif %},
+        hasNext: {{ products.has_next|yesno:"true,false" }},
+        categorySlug: '',
+        loadedCount: {{ products|length }}, // Начальное количество загруженных товаров
+
+        init(categorySlug) {
+            this.categorySlug = categorySlug;
+        },
+
+        async loadMore() {
+            if (this.loading || !this.hasNext || !this.nextPage) return;
+
+            this.loading = true;
+
+            try {
+                const url = `/products/load-more/?page=${this.nextPage}&category=${this.categorySlug}`;
+                const response = await fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (!response.ok) throw new Error('Ошибка сети');
+
+                const data = await response.json();
+
+                if (data.html) {
+                    const productGrid = document.getElementById('product-grid');
+                    productGrid.insertAdjacentHTML('beforeend', data.html);
+
+                    // Обновляем счетчик загруженных товаров
+                    const newItems = document.createElement('div');
+                    newItems.innerHTML = data.html;
+                    const itemCount = newItems.querySelectorAll('.bg-white.rounded-lg').length;
+                    this.loadedCount += itemCount;
+
+                    this.hasNext = data.has_next;
+                    this.nextPage = data.next_page || null;
+                }
+            } catch (error) {
+                console.error('Ошибка при загрузке товаров:', error);
+                alert('Произошла ошибка при загрузке товаров');
+            } finally {
+                this.loading = false;
+            }
+        }
+    }));
+});
+</script>
+
+<!-- Стиль для скрытия элементов до инициализации Alpine -->
+<style>
+    [x-cloak] { display: none !important; }
+</style>
+{% endblock %}
+
+
+================================================================================
+ФАЙЛ: ./templates/products/product_detail.html
+================================================================================
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} - {{ site_settings.site_name }}{% endblock %}
+
+{% block meta %}
+<meta name="description" content="{{ product.meta_description|default:product.short_description }}">
+{% if product.image %}
+<meta property="og:image" content="{{ product.image.url }}">
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Хлебные крошки -->
+    <nav class="flex mb-6" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a href="{% url 'mybiz_core:home' %}" class="text-gray-700 hover:text-gray-900">
+                    Главная
+                </a>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    <a href="{% url 'mybiz_core:product_list' %}" class="ml-1 text-gray-700 hover:text-gray-900">
+                        Товары
+                    </a>
+                </div>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    <a href="{{ product.category.get_absolute_url }}" class="ml-1 text-gray-700 hover:text-gray-900">
+                        {{ product.category.name }}
+                    </a>
+                </div>
+            </li>
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="ml-1 text-gray-400">{{ product.name|truncatechars:30 }}</span>
+                </div>
+            </li>
+        </ol>
+    </nav>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <!-- Изображение товара -->
+        <div>
+            <div class="bg-white rounded-xl shadow-lg p-4 mb-4">
+                {% if product.image %}
+                <img src="{{ product.image.url }}"
+                     alt="{{ product.name }}"
+                     class="w-full rounded-lg"
+                     id="main-product-image">
+                {% else %}
+                <div class="w-full h-96 bg-gray-200 rounded-lg flex items-center justify-center">
+                    <span class="text-gray-400 text-xl">Нет изображения</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Информация о товаре -->
+        <div>
+            <h1 class="text-3xl font-bold mb-4">{{ product.name }}</h1>
+
+            <div class="flex items-center mb-6">
+                <div class="flex items-center">
+                    {% for i in "12345" %}
+                    {% if forloop.counter <= product.rating|default:0 %}
+                    <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                    </svg>
+                    {% else %}
+                    <svg class="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                    </svg>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                <span class="text-gray-600 ml-2">({{ product.review_count|default:0 }} отзывов)</span>
+                <span class="mx-2">•</span>
+                <span class="text-gray-600">Артикул: {{ product.sku|default:'N/A' }}</span>
+            </div>
+
+            <div class="mb-8">
+                <div class="flex items-center mb-4">
+                    {% if product.discount_price %}
+                    <span class="text-4xl font-bold text-accent mr-4">
+                        {{ product.discount_price }} ₽
+                    </span>
+                    <span class="text-2xl text-gray-400 line-through">
+                        {{ product.price }} ₽
+                    </span>
+                    <span class="ml-4 bg-red-100 text-red-800 text-sm font-semibold px-3 py-1 rounded">
+                        -{{ product.get_discount_percentage }}%
+                    </span>
+                    {% else %}
+                    <span class="text-4xl font-bold text-gray-900">
+                        {{ product.price }} ₽
+                    </span>
+                    {% endif %}
+                </div>
+
+                {% if product.in_stock %}
+                <div class="flex items-center text-green-600 mb-2">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="font-medium">В наличии</span>
+                </div>
+                {% else %}
+                <div class="flex items-center text-red-600 mb-2">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="font-medium">Нет в наличии</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="prose max-w-none mb-8">
+                {{ product.description|safe }}
+            </div>
+
+            {% comment %} {% if product.in_stock %}
+            <div class="flex items-center space-x-4 mb-8">
+                <div class="flex items-center border border-gray-300 rounded-lg">
+                    <button class="px-4 py-2 text-gray-600 hover:text-gray-900" onclick="decreaseQuantity()">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                        </svg>
+                    </button>
+                    <input type="number"
+                           id="quantity"
+                           value="1"
+                           min="1"
+                           max="99"
+                           class="w-16 text-center border-0 focus:ring-0">
+                    <button class="px-4 py-2 text-gray-600 hover:text-gray-900" onclick="increaseQuantity()">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <button onclick="addToCart({{ product.id }})"
+                        class="flex-1 bg-accent text-white px-8 py-3 rounded-lg font-semibold hover:bg-accent-dark transition duration-300">
+                    Добавить в корзину
+                </button>
+
+                <button class="p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    </svg>
+                </button>
+            </div>
+            {% endif %} {% endcomment %}
+
+            <!-- Дополнительная информация -->
+            <div class="border-t border-gray-200 pt-6">
+                <h3 class="font-bold text-lg mb-4">Детали товара</h3>
+                <ul class="space-y-2">
+                    <li class="flex">
+                        <span class="text-gray-600 w-32">Категория:</span>
+                        <a href="{{ product.category.get_absolute_url }}" class="text-accent hover:text-accent-dark">
+                            {{ product.category.name }}
+                        </a>
+                    </li>
+                    {% if product.brand %}
+                    <li class="flex">
+                        <span class="text-gray-600 w-32">Бренд:</span>
+                        <span>{{ product.brand }}</span>
+                    </li>
+                    {% endif %}
+                    {% if product.sku %}
+                    <li class="flex">
+                        <span class="text-gray-600 w-32">Артикул:</span>
+                        <span>{{ product.sku }}</span>
+                    </li>
+                    {% endif %}
+                    <li class="flex">
+                        <span class="text-gray-600 w-32">Доступность:</span>
+                        <span class="{% if product.in_stock %}text-green-600{% else %}text-red-600{% endif %}">
+                            {% if product.in_stock %}В наличии{% else %}Нет в наличии{% endif %}
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Похожие товары -->
+    {% if related_products %}
+    <div class="mt-16">
+        <h2 class="text-2xl font-bold mb-8">Похожие товары</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            {% for related_product in related_products %}
+            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300">
+                <a href="{{ related_product.get_absolute_url }}" class="block">
+                    {% if related_product.image %}
+                    <img src="{{ related_product.image.url }}"
+                         alt="{{ related_product.name }}"
+                         class="w-full h-48 object-cover">
+                    {% endif %}
+                    <div class="p-4">
+                        <h3 class="font-semibold mb-2">{{ related_product.name }}</h3>
+                        <div class="flex justify-between items-center">
+                            <span class="text-lg font-bold text-accent">
+                                {% if related_product.discount_price %}
+                                {{ related_product.discount_price }} ₽
+                                {% else %}
+                                {{ related_product.price }} ₽
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+{% comment %} function increaseQuantity() {
+    const input = document.getElementById('quantity');
+    let value = parseInt(input.value);
+    if (value < 99) {
+        input.value = value + 1;
+    }
+}
+
+function decreaseQuantity() {
+    const input = document.getElementById('quantity');
+    let value = parseInt(input.value);
+    if (value > 1) {
+        input.value = value - 1;
+    }
+}
+
+function addToCart(productId) {
+    const quantity = document.getElementById('quantity').value;
+
+    // Заглушка для функции добавления в корзину
+    alert(`Добавлено ${quantity} товар(ов) в корзину!`);
+
+    // В реальном проекте здесь будет AJAX-запрос
+    // fetch('/cart/add/', {
+    //     method: 'POST',
+    //     headers: {
+    //         'Content-Type': 'application/json',
+    //         'X-CSRFToken': getCookie('csrftoken')
+    //     },
+    //     body: JSON.stringify({
+    //         product_id: productId,
+    //         quantity: quantity
+    //     })
+    // })
+} {% endcomment %}
+</script>
+{% endblock %}
+
+
+================================================================================
+ФАЙЛ: ./collect_project.sh
+================================================================================
+
+#!/bin/bash
+
+# Скрипт для сбора всех файлов проекта MyBiz в один текстовый файл
+# Для использования в WSL Ubuntu
+
+OUTPUT_FILE="project_analysis.txt"
+LOG_FILE="collection_log.txt"
+
+echo "=== Начало сбора файлов проекта MyBiz ===" > "$LOG_FILE"
+date >> "$LOG_FILE"
+echo "" >> "$LOG_FILE"
+
+# Функция для добавления файла в отчет
+add_file() {
+    local file_path=$1
+    local description=$2
+
+    echo "Обработка: $file_path" | tee -a "$LOG_FILE"
+
+    echo "================================================================================" >> "$OUTPUT_FILE"
+    echo "ФАЙЛ: $file_path" >> "$OUTPUT_FILE"
+    echo "ОПИСАНИЕ: $description" >> "$OUTPUT_FILE"
+    echo "================================================================================" >> "$OUTPUT_FILE"
+    echo "" >> "$OUTPUT_FILE"
+
+    if [ -f "$file_path" ]; then
+        cat "$file_path" >> "$OUTPUT_FILE"
+        echo "✓ Успешно добавлен" >> "$LOG_FILE"
+    else
+        echo "✗ Файл не найден: $file_path" >> "$OUTPUT_FILE"
+        echo "✗ Файл не найден" >> "$LOG_FILE"
+    fi
+
+    echo "" >> "$OUTPUT_FILE"
+    echo "" >> "$OUTPUT_FILE"
+}
+
+# Создаем или очищаем выходной файл
+> "$OUTPUT_FILE"
+
+echo "=== СНИМОК ПРОЕКТА MYBIZ ===" >> "$OUTPUT_FILE"
+echo "Дата создания: $(date)" >> "$OUTPUT_FILE"
+echo "Для анализа AI-ассистентом" >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+
+# 1. КОНФИГУРАЦИОННЫЕ ФАЙЛЫ
+echo "=== 1. КОНФИГУРАЦИОННЫЕ ФАЙЛЫ ===" >> "$OUTPUT_FILE"
+
+add_file "config/settings.py" "Основные настройки Django проекта"
+add_file "config/urls.py" "Главные URL-маршруты проекта"
+add_file "requirements.txt" "Зависимости Python проекта"
+
+# 2. МОДЕЛИ ДАННЫХ
+echo "=== 2. МОДЕЛИ ДАННЫХ ===" >> "$OUTPUT_FILE"
+
+add_file "mybiz_core/models.py" "Модели для товаров и категорий"
+add_file "content/models.py" "Модели для контента и настроек сайта"
+add_file "pages/models.py" "Модели для SEO-страниц"
+
+# 3. ПРЕДСТАВЛЕНИЯ (VIEWS)
+echo "=== 3. ПРЕДСТАВЛЕНИЯ (VIEWS) ===" >> "$OUTPUT_FILE"
+
+add_file "mybiz_core/views.py" "Представления для товаров и категорий"
+add_file "pages/views.py" "Представления для SEO-страниц"
+
+# 4. URL-МАРШРУТЫ
+echo "=== 4. URL-МАРШРУТЫ ===" >> "$OUTPUT_FILE"
+
+add_file "mybiz_core/urls.py" "URL-маршруты приложения mybiz_core"
+add_file "pages/urls.py" "URL-маршруты приложения pages"
+
+# 5. АДМИН-ПАНЕЛЬ
+echo "=== 5. АДМИН-ПАНЕЛЬ ===" >> "$OUTPUT_FILE"
+
+add_file "mybiz_core/admin.py" "Админка для товаров и категорий"
+add_file "content/admin.py" "Админка для контента и настроек"
+add_file "pages/admin.py" "Админка для SEO-страниц"
+
+# 6. КОНТЕКСТНЫЕ ПРОЦЕССОРЫ
+echo "=== 6. КОНТЕКСТНЫЕ ПРОЦЕССОРЫ ===" >> "$OUTPUT_FILE"
+
+add_file "mybiz_core/context_processors.py" "Контекстный процессор для категорий"
+add_file "content/context_processors.py" "Контекстные процессоры для настроек и промо-акций"
+
+# 7. ШАБЛОНЫ
+echo "=== 7. ШАБЛОНЫ ===" >> "$OUTPUT_FILE"
+
+add_file "templates/base.html" "Базовый шаблон сайта"
+add_file "templates/home.html" "Шаблон главной страницы"
+add_file "templates/products/product_list.html" "Шаблон списка товаров"
+add_file "templates/products/product_detail.html" "Шаблон детальной страницы товара"
+add_file "templates/products/product_items.html" "Шаблон для AJAX-подгрузки товаров"
+add_file "templates/includes/header.html" "Шаблон хедера"
+add_file "templates/includes/footer.html" "Шаблон футера"
+
+# 8. КОМАНДА ДЛЯ ТЕСТОВЫХ ДАННЫХ
+echo "=== 8. КОМАНДА ДЛЯ ТЕСТОВЫХ ДАННЫХ ===" >> "$OUTPUT_FILE"
+
+add_file "mybiz_core/management/commands/seed_data.py" "Команда для генерации тестовых данных"
+
+# 9. ФАЙЛЫ МИГРАЦИЙ (последние)
+echo "=== 9. ФАЙЛЫ МИГРАЦИЙ ===" >> "$OUTPUT_FILE"
+
+# Находим последние файлы миграций для каждого приложения
+find_migration() {
+    local app=$1
+    local migration_file=$(find "$app/migrations" -name "*.py" ! -name "__init__.py" | sort -V | tail -1)
+
+    if [ -n "$migration_file" ]; then
+        add_file "$migration_file" "Последняя миграция для $app"
+    else
+        echo "================================================================================" >> "$OUTPUT_FILE"
+        echo "ФАЙЛ: $app/migrations/ (нет миграций или приложение не найдено)" >> "$OUTPUT_FILE"
+        echo "================================================================================" >> "$OUTPUT_FILE"
+        echo "" >> "$OUTPUT_FILE"
+    fi
+}
+
+find_migration "mybiz_core"
+find_migration "content"
+find_migration "pages"
+
+# 10. ТЕСТЫ
+echo "=== 10. ТЕСТЫ ===" >> "$OUTPUT_FILE"
+
+add_file "mybiz_core/tests.py" "Тесты для приложения mybiz_core"
+
+# Добавляем информацию о структуре проекта
+echo "=== СТРУКТУРА ПРОЕКТА ===" >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+echo "Директории проекта:" >> "$OUTPUT_FILE"
+find . -type d -name ".*" -prune -o -type d -print | sort | head -30 >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+
+echo "Файлы проекта (первые 50):" >> "$OUTPUT_FILE"
+find . -type f -name ".*" -prune -o -type f -print | sort | head -50 >> "$OUTPUT_FILE"
+
+# Добавляем информацию о Python-пакетах
+echo "" >> "$OUTPUT_FILE"
+echo "=== ИНФОРМАЦИЯ О СРЕДЕ ===" >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+echo "Python версия:" >> "$OUTPUT_FILE"
+python3 --version 2>> "$OUTPUT_FILE" || echo "Python не найден" >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+
+echo "Установленные пакеты (Django):" >> "$OUTPUT_FILE"
+python3 -c "import django; print(f'Django версия: {django.__version__}')" 2>> "$OUTPUT_FILE" || echo "Django не установлен" >> "$OUTPUT_FILE"
+
+# Завершаем лог
+echo "" >> "$LOG_FILE"
+echo "=== Завершение сбора файлов ===" >> "$LOG_FILE"
+echo "Всего файлов обработано: $(grep -c "Обработка:" "$LOG_FILE")" >> "$LOG_FILE"
+echo "Файлов найдено: $(grep -c "✓ Успешно добавлен" "$LOG_FILE")" >> "$LOG_FILE"
+echo "Файлов не найдено: $(grep -c "✗ Файл не найден" "$LOG_FILE")" >> "$LOG_FILE"
+echo "Итоговый файл: $OUTPUT_FILE ($(wc -l < "$OUTPUT_FILE") строк)" >> "$LOG_FILE"
+
+echo ""
+echo "✅ Сбор файлов проекта завершен!"
+echo "📁 Основной файл: $OUTPUT_FILE"
+echo "📋 Лог сбора: $LOG_FILE"
+echo ""
+echo "Отправьте содержимое файла '$OUTPUT_FILE' AI-ассистенту для анализа"
+
+
+================================================================================
+ФАЙЛ: ./config/asgi.py
+================================================================================
+
+"""
+ASGI config for config project.
+
+It exposes the ASGI callable as a module-level variable named ``application``.
+
+For more information on this file, see
+https://docs.djangoproject.com/en/5.2/howto/deployment/asgi/
+"""
+
+import os
+
+from django.core.asgi import get_asgi_application
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+
+application = get_asgi_application()
+
+
+================================================================================
+ФАЙЛ: ./config/urls.py
+================================================================================
+
+from django.contrib import admin
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('mybiz_core.urls', namespace='mybiz_core')),
+    path('', include('pages.urls', namespace='pages')),
+]
+
+# Добавляем обработку медиафайлов в режиме разработки
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+
+================================================================================
+ФАЙЛ: ./config/settings.py
+================================================================================
+
+"""
+Django settings for config project.
+
+Generated by 'django-admin startproject' using Django 5.2.
+
+For more information on this file, see
+https://docs.djangoproject.com/en/5.2/topics/settings/
+
+For the full list of settings and their values, see
+https://docs.djangoproject.com/en/5.2/ref/settings/
+"""
+
+from pathlib import Path
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = 'django-insecure-bw1_iw#sqnnd5)lk+e+##+=mt-d%ocpk^i939_i$x*q@m0!8yh'
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
+
+ALLOWED_HOSTS = []
+
+
+# Application definition
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+
+    # Third party apps
+    'ckeditor',
+
+    # Local apps
+    'mybiz_core',
+    'content',
+    'pages',
+]
+
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+ROOT_URLCONF = 'config.urls'
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR / 'templates'],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                'content.context_processors.site_settings',
+                'content.context_processors.promotions',
+                'content.context_processors.header_pages',  # ДОБАВИЛИ
+                'mybiz_core.context_processors.categories',
+            ],
+        },
+    },
+]
+
+WSGI_APPLICATION = 'config.wsgi.application'
+
+
+# Database
+# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+
+
+# Password validation
+# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
+
+# Internationalization
+# https://docs.djangoproject.com/en/5.2/topics/i18n/
+
+LANGUAGE_CODE = 'ru-ru'  # Измените на 'en-us' если предпочитаете английский
+
+TIME_ZONE = 'Europe/Moscow'  # Измените на ваш часовой пояс
+
+USE_I18N = True
+
+USE_TZ = True
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Настройки CKEditor
+CKEDITOR_UPLOAD_PATH = "uploads/"
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'height': 300,
+        'width': '100%',
+    },
+}
+
+# Настройки для загрузки файлов
+MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = '/media/'
+
+# Статические файлы
+STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+SILENCED_SYSTEM_CHECKS = ['ckeditor.W001']
+
+SLUG_UNICODE = True
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
+
+
+================================================================================
+ФАЙЛ: ./config/__init__.py
+================================================================================
+
+[БИНАРНЫЙ ФАЙЛ - содержимое не показано]
+
+
+================================================================================
+ФАЙЛ: ./config/wsgi.py
+================================================================================
+
+"""
+WSGI config for config project.
+
+It exposes the WSGI callable as a module-level variable named ``application``.
+
+For more information on this file, see
+https://docs.djangoproject.com/en/5.2/howto/deployment/wsgi/
+"""
+
+import os
+
+from django.core.wsgi import get_wsgi_application
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+
+application = get_wsgi_application()
+
+
+================================================================================
+ФАЙЛ: ./content/context_processors.py
+================================================================================
+
+from .models import SiteSettings, Promotion
+from pages.models import Page
+
+def site_settings(request):
+    """Добавляет настройки сайта в контекст всех шаблонов"""
+    settings = SiteSettings.load()
+    return {'site_settings': settings}
+
+def promotions(request):
+    """Добавляет активные промо-акции в контекст"""
+    active_promotions = Promotion.objects.filter(is_active=True).order_by('-created_at')[:3]
+    return {'promotions': active_promotions}
+
+def header_pages(request):
+    """Добавляет страницы для шапки сайта"""
+    pages = Page.get_header_pages()
+    return {'header_pages': pages}
+
+
+================================================================================
+ФАЙЛ: ./content/admin.py
+================================================================================
+
+from django.contrib import admin
+from django.utils.html import format_html
+from ckeditor.widgets import CKEditorWidget
+from django import forms
+from .models import Promotion, SiteSettings
+from .widgets import ColorPickerWidget
+
+
+class PromotionForm(forms.ModelForm):
+    description = forms.CharField(widget=CKEditorWidget())
+
+    class Meta:
+        model = Promotion
+        fields = '__all__'
+
+
+@admin.register(Promotion)
+class PromotionAdmin(admin.ModelAdmin):
+    form = PromotionForm
+    list_display = ('title', 'is_active', 'start_date', 'end_date', 'image_preview')
+    list_filter = ('is_active', 'start_date', 'end_date')
+    search_fields = ('title', 'description')
+    readonly_fields = ('image_preview',)
+
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" width="200" style="max-height: 200px;" />', obj.image.url)
+        return "Нет изображения"
+
+    image_preview.short_description = 'Превью изображения'
+
+
+class SiteSettingsForm(forms.ModelForm):
+    class Meta:
+        model = SiteSettings
+        fields = '__all__'
+        widgets = {
+            'meta_description': forms.Textarea(attrs={'rows': 3}),
+            'meta_keywords': forms.Textarea(attrs={'rows': 3}),
+            'primary_color': ColorPickerWidget(),
+            'secondary_color': ColorPickerWidget(),
+            'accent_color': ColorPickerWidget(),
+            'text_color': ColorPickerWidget(),
+            'background_color': ColorPickerWidget(),
+            'header_bg_color': ColorPickerWidget(),
+            'footer_bg_color': ColorPickerWidget(),
+        }
+
+
+@admin.register(SiteSettings)
+class SiteSettingsAdmin(admin.ModelAdmin):
+    form = SiteSettingsForm
+    list_display = ('site_name', 'contact_email', 'contact_phone', 'color_preview')
+
+    fieldsets = (
+        ('Основные настройки', {
+            'fields': ('site_name', 'site_tagline', 'logo', 'favicon', 'hero_image')
+        }),
+        ('Цветовая палитра', {
+            'fields': (
+                'primary_color',
+                'secondary_color',
+                'accent_color',
+                'text_color',
+                'background_color',
+                'header_bg_color',
+                'footer_bg_color',
+            ),
+            'classes': ('wide', 'color-palette-section'),
+            'description': '''
+                <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+                    <strong>🎨 Настройка цветов сайта:</strong><br>
+                    1. <strong>Основной цвет</strong> - основной цвет бренда<br>
+                    2. <strong>Вторичный цвет</strong> - дополнительный цвет<br>
+                    3. <strong>Акцентный цвет</strong> - для кнопок и важных элементов<br>
+                    4. <strong>Цвет текста</strong> - основной цвет текста<br>
+                    5. <strong>Цвет фона</strong> - фоновый цвет сайта<br>
+                    6. <strong>Фон шапки</strong> - фон верхней части сайта<br>
+                    7. <strong>Фон подвала</strong> - фон нижней части сайта
+                </div>
+            '''
+        }),
+        ('Контактная информация', {
+            'fields': ('contact_email', 'contact_phone', 'contact_address', 'working_hours')
+        }),
+        ('Социальные сети', {
+            'fields': ('facebook_url', 'instagram_url', 'twitter_url')
+        }),
+        ('SEO', {
+            'fields': ('meta_title', 'meta_description', 'meta_keywords')
+        }),
+    )
+
+    def has_add_permission(self, request):
+        # Разрешаем только один объект настроек
+        return not SiteSettings.objects.exists()
+
+    def color_preview(self, obj):
+        """Предпросмотр цветовой палитры в списке"""
+        if obj.primary_color:
+            return format_html(
+                '''
+                <div style="display: flex; gap: 2px; align-items: center;">
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div style="width: 20px; height: 20px; background-color: {}; border: 1px solid #ccc;"></div>
+                        <small style="font-size: 8px;">Primary</small>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div style="width: 20px; height: 20px; background-color: {}; border: 1px solid #ccc;"></div>
+                        <small style="font-size: 8px;">Accent</small>
+                    </div>
+                </div>
+                ''',
+                obj.primary_color, obj.accent_color
+            )
+        return "Не настроено"
+
+    color_preview.short_description = 'Цвета'
+
+    class Media:
+        css = {
+            'all': ('admin/css/color-picker-widget.css',)
+        }
+        js = ('admin/js/color-picker-widget.js',)
+        
+
+
+================================================================================
+ФАЙЛ: ./content/models.py
+================================================================================
+
+from django.db import models
+from django.utils.text import slugify
+from ckeditor.fields import RichTextField
+
+class Promotion(models.Model):
+    title = models.CharField(max_length=200, verbose_name="Заголовок")
+    slug = models.SlugField(max_length=200, unique=True, blank=True, verbose_name="URL")
+    image = models.ImageField(upload_to='promotions/', verbose_name="Изображение")
+    description = RichTextField(verbose_name="Описание")
+    short_description = models.CharField(max_length=300, blank=True, verbose_name="Краткое описание")
+    button_text = models.CharField(max_length=50, blank=True, verbose_name="Текст кнопки")
+    button_url = models.CharField(max_length=200, blank=True, verbose_name="URL кнопки")
+    is_active = models.BooleanField(default=True, verbose_name="Активна")
+    start_date = models.DateField(blank=True, null=True, verbose_name="Дата начала")
+    end_date = models.DateField(blank=True, null=True, verbose_name="Дата окончания")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+
+    class Meta:
+        verbose_name = "Промо-акция"
+        verbose_name_plural = "Промо-акции"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title, allow_unicode=True)
+        super().save(*args, **kwargs)
+
+
+class SiteSettings(models.Model):
+    site_name = models.CharField(max_length=100, default="MyBiz", verbose_name="Название сайта")
+    site_tagline = models.CharField(max_length=200, blank=True, verbose_name="Слоган сайта")
+    logo = models.ImageField(upload_to='site/', blank=True, null=True, verbose_name="Логотип")
+    favicon = models.ImageField(upload_to='site/', blank=True, null=True, verbose_name="Фавикон")
+    hero_image = models.ImageField(upload_to='site/', blank=True, null=True, verbose_name="Главное изображение")
+
+    # Цветовая палитра
+    primary_color = models.CharField(
+        max_length=7,
+        default='#3b82f6',
+        verbose_name="Основной цвет (Primary)",
+        help_text="Основной цвет бренда"
+    )
+    secondary_color = models.CharField(
+        max_length=7,
+        default='#8b5cf6',
+        verbose_name="Вторичный цвет (Secondary)",
+        help_text="Дополнительный цвет"
+    )
+    accent_color = models.CharField(
+        max_length=7,
+        default='#10b981',
+        verbose_name="Акцентный цвет (Accent)",
+        help_text="Цвет для кнопок и важных элементов"
+    )
+    text_color = models.CharField(
+        max_length=7,
+        default='#1f2937',
+        verbose_name="Цвет текста",
+        help_text="Основной цвет текста"
+    )
+    background_color = models.CharField(
+        max_length=7,
+        default='#f9fafb',
+        verbose_name="Цвет фона",
+        help_text="Фоновый цвет сайта"
+    )
+    header_bg_color = models.CharField(
+        max_length=7,
+        default='#ffffff',
+        verbose_name="Фон шапки",
+        help_text="Фон верхней части сайта"
+    )
+    footer_bg_color = models.CharField(
+        max_length=7,
+        default='#111827',
+        verbose_name="Фон подвала",
+        help_text="Фон нижней части сайта"
+    )
+
+    # Контактная информация
+    contact_email = models.EmailField(blank=True, verbose_name="Контактный email")
+    contact_phone = models.CharField(max_length=20, blank=True, verbose_name="Контактный телефон")
+    contact_address = models.TextField(blank=True, verbose_name="Контактный адрес")
+    working_hours = models.CharField(max_length=100, blank=True, verbose_name="Время работы")
+
+    # Социальные сети
+    facebook_url = models.URLField(blank=True, verbose_name="Facebook")
+    instagram_url = models.URLField(blank=True, verbose_name="Instagram")
+    twitter_url = models.URLField(blank=True, verbose_name="Twitter")
+
+    # SEO
+    meta_title = models.CharField(max_length=200, blank=True, verbose_name="Мета-заголовок")
+    meta_description = models.TextField(blank=True, verbose_name="Мета-описание")
+    meta_keywords = models.TextField(blank=True, verbose_name="Мета-ключевые слова")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+
+    class Meta:
+        verbose_name = "Настройки сайта"
+        verbose_name_plural = "Настройки сайта"
+
+    def __str__(self):
+        return self.site_name
+
+    def save(self, *args, **kwargs):
+        # Разрешаем только одну запись настроек
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def load(cls):
+        obj, created = cls.objects.get_or_create(pk=1)
+        return obj
+
+
+================================================================================
+ФАЙЛ: ./content/tests.py
+================================================================================
+
+from django.test import TestCase
+
+# Create your tests here.
+
+
+================================================================================
+ФАЙЛ: ./content/widgets.py
+================================================================================
+
+from django import forms
+
+class ColorPickerWidget(forms.TextInput):
+    """Виджет для выбора цвета с предпросмотром"""
+
+    class Media:
+        css = {
+            'all': (
+                'admin/css/color-picker-widget.css',
+            )
+        }
+        js = (
+            'admin/js/color-picker-widget.js',
+        )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.attrs.update({
+            'type': 'color',
+            'style': 'width: 60px; height: 40px; border: none; cursor: pointer;',
+            'title': 'Нажмите для выбора цвета'
+        })
+
+
+================================================================================
+ФАЙЛ: ./content/views.py
+================================================================================
+
+from django.shortcuts import render
+
+# Create your views here.
+
+
+================================================================================
+ФАЙЛ: ./content/migrations/0003_alter_sitesettings_accent_color_and_more.py
+================================================================================
+
+# Generated by Django 5.2 on 2025-12-16 12:18
+
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('content', '0002_sitesettings_accent_color_and_more'),
+    ]
+
+    operations = [
+        migrations.AlterField(
+            model_name='sitesettings',
+            name='accent_color',
+            field=models.CharField(default='#10b981', help_text='Цвет для кнопок и важных элементов', max_length=7, verbose_name='Акцентный цвет (Accent)'),
+        ),
+        migrations.AlterField(
+            model_name='sitesettings',
+            name='background_color',
+            field=models.CharField(default='#f9fafb', help_text='Фоновый цвет сайта', max_length=7, verbose_name='Цвет фона'),
+        ),
+        migrations.AlterField(
+            model_name='sitesettings',
+            name='footer_bg_color',
+            field=models.CharField(default='#111827', help_text='Фон нижней части сайта', max_length=7, verbose_name='Фон подвала'),
+        ),
+        migrations.AlterField(
+            model_name='sitesettings',
+            name='header_bg_color',
+            field=models.CharField(default='#ffffff', help_text='Фон верхней части сайта', max_length=7, verbose_name='Фон шапки'),
+        ),
+        migrations.AlterField(
+            model_name='sitesettings',
+            name='primary_color',
+            field=models.CharField(default='#3b82f6', help_text='Основной цвет бренда', max_length=7, verbose_name='Основной цвет (Primary)'),
+        ),
+        migrations.AlterField(
+            model_name='sitesettings',
+            name='secondary_color',
+            field=models.CharField(default='#8b5cf6', help_text='Дополнительный цвет', max_length=7, verbose_name='Вторичный цвет (Secondary)'),
+        ),
+        migrations.AlterField(
+            model_name='sitesettings',
+            name='text_color',
+            field=models.CharField(default='#1f2937', help_text='Основной цвет текста', max_length=7, verbose_name='Цвет текста'),
+        ),
+    ]
+
+
+================================================================================
+ФАЙЛ: ./content/migrations/0001_initial.py
+================================================================================
+
+# Generated by Django 5.2 on 2025-12-15 11:01
+
+import ckeditor.fields
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    initial = True
+
+    dependencies = [
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name='Promotion',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('title', models.CharField(max_length=200, verbose_name='Заголовок')),
+                ('slug', models.SlugField(blank=True, max_length=200, unique=True, verbose_name='URL')),
+                ('image', models.ImageField(upload_to='promotions/', verbose_name='Изображение')),
+                ('description', ckeditor.fields.RichTextField(verbose_name='Описание')),
+                ('short_description', models.CharField(blank=True, max_length=300, verbose_name='Краткое описание')),
+                ('button_text', models.CharField(blank=True, max_length=50, verbose_name='Текст кнопки')),
+                ('button_url', models.CharField(blank=True, max_length=200, verbose_name='URL кнопки')),
+                ('is_active', models.BooleanField(default=True, verbose_name='Активна')),
+                ('start_date', models.DateField(blank=True, null=True, verbose_name='Дата начала')),
+                ('end_date', models.DateField(blank=True, null=True, verbose_name='Дата окончания')),
+                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')),
+                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Дата обновления')),
+            ],
+            options={
+                'verbose_name': 'Промо-акция',
+                'verbose_name_plural': 'Промо-акции',
+                'ordering': ['-created_at'],
+            },
+        ),
+        migrations.CreateModel(
+            name='SiteSettings',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('site_name', models.CharField(default='MyBiz', max_length=100, verbose_name='Название сайта')),
+                ('site_tagline', models.CharField(blank=True, max_length=200, verbose_name='Слоган сайта')),
+                ('logo', models.ImageField(blank=True, null=True, upload_to='site/', verbose_name='Логотип')),
+                ('favicon', models.ImageField(blank=True, null=True, upload_to='site/', verbose_name='Фавикон')),
+                ('hero_image', models.ImageField(blank=True, null=True, upload_to='site/', verbose_name='Главное изображение')),
+                ('contact_email', models.EmailField(blank=True, max_length=254, verbose_name='Контактный email')),
+                ('contact_phone', models.CharField(blank=True, max_length=20, verbose_name='Контактный телефон')),
+                ('contact_address', models.TextField(blank=True, verbose_name='Контактный адрес')),
+                ('working_hours', models.CharField(blank=True, max_length=100, verbose_name='Время работы')),
+                ('facebook_url', models.URLField(blank=True, verbose_name='Facebook')),
+                ('instagram_url', models.URLField(blank=True, verbose_name='Instagram')),
+                ('twitter_url', models.URLField(blank=True, verbose_name='Twitter')),
+                ('meta_title', models.CharField(blank=True, max_length=200, verbose_name='Мета-заголовок')),
+                ('meta_description', models.TextField(blank=True, verbose_name='Мета-описание')),
+                ('meta_keywords', models.TextField(blank=True, verbose_name='Мета-ключевые слова')),
+                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Дата обновления')),
+            ],
+            options={
+                'verbose_name': 'Настройки сайта',
+                'verbose_name_plural': 'Настройки сайта',
+            },
+        ),
+    ]
+
+
+================================================================================
+ФАЙЛ: ./content/migrations/0002_sitesettings_accent_color_and_more.py
+================================================================================
+
+# Generated by Django 5.2 on 2025-12-16 11:36
+
+import django.core.validators
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('content', '0001_initial'),
+    ]
+
+    operations = [
+        migrations.AddField(
+            model_name='sitesettings',
+            name='accent_color',
+            field=models.CharField(default='#10b981', help_text='HEX-код акцентного цвета для кнопок (например, #10b981)', max_length=7, validators=[django.core.validators.RegexValidator('^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$', 'Введите корректный HEX-код цвета')], verbose_name='Акцентный цвет'),
+        ),
+        migrations.AddField(
+            model_name='sitesettings',
+            name='background_color',
+            field=models.CharField(default='#f9fafb', help_text='HEX-код фона сайта (например, #f9fafb)', max_length=7, validators=[django.core.validators.RegexValidator('^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$', 'Введите корректный HEX-код цвета')], verbose_name='Цвет фона'),
+        ),
+        migrations.AddField(
+            model_name='sitesettings',
+            name='footer_bg_color',
+            field=models.CharField(default='#111827', help_text='HEX-код фона подвала сайта (например, #111827)', max_length=7, validators=[django.core.validators.RegexValidator('^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$', 'Введите корректный HEX-код цвета')], verbose_name='Фон подвала'),
+        ),
+        migrations.AddField(
+            model_name='sitesettings',
+            name='header_bg_color',
+            field=models.CharField(default='#ffffff', help_text='HEX-код фона шапки сайта (например, #ffffff)', max_length=7, validators=[django.core.validators.RegexValidator('^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$', 'Введите корректный HEX-код цвета')], verbose_name='Фон шапки'),
+        ),
+        migrations.AddField(
+            model_name='sitesettings',
+            name='primary_color',
+            field=models.CharField(default='#3b82f6', help_text='HEX-код основного цвета (например, #3b82f6)', max_length=7, validators=[django.core.validators.RegexValidator('^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$', 'Введите корректный HEX-код цвета')], verbose_name='Основной цвет'),
+        ),
+        migrations.AddField(
+            model_name='sitesettings',
+            name='secondary_color',
+            field=models.CharField(default='#8b5cf6', help_text='HEX-код вторичного цвета (например, #8b5cf6)', max_length=7, validators=[django.core.validators.RegexValidator('^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$', 'Введите корректный HEX-код цвета')], verbose_name='Вторичный цвет'),
+        ),
+        migrations.AddField(
+            model_name='sitesettings',
+            name='text_color',
+            field=models.CharField(default='#1f2937', help_text='HEX-код основного цвета текста (например, #1f2937)', max_length=7, validators=[django.core.validators.RegexValidator('^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$', 'Введите корректный HEX-код цвета')], verbose_name='Цвет текста'),
+        ),
+    ]
+
+
+================================================================================
+ФАЙЛ: ./content/migrations/__init__.py
+================================================================================
+
+[БИНАРНЫЙ ФАЙЛ - содержимое не показано]
+
+
+================================================================================
+ФАЙЛ: ./content/__init__.py
+================================================================================
+
+[БИНАРНЫЙ ФАЙЛ - содержимое не показано]
+
+
+================================================================================
+ФАЙЛ: ./content/apps.py
+================================================================================
+
+from django.apps import AppConfig
+
+
+class ContentConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'content'
+
+
+================================================================================
+ФАЙЛ: ./collect_all_files.sh
+================================================================================
+
+#!/bin/bash
+
+# Скрипт для сбора ВСЕХ файлов проекта MyBiz в один текстовый файл
+# Рекурсивно обходит все папки и подпапки
+
+OUTPUT_FILE="full_project_analysis.txt"
+LOG_FILE="full_collection_log.txt"
+
+echo "=== Начало полного сбора файлов проекта MyBiz ===" > "$LOG_FILE"
+date >> "$LOG_FILE"
+echo "" >> "$LOG_FILE"
+
+# Функция для добавления файла в отчет
+add_file() {
+    local file_path=$1
+
+    echo "Обработка: $file_path" >> "$LOG_FILE"
+
+    echo "================================================================================" >> "$OUTPUT_FILE"
+    echo "ФАЙЛ: $file_path" >> "$OUTPUT_FILE"
+    echo "================================================================================" >> "$OUTPUT_FILE"
+    echo "" >> "$OUTPUT_FILE"
+
+    if [ -f "$file_path" ]; then
+        # Проверяем, является ли файл текстовым (не бинарным)
+        if file "$file_path" | grep -q "text"; then
+            cat "$file_path" >> "$OUTPUT_FILE"
+            echo "✓ Успешно добавлен (текстовый)" >> "$LOG_FILE"
+        else
+            echo "[БИНАРНЫЙ ФАЙЛ - содержимое не показано]" >> "$OUTPUT_FILE"
+            echo "✗ Бинарный файл, пропущен" >> "$LOG_FILE"
+        fi
+    else
+        echo "✗ Файл не найден" >> "$OUTPUT_FILE"
+        echo "✗ Файл не найден" >> "$LOG_FILE"
+    fi
+
+    echo "" >> "$OUTPUT_FILE"
+    echo "" >> "$OUTPUT_FILE"
+}
+
+# Создаем или очищаем выходной файл
+> "$OUTPUT_FILE"
+
+echo "=== ПОЛНЫЙ СНИМОК ПРОЕКТА MYBIZ ===" >> "$OUTPUT_FILE"
+echo "Дата создания: $(date)" >> "$OUTPUT_FILE"
+echo "Полная рекурсивная коллекция всех файлов" >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+
+# Исключаем некоторые директории и файлы
+EXCLUDE_DIRS=(
+    ".git"
+    "__pycache__"
+    ".pytest_cache"
+    ".vscode"
+    "node_modules"
+    "venv"
+    "env"
+    ".env"
+    "staticfiles"
+    "media"
+)
+
+EXCLUDE_FILES=(
+    "*.pyc"
+    "*.pyo"
+    "*.pyd"
+    ".DS_Store"
+    "*.db"
+    "*.sqlite3"
+    "*.log"
+    "full_project_analysis.txt"
+    "full_collection_log.txt"
+    "project_analysis.txt"
+    "collection_log.txt"
+)
+
+# Функция для проверки исключения директории
+is_excluded_dir() {
+    local dir=$1
+    for excluded in "${EXCLUDE_DIRS[@]}"; do
+        if [[ "$dir" == *"/$excluded"* ]] || [[ "$dir" == "$excluded"* ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+# Функция для проверки исключения файла
+is_excluded_file() {
+    local file=$1
+    for pattern in "${EXCLUDE_FILES[@]}"; do
+        if [[ "$file" == $pattern ]] || [[ "$(basename "$file")" == $pattern ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+# Счетчики
+total_files=0
+added_files=0
+skipped_files=0
+
+echo "Начинаю рекурсивный обход всех файлов..." >> "$LOG_FILE"
+
+# Рекурсивный обход всех файлов
+find . -type f | while read -r file; do
+    # Пропускаем исключенные директории
+    dir=$(dirname "$file")
+    if is_excluded_dir "$dir"; then
+        echo "Пропущена директория: $file" >> "$LOG_FILE"
+        skipped_files=$((skipped_files + 1))
+        continue
+    fi
+
+    # Пропускаем исключенные файлы
+    if is_excluded_file "$file"; then
+        echo "Пропущен файл (по паттерну): $file" >> "$LOG_FILE"
+        skipped_files=$((skipped_files + 1))
+        continue
+    fi
+
+    # Пропускаем сам выходной файл и лог
+    if [[ "$file" == "./$OUTPUT_FILE" ]] || [[ "$file" == "./$LOG_FILE" ]]; then
+        continue
+    fi
+
+    total_files=$((total_files + 1))
+
+    # Добавляем файл в отчет
+    add_file "$file"
+    added_files=$((added_files + 1))
+
+    # Выводим прогресс каждые 10 файлов
+    if [ $((total_files % 10)) -eq 0 ]; then
+        echo "Обработано файлов: $total_files" >> "$LOG_FILE"
+    fi
+done
+
+# Добавляем информацию о структуре проекта
+echo "=== СТРУКТУРА ПРОЕКТА (дерево директорий) ===" >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+find . -type d | grep -vE "$(IFS='|'; echo "${EXCLUDE_DIRS[*]}")" | sort | sed 's|[^/]*/|- |g' >> "$OUTPUT_FILE"
+
+# Добавляем информацию о Python-пакетах
+echo "" >> "$OUTPUT_FILE"
+echo "=== ИНФОРМАЦИЯ О СРЕДЕ ===" >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+echo "Python версия:" >> "$OUTPUT_FILE"
+python3 --version 2>> "$OUTPUT_FILE" || echo "Python не найден" >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+
+echo "Установленные пакеты Django:" >> "$OUTPUT_FILE"
+python3 -c "import django; print(f'Django версия: {django.__version__}')" 2>> "$OUTPUT_FILE" || echo "Django не установлен" >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+
+echo "Зависимости проекта:" >> "$OUTPUT_FILE"
+if [ -f "requirements.txt" ]; then
+    cat requirements.txt >> "$OUTPUT_FILE"
+else
+    echo "requirements.txt не найден" >> "$OUTPUT_FILE"
+fi
+
+# Завершаем лог
+echo "" >> "$LOG_FILE"
+echo "=== Завершение полного сбора файлов ===" >> "$LOG_FILE"
+echo "Всего найдено файлов: $total_files" >> "$LOG_FILE"
+echo "Файлов добавлено в отчет: $added_files" >> "$LOG_FILE"
+echo "Файлов пропущено: $skipped_files" >> "$LOG_FILE"
+echo "Итоговый файл: $OUTPUT_FILE ($(wc -l < "$OUTPUT_FILE") строк, $(wc -c < "$OUTPUT_FILE") символов)" >> "$LOG_FILE"
+echo "Размер выходного файла: $(du -h "$OUTPUT_FILE" | cut -f1)" >> "$LOG_FILE"
+
+echo ""
+echo "✅ Полный сбор файлов проекта завершен!"
+echo "📁 Основной файл: $OUTPUT_FILE"
+echo "📋 Лог сбора: $LOG_FILE"
+echo ""
+echo "📊 Статистика:"
+echo "   Всего файлов: $total_files"
+echo "   Добавлено: $added_files"
+echo "   Пропущено: $skipped_files"
+echo ""
+echo "Отправьте содержимое файла '$OUTPUT_FILE' AI-ассистенту для полного анализа"
+
+
+================================================================================
+ФАЙЛ: ./static/admin/css/color-picker-widget.css
+================================================================================
+
+/* Стили для виджета выбора цвета */
+.color-picker-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+.color-picker-input {
+    width: 40px !important;
+    height: 40px !important;
+    border: 1px solid #ddd !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+}
+
+.color-picker-text {
+    flex-grow: 1;
+}
+
+.color-picker-value {
+    font-family: monospace;
+    background: #f5f5f5;
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    font-size: 13px;
+}
+
+.color-picker-help {
+    color: #666;
+    font-size: 12px;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+
+================================================================================
+ФАЙЛ: ./static/admin/css/color-picker.css
+================================================================================
+
+/* Дополнительные стили для цветовой палитры в админке */
+.color-palette-section .fieldBox {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 5px;
+}
+
+.color-palette-section label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.color-palette-section .help {
+    color: #666;
+    font-size: 12px;
+    margin-top: 5px;
+    display: block;
+}
+
+/* Стили для предпросмотра цвета */
+.color-preview {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+/* Группировка цветов */
+.form-row.field-primary_color,
+.form-row.field-secondary_color,
+.form-row.field-accent_color {
+    float: left;
+    width: 30%;
+    margin-right: 3%;
+}
+
+.form-row.field-text_color,
+.form-row.field-background_color {
+    float: left;
+    width: 47%;
+    margin-right: 3%;
+}
+
+.form-row.field-header_bg_color,
+.form-row.field-footer_bg_color {
+    float: left;
+    width: 47%;
+    margin-right: 3%;
+}
+
+/* Очистка float */
+.color-palette-section:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+
+================================================================================
+ФАЙЛ: ./static/admin/js/color-picker-widget.js
+================================================================================
+
+// static/admin/js/color-picker-widget.js
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Инициализация всех цветовых пикеров на странице
+    function initializeColorPickers() {
+        const colorPickers = document.querySelectorAll('input[type="color"]');
+
+        colorPickers.forEach(function(picker) {
+            // Проверяем, инициализирован ли уже этот пикер
+            if (picker.dataset.initialized === 'true') {
+                return;
+            }
+
+            // Помечаем как инициализированный
+            picker.dataset.initialized = 'true';
+
+            // Находим контейнер поля
+            const fieldContainer = picker.closest('.fieldBox') || picker.closest('.form-row') || picker.parentNode;
+
+            // Создаем основной контейнер для цветового пикера
+            const pickerContainer = document.createElement('div');
+            pickerContainer.className = 'color-picker-widget-container';
+            pickerContainer.style.cssText = `
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                margin: 10px 0;
+                padding: 15px;
+                background: #f9f9f9;
+                border-radius: 8px;
+                border: 1px solid #e0e0e0;
+            `;
+
+            // Создаем визуальную кнопку для выбора цвета
+            const colorButton = document.createElement('div');
+            colorButton.className = 'color-picker-visual-button';
+            colorButton.style.cssText = `
+                width: 60px;
+                height: 60px;
+                border-radius: 8px;
+                background-color: ${picker.value || '#ffffff'};
+                border: 3px solid ${picker.value ? darkenColor(picker.value, 0.2) : '#cccccc'};
+                cursor: pointer;
+                position: relative;
+                overflow: hidden;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                transition: all 0.3s ease;
+            `;
+
+            // Добавляем эффект при наведении
+            colorButton.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.05)';
+                this.style.boxShadow = '0 4px 10px rgba(0,0,0,0.15)';
+            });
+
+            colorButton.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+                this.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
+            });
+
+            // При клике на кнопку открываем нативный пикер
+            colorButton.addEventListener('click', function() {
+                picker.click();
+            });
+
+            // Создаем иконку карандаша для настройки
+            const editIcon = document.createElement('div');
+            editIcon.innerHTML = `
+                <svg style="position: absolute; bottom: 5px; right: 5px; width: 16px; height: 16px;"
+                     fill="white" viewBox="0 0 24 24">
+                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                </svg>
+            `;
+            colorButton.appendChild(editIcon);
+
+            // Создаем контейнер для информации о цвете
+            const infoContainer = document.createElement('div');
+            infoContainer.style.cssText = `
+                flex-grow: 1;
+            `;
+
+            // Создаем текстовое поле для ввода HEX
+            const hexInput = document.createElement('input');
+            hexInput.type = 'text';
+            hexInput.className = 'color-picker-hex-input';
+            hexInput.value = picker.value || '#000000';
+            hexInput.maxLength = 7;
+            hexInput.style.cssText = `
+                width: 100%;
+                padding: 10px 12px;
+                font-size: 14px;
+                font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+                border: 2px solid #ddd;
+                border-radius: 6px;
+                margin-bottom: 8px;
+                box-sizing: border-box;
+                transition: border-color 0.3s;
+            `;
+
+            // Создаем метку для отображения названия цвета (если возможно)
+            const colorNameLabel = document.createElement('div');
+            colorNameLabel.className = 'color-picker-name';
+            colorNameLabel.style.cssText = `
+                font-size: 12px;
+                color: #666;
+                margin-top: 5px;
+                font-style: italic;
+            `;
+
+            // Определяем название цвета по HEX (основные цвета)
+            function getColorName(hex) {
+                const colors = {
+                    '#3b82f6': 'Синий (Primary)',
+                    '#8b5cf6': 'Фиолетовый (Secondary)',
+                    '#10b981': 'Зеленый (Accent)',
+                    '#1f2937': 'Темно-серый (Text)',
+                    '#f9fafb': 'Светло-серый (Background)',
+                    '#ffffff': 'Белый (Header)',
+                    '#111827': 'Темно-серый (Footer)',
+                    '#000000': 'Черный',
+                    '#ffffff': 'Белый',
+                    '#ff0000': 'Красный',
+                    '#00ff00': 'Зеленый',
+                    '#0000ff': 'Синий',
+                    '#ffff00': 'Желтый',
+                    '#ff00ff': 'Пурпурный',
+                    '#00ffff': 'Голубой'
+                };
+
+                return colors[hex.toLowerCase()] || 'Пользовательский цвет';
+            }
+
+            // Обновляем название цвета
+            function updateColorName() {
+                colorNameLabel.textContent = getColorName(picker.value);
+            }
+
+            // Создаем блок предварительного просмотра применения цвета
+            const previewContainer = document.createElement('div');
+            previewContainer.style.cssText = `
+                margin-top: 10px;
+                padding: 10px;
+                background: white;
+                border-radius: 6px;
+                border: 1px solid #eee;
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+            `;
+
+            // Создаем примеры применения цвета
+            function createColorPreview() {
+                previewContainer.innerHTML = '';
+
+                const examples = [
+                    { label: 'Текст', style: `color: ${picker.value}; font-weight: bold;` },
+                    { label: 'Фон', style: `background-color: ${picker.value}; color: white; padding: 5px 10px; border-radius: 4px;` },
+                    { label: 'Кнопка', style: `background-color: ${picker.value}; color: white; padding: 6px 12px; border-radius: 6px; border: none; font-weight: bold;` },
+                    { label: 'Граница', style: `border: 2px solid ${picker.value}; padding: 5px 10px; border-radius: 4px;` }
+                ];
+
+                examples.forEach(example => {
+                    const exampleElement = document.createElement('div');
+                    exampleElement.style.cssText = `
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 5px;
+                        font-size: 11px;
+                    `;
+
+                    const previewElement = document.createElement('div');
+                    previewElement.textContent = example.label;
+                    previewElement.style.cssText = example.style + 'min-width: 60px; text-align: center;';
+
+                    exampleElement.appendChild(previewElement);
+                    previewContainer.appendChild(exampleElement);
+                });
+            }
+
+            // Функция для затемнения цвета (для границы)
+            function darkenColor(hex, percent) {
+                hex = hex.replace('#', '');
+
+                let r = parseInt(hex.substring(0, 2), 16);
+                let g = parseInt(hex.substring(2, 4), 16);
+                let b = parseInt(hex.substring(4, 6), 16);
+
+                r = Math.floor(r * (1 - percent));
+                g = Math.floor(g * (1 - percent));
+                b = Math.floor(b * (1 - percent));
+
+                return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+            }
+
+            // Обновление визуального представления
+            function updateVisuals() {
+                const colorValue = picker.value;
+
+                // Обновляем кнопку
+                colorButton.style.backgroundColor = colorValue;
+                colorButton.style.borderColor = darkenColor(colorValue, 0.2);
+
+                // Обновляем текстовое поле
+                hexInput.value = colorValue;
+
+                // Обновляем цвет текстового поля (контрастный)
+                const textColor = getContrastColor(colorValue);
+                hexInput.style.color = textColor;
+                hexInput.style.backgroundColor = colorValue;
+                hexInput.style.borderColor = darkenColor(colorValue, 0.3);
+
+                // Обновляем название
+                updateColorName();
+
+                // Обновляем превью
+                createColorPreview();
+            }
+
+            // Получение контрастного цвета (черный или белый)
+            function getContrastColor(hex) {
+                hex = hex.replace('#', '');
+
+                const r = parseInt(hex.substring(0, 2), 16);
+                const g = parseInt(hex.substring(2, 4), 16);
+                const b = parseInt(hex.substring(4, 6), 16);
+
+                // Яркость по формуле
+                const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+                return brightness > 128 ? '#000000' : '#ffffff';
+            }
+
+            // Обработчик изменения цвета в нативном пикере
+            picker.addEventListener('input', function() {
+                updateVisuals();
+            });
+
+            // Обработчик изменения в текстовом поле
+            hexInput.addEventListener('input', function() {
+                let value = this.value;
+
+                // Добавляем # если его нет
+                if (value && !value.startsWith('#')) {
+                    value = '#' + value;
+                    this.value = value;
+                }
+
+                // Проверяем корректность HEX кода
+                if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(value)) {
+                    // Если короткий формат (#RGB), преобразуем в полный (#RRGGBB)
+                    if (value.length === 4) {
+                        value = '#' + value[1] + value[1] + value[2] + value[2] + value[3] + value[3];
+                    }
+
+                    picker.value = value;
+                    updateVisuals();
+                }
+            });
+
+            // Подсказка при фокусе
+            hexInput.addEventListener('focus', function() {
+                this.style.outline = 'none';
+                this.style.borderColor = '#3b82f6';
+                this.style.boxShadow = '0 0 0 2px rgba(59, 130, 246, 0.2)';
+            });
+
+            hexInput.addEventListener('blur', function() {
+                this.style.boxShadow = 'none';
+            });
+
+            // Вставляем все элементы в контейнер
+            infoContainer.appendChild(hexInput);
+            infoContainer.appendChild(colorNameLabel);
+            infoContainer.appendChild(previewContainer);
+
+            pickerContainer.appendChild(colorButton);
+            pickerContainer.appendChild(infoContainer);
+
+            // Вставляем контейнер после оригинального поля и скрываем оригинальный input
+            fieldContainer.appendChild(pickerContainer);
+            picker.style.position = 'absolute';
+            picker.style.opacity = '0';
+            picker.style.width = '60px';
+            picker.style.height = '60px';
+            picker.style.pointerEvents = 'none';
+
+            // Инициализация визуалов
+            updateVisuals();
+        });
+    }
+
+    // Инициализация при загрузке
+    initializeColorPickers();
+
+    // Также инициализируем при динамическом добавлении полей (если есть)
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.addedNodes.length) {
+                initializeColorPickers();
+            }
+        });
+    });
+
+    // Начинаем наблюдение за изменениями в DOM
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+
+    // Добавляем глобальную функцию для ручной инициализации
+    window.initializeColorPickers = initializeColorPickers;
+});
+
+
+================================================================================
+ФАЙЛ: ./pages/admin.py
+================================================================================
+
+from django.contrib import admin
+from ckeditor.widgets import CKEditorWidget
+from django import forms
+from .models import Page
+
+
+class PageForm(forms.ModelForm):
+    content = forms.CharField(widget=CKEditorWidget())
+
+    class Meta:
+        model = Page
+        fields = '__all__'
+
+
+@admin.register(Page)
+class PageAdmin(admin.ModelAdmin):
+    form = PageForm
+    list_display = ('title', 'slug', 'is_active', 'show_in_header', 'created_at')  # Добавили show_in_header
+    list_filter = ('is_active', 'show_in_header', 'created_at')  # Добавили фильтр
+    search_fields = ('title', 'content', 'meta_description')
+    prepopulated_fields = {'slug': ('title',)}
+    fieldsets = (
+        ('Основная информация', {
+            'fields': ('title', 'slug', 'content', 'excerpt')
+        }),
+        ('SEO', {
+            'fields': ('meta_title', 'meta_description', 'meta_keywords')
+        }),
+        ('Отображение', {
+            'fields': ('is_active', 'show_in_header')  # Добавили show_in_header
+        }),
+        ('Дополнительно', {
+            'fields': ('created_at', 'updated_at')
+        }),
+    )
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        if obj:  # Если объект уже существует
+            readonly_fields.append('created_at')
+            readonly_fields.append('updated_at')
+        return readonly_fields
+
+
+================================================================================
+ФАЙЛ: ./pages/models.py
+================================================================================
+
+from django.db import models
+from django.urls import reverse
+from ckeditor.fields import RichTextField
+
+class Page(models.Model):
+    title = models.CharField('Заголовок', max_length=200)
+    slug = models.SlugField('URL', unique=True, max_length=200)
+    content = RichTextField('Содержание', blank=True)
+    excerpt = models.TextField('Краткое описание', blank=True)
+    meta_title = models.CharField('Мета-заголовок', max_length=200, blank=True)
+    meta_description = models.TextField('Мета-описание', blank=True)
+    meta_keywords = models.TextField('Мета-ключевые слова', blank=True)
+    is_active = models.BooleanField('Активно', default=True)
+    show_in_header = models.BooleanField('Показывать в шапке', default=False)  # НОВОЕ ПОЛЕ
+    created_at = models.DateTimeField('Создано', auto_now_add=True)
+    updated_at = models.DateTimeField('Обновлено', auto_now=True)
+
+    @classmethod
+    def get_header_pages(cls):
+        """Возвращает страницы для отображения в шапке"""
+        return cls.objects.filter(is_active=True, show_in_header=True).order_by('title')
+
+    @classmethod
+    def get_footer_pages(cls):
+        """Возвращает страницы для отображения в футере"""
+        return cls.objects.filter(is_active=True)[:4]
+
+    class Meta:
+        verbose_name = 'SEO-страница'
+        verbose_name_plural = 'SEO-страницы'
+        ordering = ['title']
+
+    def get_absolute_url(self):
+        return reverse('pages:page_detail', args=[self.slug])
+
+    def __str__(self):
+        return self.title
+
+
+================================================================================
+ФАЙЛ: ./pages/tests.py
+================================================================================
+
+from django.test import TestCase
+
+# Create your tests here.
+
+
+================================================================================
+ФАЙЛ: ./pages/urls.py
+================================================================================
+
+from django.urls import re_path
+from . import views
+
+app_name = 'pages'
+
+urlpatterns = [
+    re_path(r'^pages/(?P<page_slug>[-\w]+)/$', views.page_detail, name='page_detail'),
+]
+
+
+================================================================================
+ФАЙЛ: ./pages/views.py
+================================================================================
+
+from django.shortcuts import render, get_object_or_404
+from .models import Page
+
+def page_detail(request, page_slug):
+    """Детальная страница SEO-текстового блока"""
+    page = get_object_or_404(Page, slug=page_slug, is_active=True)
+
+    context = {
+        'page': page,
+        'title': page.title,
+    }
+    return render(request, 'pages/page_detail.html', context)
+
+
+================================================================================
+ФАЙЛ: ./pages/migrations/0003_page_show_in_header.py
+================================================================================
+
+# Generated by Django 5.2 on 2025-12-16 11:05
+
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('pages', '0002_page_meta_keywords'),
+    ]
+
+    operations = [
+        migrations.AddField(
+            model_name='page',
+            name='show_in_header',
+            field=models.BooleanField(default=False, verbose_name='Показывать в шапке'),
+        ),
+    ]
+
+
+================================================================================
+ФАЙЛ: ./pages/migrations/0001_initial.py
+================================================================================
+
+# Generated by Django 5.2 on 2025-12-15 11:02
+
+import ckeditor.fields
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    initial = True
+
+    dependencies = [
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name='Page',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('title', models.CharField(max_length=200, verbose_name='Заголовок')),
+                ('slug', models.SlugField(max_length=200, unique=True, verbose_name='URL')),
+                ('content', ckeditor.fields.RichTextField(blank=True, verbose_name='Содержание')),
+                ('excerpt', models.TextField(blank=True, verbose_name='Краткое описание')),
+                ('meta_title', models.CharField(blank=True, max_length=200, verbose_name='Мета-заголовок')),
+                ('meta_description', models.TextField(blank=True, verbose_name='Мета-описание')),
+                ('is_active', models.BooleanField(default=True, verbose_name='Активно')),
+                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Создано')),
+                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Обновлено')),
+            ],
+            options={
+                'verbose_name': 'SEO-страница',
+                'verbose_name_plural': 'SEO-страницы',
+                'ordering': ['title'],
+            },
+        ),
+    ]
+
+
+================================================================================
+ФАЙЛ: ./pages/migrations/0002_page_meta_keywords.py
+================================================================================
+
+# Generated by Django 5.2 on 2025-12-16 10:00
+
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('pages', '0001_initial'),
+    ]
+
+    operations = [
+        migrations.AddField(
+            model_name='page',
+            name='meta_keywords',
+            field=models.TextField(blank=True, verbose_name='Мета-ключевые слова'),
+        ),
+    ]
+
+
+================================================================================
+ФАЙЛ: ./pages/migrations/__init__.py
+================================================================================
+
+[БИНАРНЫЙ ФАЙЛ - содержимое не показано]
+
+
+================================================================================
+ФАЙЛ: ./pages/__init__.py
+================================================================================
+
+[БИНАРНЫЙ ФАЙЛ - содержимое не показано]
+
+
+================================================================================
+ФАЙЛ: ./pages/apps.py
+================================================================================
+
+from django.apps import AppConfig
+
+
+class PagesConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'pages'
+
+
+================================================================================
+ФАЙЛ: ./mybiz_core/context_processors.py
+================================================================================
+
+from .models import Category
+
+
+def categories(request):
+    """Добавляет список активных категорий в контекст всех шаблонов."""
+    return {
+        'categories': Category.objects.filter(is_active=True).order_by('name')
+    }
+
+
+================================================================================
+ФАЙЛ: ./mybiz_core/admin.py
+================================================================================
+
+from django.contrib import admin
+from django.utils.html import format_html
+from .models import Category, Product
+
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug', 'is_active', 'created_at')
+    list_filter = ('is_active', 'created_at')
+    search_fields = ('name', 'description')
+    prepopulated_fields = {'slug': ('name',)}
+    ordering = ('-created_at',)
+
+
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('name', 'category', 'price', 'is_active', 'created_at', 'image_preview')
+    list_filter = ('is_active', 'category', 'created_at')
+    search_fields = ('name', 'description', 'category__name')
+    prepopulated_fields = {'slug': ('name',)}
+    readonly_fields = ('image_preview',)
+    fieldsets = (
+        ('Основная информация', {
+            'fields': ('name', 'slug', 'category', 'description', 'price')
+        }),
+        ('Изображения', {
+            'fields': ('image', 'image_preview')
+        }),
+        ('Дополнительно', {
+            'fields': ('is_active', 'created_at', 'updated_at')
+        }),
+    )
+
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" width="100" height="100" style="object-fit: cover;" />', obj.image.url)
+        return "Нет изображения"
+
+    image_preview.short_description = 'Превью'
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        if obj:  # Если объект уже существует
+            readonly_fields.append('created_at')
+            readonly_fields.append('updated_at')
+        return readonly_fields
+
+
+================================================================================
+ФАЙЛ: ./mybiz_core/models.py
+================================================================================
+
+from django.db import models
+from django.utils.text import slugify
+from django.urls import reverse
+
+class Category(models.Model):
+    name = models.CharField(max_length=200, verbose_name="Название категории")
+    slug = models.SlugField(max_length=200, unique=True, blank=True, verbose_name="URL")
+    description = models.TextField(blank=True, verbose_name="Описание")
+    image = models.ImageField(upload_to='categories/', blank=True, null=True, verbose_name="Изображение")
+    is_active = models.BooleanField(default=True, verbose_name="Активна")
+    order = models.IntegerField(default=0, verbose_name="Порядок отображения")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+    def get_absolute_url(self):
+        return reverse('mybiz_core:product_list_by_category', args=[self.slug])
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Категория"
+        verbose_name_plural = "Категории"
+        ordering = ['order', 'name']
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name, allow_unicode=True)
+        super().save(*args, **kwargs)
+
+class Product(models.Model):
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products', verbose_name="Категория")
+    name = models.CharField(max_length=200, verbose_name="Название товара")
+    slug = models.SlugField(max_length=200, unique=True, blank=True, verbose_name="URL")
+    description = models.TextField(verbose_name="Описание")
+    short_description = models.CharField(max_length=300, blank=True, verbose_name="Краткое описание")
+    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Цена")
+    old_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True, verbose_name="Старая цена")
+    image = models.ImageField(upload_to='products/', verbose_name="Основное изображение")
+    is_active = models.BooleanField(default=True, verbose_name="Активен")
+    is_featured = models.BooleanField(default=False, verbose_name="Рекомендуемый")
+    stock = models.IntegerField(default=0, verbose_name="Остаток на складе")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+    sku = models.CharField('Артикул', max_length=100, blank=True)
+    brand = models.CharField('Бренд', max_length=200, blank=True)
+    rating = models.DecimalField('Рейтинг', max_digits=3, decimal_places=1, default=0)
+    review_count = models.IntegerField('Количество отзывов', default=0)
+    is_new = models.BooleanField('Новинка', default=False)
+    in_stock = models.BooleanField('В наличии', default=True)
+    discount_price = models.DecimalField('Цена со скидкой', max_digits=10, decimal_places=2, null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Товар"
+        verbose_name_plural = "Товары"
+        ordering = ['-created_at']
+
+    def get_discount_percentage(self):
+        if self.discount_price and self.price:
+            discount = ((self.price - self.discount_price) / self.price) * 100
+            return int(discount)
+        return 0
+
+    def get_absolute_url(self):
+        return reverse('mybiz_core:product_detail', args=[self.slug])
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name, allow_unicode=True)
+        super().save(*args, **kwargs)
+
+    @property
+    def has_discount(self):
+        return self.old_price and self.old_price > self.price
+
+
+================================================================================
+ФАЙЛ: ./mybiz_core/management/commands/seed_data.py
+================================================================================
+
+from django.core.management.base import BaseCommand
+from django.contrib.auth.models import User
+from mybiz_core.models import Category, Product
+from content.models import SiteSettings, Promotion
+from pages.models import Page
+import random
+from decimal import Decimal
+import re
+from datetime import datetime, timedelta
+
+def transliterate_ru_to_en(text):
+    """Транслитерация русских букв в латинские"""
+    conversion = {
+        'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo',
+        'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm',
+        'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u',
+        'ф': 'f', 'х': 'h', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch',
+        'ъ': '', 'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya',
+        'А': 'A', 'Б': 'B', 'В': 'V', 'Г': 'G', 'Д': 'D', 'Е': 'E', 'Ё': 'YO',
+        'Ж': 'Zh', 'З': 'Z', 'И': 'I', 'Й': 'Y', 'К': 'K', 'Л': 'L', 'М': 'M',
+        'Н': 'N', 'О': 'O', 'П': 'P', 'Р': 'R', 'С': 'S', 'Т': 'T', 'У': 'U',
+        'Ф': 'F', 'Х': 'H', 'Ц': 'Ts', 'Ч': 'Ch', 'Ш': 'Sh', 'Щ': 'Sch',
+        'Ъ': '', 'Ы': 'Y', 'Ь': '', 'Э': 'E', 'Ю': 'Yu', 'Я': 'Ya'
+    }
+
+    result = []
+    for char in text:
+        if char in conversion:
+            result.append(conversion[char])
+        elif char.isalnum() or char in ['-', '_']:
+            result.append(char)
+        else:
+            result.append('-')
+
+    slug = ''.join(result)
+    # Удаляем множественные дефисы
+    slug = re.sub(r'-+', '-', slug)
+    # Удаляем дефисы в начале и конце
+    slug = slug.strip('-')
+
+    return slug.lower()
+
+class Command(BaseCommand):
+    help = 'Создает тестовые данные для сайта'
+
+    def handle(self, *args, **kwargs):
+        self.stdout.write("Начинаем создание тестовых данных...")
+
+        # Создаем суперпользователя (если еще нет)
+        if not User.objects.filter(username='admin').exists():
+            User.objects.create_superuser('admin', 'admin@example.com', 'admin123')
+            self.stdout.write(self.style.SUCCESS('✓ Создан суперпользователь admin/admin123'))
+        else:
+            self.stdout.write(self.style.WARNING('Суперпользователь уже существует'))
+
+        # Создаем настройки сайта
+        settings, created = SiteSettings.objects.get_or_create(
+            pk=1,
+            defaults={
+                'site_name': 'MyBiz Витрина',
+                'site_tagline': 'Лучшие товары по доступным ценам',
+                'contact_email': 'info@mybiz.ru',
+                'contact_phone': '+7 (999) 123-45-67',
+                'contact_address': 'Москва, ул. Примерная, д. 1',
+                'working_hours': 'Пн-Пт: 9:00-18:00, Сб: 10:00-16:00',
+                'facebook_url': 'https://facebook.com/mybiz',
+                'instagram_url': 'https://instagram.com/mybiz',
+                'twitter_url': 'https://twitter.com/mybiz',
+                'meta_description': 'Интернет-магазин качественных товаров',
+                'meta_keywords': 'магазин, товары, купить, онлайн, доставка'
+            }
+        )
+        if created:
+            self.stdout.write(self.style.SUCCESS('✓ Созданы настройки сайта'))
+        else:
+            self.stdout.write(self.style.WARNING('Настройки сайта уже существуют'))
+
+        # Создаем больше категорий
+        categories_data = [
+            {'name': 'Электроника', 'slug': 'electronics', 'product_count': 20},
+            {'name': 'Смартфоны и гаджеты', 'slug': 'smartphones', 'product_count': 15},
+            {'name': 'Ноутбуки и компьютеры', 'slug': 'laptops', 'product_count': 12},
+            {'name': 'Телевизоры и аудио', 'slug': 'tv-audio', 'product_count': 10},
+            {'name': 'Бытовая техника', 'slug': 'appliances', 'product_count': 15},
+            {'name': 'Одежда', 'slug': 'clothing', 'product_count': 18},
+            {'name': 'Обувь', 'slug': 'shoes', 'product_count': 12},
+            {'name': 'Аксессуары', 'slug': 'accessories', 'product_count': 10},
+            {'name': 'Книги', 'slug': 'books', 'product_count': 15},
+            {'name': 'Спорт и отдых', 'slug': 'sports', 'product_count': 12},
+            {'name': 'Красота и здоровье', 'slug': 'beauty', 'product_count': 10},
+            {'name': 'Дом и сад', 'slug': 'home-garden', 'product_count': 12},
+            {'name': 'Детские товары', 'slug': 'kids', 'product_count': 8},
+            {'name': 'Автотовары', 'slug': 'auto', 'product_count': 6},
+            {'name': 'Игры и консоли', 'slug': 'games', 'product_count': 8},
+        ]
+
+        categories = []
+        for cat_data in categories_data:
+            category, created = Category.objects.get_or_create(
+                slug=cat_data['slug'],
+                defaults={
+                    'name': cat_data['name'],
+                    'description': f'Категория {cat_data["name"]}. Широкий выбор товаров по выгодным ценам.',
+                    'is_active': True,
+                    'order': len(categories) + 1
+                }
+            )
+            if created:
+                categories.append((category, cat_data['product_count']))
+                self.stdout.write(self.style.SUCCESS(f'✓ Создана категория: {cat_data["name"]}'))
+            else:
+                categories.append((category, cat_data['product_count']))
+                self.stdout.write(self.style.WARNING(f'Категория "{cat_data["name"]}" уже существует'))
+
+        # Удаляем старые товары
+        Product.objects.all().delete()
+        self.stdout.write(self.style.WARNING('Старые товары удалены'))
+
+        # Словари товаров по категориям
+        product_names_by_category = {
+            'Электроника': [
+                'Смартфон', 'Планшет', 'Смарт-часы', 'Фитнес-браслет', 'Электронная книга',
+                'Электросамокат', 'Power Bank', 'Солнечная батарея', 'Камера видеонаблюдения',
+                'Дрон', 'Электронная сигарета', 'VR-очки', '3D-принтер', 'Графический планшет'
+            ],
+            'Смартфоны и гаджеты': [
+                'Смартфон', 'Чехол для телефона', 'Защитное стекло', 'Монопод',
+                'Bluetooth гарнитура', 'Портативная колонка', 'Автомобильное зарядное устройство',
+                'Мобильный роутер', 'Смартфон', 'Умные часы', 'Фитнес-трекер', 'Селфи-палка'
+            ],
+            'Ноутбуки и компьютеры': [
+                'Ноутбук', 'Игровой ноутбук', 'Системный блок', 'Монитор', 'Клавиатура',
+                'Компьютерная мышь', 'Веб-камера', 'Игровая мышь', 'Механическая клавиатура',
+                'Коврик для мыши', 'Монитор 4K', 'Ноутбук для работы', 'Ультрабук'
+            ],
+            'Телевизоры и аудио': [
+                'Телевизор', 'Домашний кинотеатр', 'Саундбар', 'Акустическая система',
+                'Наушники', 'Беспроводные наушники', 'Bluetooth колонка', 'Усилитель звука',
+                'Сабвуфер', 'Микрофон', 'FM-тюнер', 'Цифровая антенна', 'Кронштейн для ТВ'
+            ],
+            'Бытовая техника': [
+                'Холодильник', 'Стиральная машина', 'Пылесос', 'Микроволновая печь',
+                'Духовой шкаф', 'Варочная панель', 'Посудомоечная машина', 'Кофемашина',
+                'Блендер', 'Мультиварка', 'Электрочайник', 'Тостер', 'Вытяжка'
+            ],
+            'Одежда': [
+                'Футболка', 'Джинсы', 'Рубашка', 'Платье', 'Юбка',
+                'Свитер', 'Толстовка', 'Куртка', 'Пальто', 'Пиджак',
+                'Шорты', 'Брюки', 'Блузка', 'Кардиган'
+            ],
+            'Обувь': [
+                'Кроссовки', 'Туфли', 'Ботинки', 'Сапоги', 'Сандалии',
+                'Тапочки', 'Лоферы', 'Босоножки', 'Кеды', 'Мокасины'
+            ],
+            'Аксессуары': [
+                'Рюкзак', 'Сумка', 'Кошелек', 'Ремень', 'Шарф',
+                'Шапка', 'Перчатки', 'Зонт', 'Очки', 'Брелок'
+            ],
+            'Книги': [
+                'Роман', 'Детектив', 'Фэнтези', 'Научная фантастика', 'Биография',
+                'Учебник', 'Справочник', 'Кулинарная книга', 'Детская книга', 'Комикс',
+                'Поэзия', 'Историческая литература', 'Бизнес-литература'
+            ],
+            'Спорт и отдых': [
+                'Велосипед', 'Самокат', 'Роликовые коньки', 'Тренажер', 'Гантели',
+                'Коврик для йоги', 'Спортивный костюм', 'Футбольный мяч', 'Баскетбольный мяч',
+                'Теннисная ракетка', 'Спортивная сумка', 'Бутылка для воды'
+            ],
+            'Красота и здоровье': [
+                'Крем для лица', 'Шампунь', 'Гель для душа', 'Дезодорант',
+                'Парфюм', 'Косметичка', 'Расческа', 'Зеркало', 'Маникюрный набор',
+                'Эпилятор', 'Массажер', 'Термометр', 'Тонометр'
+            ],
+            'Дом и сад': [
+                'Диван', 'Кресло', 'Стол', 'Стул', 'Кровать',
+                'Шкаф', 'Тумба', 'Светильник', 'Шторы', 'Ковер',
+                'Подушка', 'Одеяло', 'Горшок для цветов', 'Садовые инструменты'
+            ],
+            'Детские товары': [
+                'Игрушка', 'Конструктор', 'Кукла', 'Машинка', 'Пазл',
+                'Краски', 'Пластилин', 'Детская одежда', 'Детская обувь', 'Коляска'
+            ],
+            'Автотовары': [
+                'Автомобильное кресло', 'Авточехлы', 'Коврики в салон', 'Автохимия',
+                'Автоаксессуары', 'Навигатор', 'Видеорегистратор', 'Радар-детектор'
+            ],
+            'Игры и консоли': [
+                'Игровая консоль', 'Игровой контроллер', 'Игра для консоли',
+                'Настольная игра', 'Карточная игра', 'Головоломка', 'Развивающая игра'
+            ]
+        }
+
+        # Бренды
+        brands = {
+            'Электроника': ['Apple', 'Samsung', 'Xiaomi', 'Huawei', 'Sony', 'LG', 'Canon', 'Nikon'],
+            'Смартфоны и гаджеты': ['Apple', 'Samsung', 'Xiaomi', 'Huawei', 'Realme', 'OnePlus', 'Google'],
+            'Ноутбуки и компьютеры': ['Apple', 'Dell', 'HP', 'Lenovo', 'Asus', 'Acer', 'Microsoft'],
+            'Телевизоры и аудио': ['Samsung', 'LG', 'Sony', 'Philips', 'Panasonic', 'JBL', 'Bose'],
+            'Бытовая техника': ['Bosch', 'Siemens', 'LG', 'Samsung', 'Indesit', 'Electrolux', 'Miele'],
+            'Одежда': ['Zara', 'H&M', 'Adidas', 'Nike', 'Puma', 'Levi\'s', 'Tommy Hilfiger'],
+            'Обувь': ['Nike', 'Adidas', 'Puma', 'Reebok', 'Geox', 'Ecco', 'Clarks'],
+            'Аксессуары': ['Guess', 'Michael Kors', 'Fossil', 'Casio', 'Swatch', 'Gant'],
+            'Книги': ['Эксмо', 'АСТ', 'Питер', 'Манн, Иванов и Фербер', 'Альпина Паблишер'],
+            'Спорт и отдых': ['Adidas', 'Nike', 'Reebok', 'Puma', 'Under Armour', 'Decathlon'],
+            'Красота и здоровье': ['L\'Oreal', 'Garnier', 'Nivea', 'Vichy', 'La Roche-Posay'],
+            'Дом и сад': ['IKEA', 'Hoff', 'Mebelion', 'Askona', 'Togas'],
+            'Детские товары': ['Lego', 'Hasbro', 'Mattel', 'Fisher-Price', 'Chicco'],
+            'Автотовары': ['Mann', 'Bosch', 'NGK', 'Castrol', 'Liqui Moly'],
+            'Игры и консоли': ['Sony', 'Microsoft', 'Nintendo', 'EA', 'Ubisoft']
+        }
+
+        # Генерируем товары для каждой категории
+        product_counter = 1
+        total_products_created = 0
+
+        for category_obj, product_count in categories:
+            category_name = category_obj.name
+            category_specific_names = product_names_by_category.get(category_name, ['Товар'])
+            category_brands = brands.get(category_name, ['Бренд'])
+
+            for i in range(product_count):
+                product_name = f'{random.choice(category_specific_names)} {product_counter}'
+
+                # Цены в зависимости от категории
+                if category_name in ['Электроника', 'Смартфоны и гаджеты', 'Ноутбуки и компьютеры']:
+                    price = Decimal(random.randint(5000, 150000))
+                elif category_name in ['Телевизоры и аудио', 'Бытовая техника']:
+                    price = Decimal(random.randint(10000, 300000))
+                elif category_name in ['Одежда', 'Обувь']:
+                    price = Decimal(random.randint(1000, 15000))
+                elif category_name in ['Книги']:
+                    price = Decimal(random.randint(300, 3000))
+                else:
+                    price = Decimal(random.randint(500, 20000))
+
+                # Скидка (30% товаров со скидкой)
+                has_discount = random.random() < 0.3
+                discount_price = price * Decimal('0.8') if has_discount else None
+
+                # Создаем slug с транслитерацией
+                base_slug = transliterate_ru_to_en(product_name)
+                slug = f'{base_slug}-{product_counter}'
+
+                # Ограничиваем длину slug (max_length=200)
+                if len(slug) > 200:
+                    slug = slug[:200]
+
+                # Выбираем бренд
+                brand = random.choice(category_brands)
+
+                # Наличие на складе (80% товаров в наличии)
+                in_stock = random.random() < 0.8
+
+                # Новинка (20% товаров)
+                is_new = random.random() < 0.2
+
+                # Рейтинг
+                rating = Decimal(random.randint(35, 50)) / 10
+                review_count = random.randint(0, 200)
+
+                # Описание
+                descriptions = [
+                    f'<p>Высококачественный {product_name.lower()} от производителя {brand}. Идеально подходит для повседневного использования.</p>',
+                    f'<p>Инновационный дизайн и передовые технологии в {product_name.lower()}. Гарантия качества от {brand}.</p>',
+                    f'<p>Надежный и долговечный {product_name.lower()}. Отличное соотношение цены и качества.</p>',
+                    f'<p>Современный {product_name.lower()} с уникальными характеристиками. Подчеркнет ваш стиль и статус.</p>'
+                ]
+
+                short_descriptions = [
+                    f'Качественный товар от {brand}',
+                    f'Лучшее предложение на рынке',
+                    f'Популярная модель с отличными отзывами',
+                    f'Новинка сезона от {brand}',
+                    f'Эргономичный дизайн и удобство использования'
+                ]
+
+                product = Product.objects.create(
+                    name=product_name,
+                    slug=slug,
+                    category=category_obj,
+                    price=price,
+                    discount_price=discount_price,
+                    short_description=random.choice(short_descriptions),
+                    description=random.choice(descriptions),
+                    sku=f'PROD{10000 + product_counter}',
+                    brand=brand,
+                    rating=rating,
+                    review_count=review_count,
+                    is_new=is_new,
+                    in_stock=in_stock,
+                    is_active=True,
+                    stock=random.randint(0, 100) if in_stock else 0
+                )
+
+                product_counter += 1
+                total_products_created += 1
+
+        self.stdout.write(self.style.SUCCESS(f'✓ Создано {total_products_created} товаров в {len(categories)} категориях'))
+
+        # Создаем промо-акции с новыми полями
+        Promotion.objects.all().delete()
+        self.stdout.write(self.style.WARNING('Старые промо-акции удалены'))
+
+        today = datetime.now().date()
+        promotions_data = [
+            {
+                'title': 'Скидка 20% на всю электронику',
+                'slug': 'electronics-sale',
+                'description': '<p>Только этой недели скидка 20% на всю электронику. Успейте купить!</p>',
+                'button_text': 'Смотреть электронику',
+                'button_url': '/products/category/electronics/',
+                'is_active': True,
+                'start_date': today - timedelta(days=2),
+                'end_date': today + timedelta(days=5)
+            },
+            {
+                'title': 'Бесплатная доставка при заказе от 5000₽',
+                'slug': 'free-delivery',
+                'description': '<p>При заказе от 5000 рублей - бесплатная доставка по всей России. Акция действует до конца месяца.</p>',
+                'button_text': 'Условия доставки',
+                'button_url': '/pages/delivery/',
+                'is_active': True,
+                'start_date': today - timedelta(days=5),
+                'end_date': today + timedelta(days=25)
+            },
+            {
+                'title': 'Новинки весенней коллекции 2024',
+                'slug': 'new-season',
+                'description': '<p>Встречайте новинки весенней коллекции 2024 года. Скидки на предыдущие коллекции.</p>',
+                'button_text': 'Смотреть новинки',
+                'button_url': '/products/',
+                'is_active': True,
+                'start_date': today - timedelta(days=10),
+                'end_date': today + timedelta(days=50)
+            },
+            {
+                'title': 'Распродажа зимней одежды',
+                'slug': 'winter-sale',
+                'description': '<p>Супер распродажа зимней одежды со скидками до 50%. Только пока товары есть в наличии.</p>',
+                'button_text': 'В раздел одежды',
+                'button_url': '/products/category/clothing/',
+                'is_active': True,
+                'start_date': today - timedelta(days=15),
+                'end_date': today + timedelta(days=15)
+            },
+            {
+                'title': 'Акция закончилась',
+                'slug': 'ended-promo',
+                'description': '<p>Эта акция уже закончилась, но у нас всегда есть интересные предложения.</p>',
+                'button_text': 'Все акции',
+                'button_url': '/',
+                'is_active': False,
+                'start_date': today - timedelta(days=60),
+                'end_date': today - timedelta(days=30)
+            }
+        ]
+
+        for promo in promotions_data:
+            Promotion.objects.create(
+                title=promo['title'],
+                slug=promo['slug'],
+                description=promo['description'],
+                button_text=promo['button_text'],
+                button_url=promo['button_url'],
+                is_active=promo['is_active'],
+                start_date=promo['start_date'],
+                end_date=promo['end_date']
+            )
+            self.stdout.write(self.style.SUCCESS(f'✓ Создана промо-акция: {promo["title"]}'))
+
+        # Создаем SEO-страницы
+        Page.objects.all().delete()
+        self.stdout.write(self.style.WARNING('Старые SEO-страницы удалены'))
+
+        pages_data = [
+            {
+                'title': 'О компании',
+                'slug': 'about',
+                'content': '''
+                    <h2>О компании MyBiz</h2>
+                    <p>Мы - современная компания, специализирующаяся на продаже качественных товаров с 2010 года. Наша миссия - сделать покупки удобными и доступными для каждого.</p>
+                    <h3>Наши преимущества:</h3>
+                    <ul>
+                        <li>Широкий ассортимент товаров</li>
+                        <li>Гарантия качества на все товары</li>
+                        <li>Быстрая доставка по всей России</li>
+                        <li>Профессиональная поддержка клиентов</li>
+                        <li>Удобные способы оплаты</li>
+                    </ul>
+                ''',
+                'excerpt': 'Информация о нашей компании, миссии и преимуществах',
+                'meta_title': 'О компании MyBiz - интернет-магазин качественных товаров',
+                'meta_description': 'Узнайте больше о компании MyBiz, нашей миссии и преимуществах. Мы работаем с 2010 года.'
+            },
+            {
+                'title': 'Доставка и оплата',
+                'slug': 'delivery',
+                'content': '''
+                    <h2>Условия доставки и оплаты</h2>
+                    <h3>Способы доставки:</h3>
+                    <ul>
+                        <li><strong>Курьерская доставка</strong> - в течение 1-3 дней</li>
+                        <li><strong>Почта России</strong> - 5-14 дней по всей стране</li>
+                        <li><strong>Самовывоз</strong> - из пунктов выдачи в вашем городе</li>
+                        <li><strong>Экспресс-доставка</strong> - день в день (для Москвы)</li>
+                    </ul>
+                    <h3>Способы оплаты:</h3>
+                    <ul>
+                        <li>Банковские карты (Visa, MasterCard, Мир)</li>
+                        <li>Наличными курьеру</li>
+                        <li>Электронные кошельки (ЮMoney, Qiwi)</li>
+                        <li>Банковский перевод</li>
+                    </ul>
+                ''',
+                'excerpt': 'Информация о способах доставки и оплаты товаров',
+                'meta_title': 'Доставка и оплата - условия доставки и способы оплаты',
+                'meta_description': 'Условия доставки товаров по России. Способы оплаты: карты, наличные, электронные кошельки.'
+            },
+            {
+                'title': 'Гарантия и возврат',
+                'slug': 'warranty',
+                'content': '''
+                    <h2>Гарантия и возврат товаров</h2>
+                    <h3>Гарантийные обязательства:</h3>
+                    <p>Мы предоставляем гарантию на все товары от 1 года до 3 лет в зависимости от категории товара.</p>
+                    <h3>Возврат товаров:</h3>
+                    <p>Вы можете вернуть товар в течение 14 дней с момента получения при соблюдении условий:</p>
+                    <ul>
+                        <li>Товар не был в употреблении</li>
+                        <li>Сохранен товарный вид</li>
+                        <li>Сохранены все ярлыки и упаковка</li>
+                        <li>Имеются все документы на покупку</li>
+                    </ul>
+                ''',
+                'excerpt': 'Информация о гарантии на товары и условиях возврата',
+                'meta_title': 'Гарантия и возврат товаров - условия гарантии и возврата',
+                'meta_description': 'Информация о гарантийных обязательствах и условиях возврата товаров.'
+            },
+            {
+                'title': 'Контакты',
+                'slug': 'contacts',
+                'content': '''
+                    <h2>Наши контакты</h2>
+                    <h3>Контактная информация:</h3>
+                    <ul>
+                        <li><strong>Телефон:</strong> +7 (999) 123-45-67</li>
+                        <li><strong>Email:</strong> info@mybiz.ru</li>
+                        <li><strong>Адрес:</strong> Москва, ул. Примерная, д. 1</li>
+                        <li><strong>Время работы:</strong> Пн-Пт: 9:00-18:00, Сб: 10:00-16:00</li>
+                    </ul>
+                    <h3>Реквизиты компании:</h3>
+                    <p>ООО "МайБиз"<br>
+                    ИНН: 1234567890<br>
+                    ОГРН: 1234567890123</p>
+                ''',
+                'excerpt': 'Контактная информация компании MyBiz',
+                'meta_title': 'Контакты компании MyBiz - как с нами связаться',
+                'meta_description': 'Контактная информация, адрес и реквизиты компании MyBiz.'
+            },
+            {
+                'title': 'Политика конфиденциальности',
+                'slug': 'privacy',
+                'content': '''
+                    <h2>Политика конфиденциальности</h2>
+                    <p>Настоящая Политика конфиденциальности регулирует порядок обработки и использования персональных данных.</p>
+                    <h3>Какие данные мы собираем:</h3>
+                    <ul>
+                        <li>Имя и контактные данные</li>
+                        <li>Информация о заказах</li>
+                        <li>История покупок</li>
+                        <li>Технические данные (IP-адрес, браузер)</li>
+                    </ul>
+                    <h3>Как мы используем данные:</h3>
+                    <ul>
+                        <li>Для обработки заказов</li>
+                        <li>Для улучшения сервиса</li>
+                        <li>Для отправки информации о акциях</li>
+                        <li>Для аналитики работы сайта</li>
+                    </ul>
+                ''',
+                'excerpt': 'Политика обработки персональных данных',
+                'meta_title': 'Политика конфиденциальности - защита персональных данных',
+                'meta_description': 'Политика обработки и защиты персональных данных пользователей сайта MyBiz.'
+            },
+            {
+                'title': 'Публичная оферта',
+                'slug': 'offer',
+                'content': '''
+                    <h2>Публичная оферта</h2>
+                    <p>Настоящий документ является публичной офертой, адресованной физическим лицам, о заключении Договора купли-продажи товаров дистанционным способом.</p>
+                    <h3>Общие положения:</h3>
+                    <p>Продавец предлагает Покупателю заключить Договор купли-продажи товаров (далее - Договор) на условиях настоящей оферты.</p>
+                    <h3>Порядок заключения Договора:</h3>
+                    <p>Договор считается заключенным с момента оплаты Покупателем товара.</p>
+                ''',
+                'excerpt': 'Публичная оферта интернет-магазина',
+                'meta_title': 'Публичная оферта - условия договора купли-продажи',
+                'meta_description': 'Публичная оферта интернет-магазина MyBiz о заключении договора купли-продажи.'
+            }
+        ]
+
+        for page in pages_data:
+            Page.objects.create(
+                title=page['title'],
+                slug=page['slug'],
+                content=page['content'],
+                excerpt=page['excerpt'],
+                meta_title=page['meta_title'],
+                meta_description=page['meta_description'],
+                is_active=True
+            )
+            self.stdout.write(self.style.SUCCESS(f'✓ Создана страница: {page["title"]}'))
+
+        # Выводим статистику
+        self.stdout.write("\n" + "="*50)
+        self.stdout.write(self.style.SUCCESS("📊 СТАТИСТИКА СОЗДАННЫХ ДАННЫХ:"))
+        self.stdout.write(f"📁 Категорий: {len(categories)}")
+        self.stdout.write(f"📦 Товаров: {total_products_created}")
+        self.stdout.write(f"🎁 Промо-акций: {len(promotions_data)}")
+        self.stdout.write(f"📄 SEO-страниц: {len(pages_data)}")
+
+        # Статистика по категориям
+        self.stdout.write("\n📈 Товаров по категориям:")
+        for category_obj, product_count in categories:
+            actual_count = Product.objects.filter(category=category_obj).count()
+            self.stdout.write(f"   • {category_obj.name}: {actual_count} товаров")
+
+        self.stdout.write("\n" + "="*50)
+        self.stdout.write(self.style.SUCCESS('✅ Тестовые данные успешно созданы!'))
+        self.stdout.write("\n💡 Для запуска сайта выполните команду:")
+        self.stdout.write("   python manage.py runserver")
+        self.stdout.write("🌐 Откройте в браузере: http://127.0.0.1:8000/")
+
+
+================================================================================
+ФАЙЛ: ./mybiz_core/tests.py
+================================================================================
+
+from django.test import TestCase, Client
+from django.urls import reverse
+from django.core.files.uploadedfile import SimpleUploadedFile
+from .models import Category, Product
+from content.models import SiteSettings, Promotion
+from pages.models import Page
+from decimal import Decimal
+import json
+from datetime import datetime, timedelta
+
+from django.test import TestCase, Client
+from django.urls import reverse
+from django.core.files.uploadedfile import SimpleUploadedFile
+from .models import Category, Product
+from content.models import SiteSettings, Promotion
+from pages.models import Page
+from decimal import Decimal
+import json
+from datetime import datetime, timedelta
+
+
+class ProductViewsTest(TestCase):
+    """Тест представлений для товаров и категорий"""
+
+    def setUp(self):
+        """Создание тестовых данных"""
+        self.client = Client()
+
+        # Создаем категорию
+        self.category = Category.objects.create(
+            name="Тестовая категория",
+            slug="test-category",
+            description="Описание тестовой категории",
+            is_active=True
+        )
+
+        # Создаем товары (больше, чем помещается на одну страницу)
+        for i in range(15):
+            Product.objects.create(
+                name=f"Тестовый товар {i}",
+                slug=f"test-product-{i}",
+                description=f"Описание товара {i}",
+                price=Decimal('1000.00'),
+                category=self.category,
+                is_active=True,
+                in_stock=True,
+                rating=Decimal('4.5')
+            )
+
+    def test_home_page(self):
+        """Тест главной страницы"""
+        response = self.client.get(reverse('mybiz_core:home'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'home.html')
+        self.assertContains(response, 'Тестовый товар')
+
+    def test_product_list_page(self):
+        """Тест страницы списка товаров"""
+        response = self.client.get(reverse('mybiz_core:product_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'products/product_list.html')
+
+        # Проверяем пагинацию (12 товаров на странице)
+        self.assertEqual(len(response.context['products']), 12)
+
+    def test_product_detail_page(self):
+        """Тест детальной страницы товара"""
+        product = Product.objects.first()
+        response = self.client.get(reverse('mybiz_core:product_detail', args=[product.slug]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'products/product_detail.html')
+        self.assertContains(response, product.name)
+
+    def test_category_filter(self):
+        """Тест фильтрации по категории"""
+        response = self.client.get(
+            reverse('mybiz_core:product_list_by_category', args=[self.category.slug])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        # Все товары должны принадлежать тестовой категории
+        for product in response.context['products']:
+            self.assertEqual(product.category, self.category)
+
+    def test_ajax_load_more(self):
+        """Тест AJAX-подгрузки товаров"""
+        # Проверяем, что URL существует
+        url = reverse('mybiz_core:load_more_products')
+
+        # Пробуем оба способа отправки AJAX заголовков
+        # Способ 1: Через headers
+        response = self.client.get(
+            url,
+            {'page': 2},
+            headers={'X-Requested-With': 'XMLHttpRequest'}
+        )
+
+        # Если способ 1 не сработал, пробуем способ 2
+        if response.status_code != 200:
+            # Способ 2: Через HTTP_X_REQUESTED_WITH
+            response = self.client.get(
+                url,
+                {'page': 2},
+                HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+            )
+
+        # Если оба способа не сработали, проверяем URL в отладке
+        if response.status_code != 200:
+            # Попробуем с параметром debug
+            response = self.client.get(
+                url,
+                {'page': 2, 'debug': 'ajax'}
+            )
+
+        self.assertEqual(response.status_code, 200,
+                        f"Не удалось получить ответ 200 от {url}. Получен код: {response.status_code}")
+
+        # Проверяем, что ответ содержит JSON
+        try:
+            data = json.loads(response.content)
+            self.assertIn('html', data)
+            self.assertIn('has_next', data)
+        except json.JSONDecodeError:
+            self.fail("Ответ не является валидным JSON")
+
+
+class ProductViewsWithLargeDatasetTest(TestCase):
+    """Тесты представлений с большим набором данных"""
+
+    @classmethod
+    def setUpTestData(cls):
+        """Создание тестовых данных один раз для всех тестов"""
+        # Создаем категорию
+        cls.category = Category.objects.create(
+            name="Тестовая категория",
+            slug="test-category",
+            description="Описание тестовой категории",
+            is_active=True
+        )
+
+        # Создаем 30 товаров
+        cls.products = []
+        for i in range(30):
+            product = Product.objects.create(
+                name=f"Тестовый товар {i+1}",
+                slug=f"test-product-{i+1}",
+                description=f"Описание товара {i+1}",
+                price=Decimal('1000.00'),
+                category=cls.category,
+                is_active=True,
+                in_stock=True,
+                rating=Decimal('4.5')
+            )
+            cls.products.append(product)
+
+    def setUp(self):
+        self.client = Client()
+
+    def test_pagination_with_many_products(self):
+        """Тест пагинации с большим количеством товаров"""
+        response = self.client.get(reverse('mybiz_core:product_list'))
+
+        self.assertEqual(response.status_code, 200)
+
+        # Должно быть 12 товаров на странице (пагинация)
+        self.assertEqual(len(response.context['products']), 12)
+
+        # Проверяем общее количество товаров
+        self.assertEqual(response.context['products'].paginator.count, 30)
+
+        # Проверяем, что есть следующая страница
+        self.assertTrue(response.context['products'].has_next())
+
+    def test_ajax_load_more_multiple_pages(self):
+        """Тест AJAX-подгрузки нескольких страниц"""
+        # Получаем URL
+        url = reverse('mybiz_core:load_more_products')
+
+        # Первая страница (должна вернуть товары 13-24)
+        response = self.client.get(
+            url,
+            {'page': 2},
+            headers={'X-Requested-With': 'XMLHttpRequest'}
+        )
+
+        # Если не сработало, пробуем другой способ
+        if response.status_code != 200:
+            response = self.client.get(
+                url,
+                {'page': 2},
+                HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+            )
+
+        # Если все еще не сработало, пробуем с debug
+        if response.status_code != 200:
+            response = self.client.get(
+                url,
+                {'page': 2, 'debug': 'ajax'}
+            )
+
+        self.assertEqual(response.status_code, 200,
+                        f"Не удалось получить AJAX ответ от {url}. Код: {response.status_code}")
+
+        data = json.loads(response.content)
+        self.assertTrue(data['has_next'])  # Должна быть третья страница
+
+        # Третья страница (товары 25-30)
+        response = self.client.get(
+            url,
+            {'page': 3},
+            headers={'X-Requested-With': 'XMLHttpRequest'}
+        )
+
+        if response.status_code != 200:
+            response = self.client.get(
+                url,
+                {'page': 3},
+                HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+            )
+
+        if response.status_code != 200:
+            response = self.client.get(
+                url,
+                {'page': 3, 'debug': 'ajax'}
+            )
+
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertFalse(data['has_next'])  # Больше страниц нет
+
+class ComprehensiveDataTest(TestCase):
+    """Тесты для проверки создания данных"""
+
+    def test_create_large_dataset(self):
+        """Тест создания большого набора данных"""
+        # Создаем категории
+        categories_data = [
+            ('Электроника', 'electronics'),
+            ('Одежда', 'clothing'),
+            ('Книги', 'books'),
+            ('Спорт', 'sports'),
+            ('Красота', 'beauty'),
+        ]
+
+        categories = []
+        for name, slug in categories_data:
+            category = Category.objects.create(
+                name=name,
+                slug=slug,
+                description=f'Описание категории {name}',
+                is_active=True
+            )
+            categories.append(category)
+
+        self.assertEqual(Category.objects.count(), 5)
+
+        # Создаем товары в каждой категории
+        total_products = 50
+        for i in range(total_products):
+            category = categories[i % len(categories)]
+            Product.objects.create(
+                name=f'Тестовый товар {i+1}',
+                slug=f'test-product-{i+1}',
+                description=f'Описание товара {i+1}',
+                price=Decimal('1000.00'),
+                category=category,
+                is_active=True,
+                in_stock=True,
+                rating=Decimal('4.5')
+            )
+
+        self.assertEqual(Product.objects.count(), total_products)
+
+        # Проверяем распределение по категориям
+        for category in categories:
+            product_count = Product.objects.filter(category=category).count()
+            self.assertGreater(product_count, 0)
+            print(f'Категория "{category.name}": {product_count} товаров')
+
+
+class ProductViewsWithLargeDatasetTest(TestCase):
+    """Тесты представлений с большим набором данных"""
+
+    @classmethod
+    def setUpTestData(cls):
+        """Создание тестовых данных один раз для всех тестов"""
+        # Создаем категорию
+        cls.category = Category.objects.create(
+            name="Тестовая категория",
+            slug="test-category",
+            description="Описание тестовой категории",
+            is_active=True
+        )
+
+        # Создаем 30 товаров
+        cls.products = []
+        for i in range(30):
+            product = Product.objects.create(
+                name=f"Тестовый товар {i+1}",
+                slug=f"test-product-{i+1}",
+                description=f"Описание товара {i+1}",
+                price=Decimal('1000.00'),
+                category=cls.category,
+                is_active=True,
+                in_stock=True,
+                rating=Decimal('4.5')
+            )
+            cls.products.append(product)
+
+    def setUp(self):
+        self.client = Client()
+
+    def test_pagination_with_many_products(self):
+        """Тест пагинации с большим количеством товаров"""
+        response = self.client.get(reverse('mybiz_core:product_list'))
+
+        self.assertEqual(response.status_code, 200)
+
+        # Должно быть 12 товаров на странице (пагинация)
+        self.assertEqual(len(response.context['products']), 12)
+
+        # Проверяем общее количество товаров
+        self.assertEqual(response.context['products'].paginator.count, 30)
+
+        # Проверяем, что есть следующая страница
+        self.assertTrue(response.context['products'].has_next())
+
+    def test_ajax_load_more_multiple_pages(self):
+        """Тест AJAX-подгрузки нескольких страниц"""
+        # Первая страница (должна вернуть товары 13-24)
+        response = self.client.get(
+            reverse('mybiz_core:load_more_products'),
+            {'page': 2},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertTrue(data['has_next'])  # Должна быть третья страница
+
+        # Третья страница (товары 25-30)
+        response = self.client.get(
+            reverse('mybiz_core:load_more_products'),
+            {'page': 3},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertFalse(data['has_next'])  # Больше страниц нет
+
+
+class SitePerformanceTest(TestCase):
+    """Тесты производительности с большим набором данных"""
+
+    def test_home_page_performance_with_many_products(self):
+        """Тест производительности главной страницы с большим количеством товаров"""
+        # Создаем категорию
+        category = Category.objects.create(
+            name="Категория для теста",
+            slug="test-category",
+            is_active=True
+        )
+
+        # Создаем 50 товаров
+        for i in range(50):
+            Product.objects.create(
+                name=f"Товар {i+1}",
+                slug=f"product-{i+1}",
+                description=f"Описание {i+1}",
+                price=Decimal('1000.00'),
+                category=category,
+                is_active=True,
+                is_featured=(i % 5 == 0)  # Каждый 5-й товар - рекомендованный
+            )
+
+        # Замеряем время выполнения запроса главной страницы
+        import time
+        start_time = time.time()
+
+        response = self.client.get(reverse('mybiz_core:home'))
+
+        end_time = time.time()
+        execution_time = end_time - start_time
+
+        self.assertEqual(response.status_code, 200)
+
+        # Проверяем, что на главной отображаются только рекомендованные товары (8 штук)
+        featured_products = response.context['featured_products']
+        self.assertEqual(len(featured_products), 8)
+
+        # Проверяем, что время выполнения приемлемое
+        # (это субъективный тест, но полезный для мониторинга)
+        print(f"Время выполнения главной страницы с 50 товарами: {execution_time:.3f} секунд")
+        self.assertLess(execution_time, 2.0)  # Должно быть меньше 2 секунд
+
+
+class CategoryDistributionTest(TestCase):
+    """Тесты распределения товаров по категориям"""
+
+    def test_category_product_counts(self):
+        """Тест подсчета товаров в категориях"""
+        # Создаем несколько категорий
+        categories = []
+        for i in range(3):
+            category = Category.objects.create(
+                name=f"Категория {i+1}",
+                slug=f"category-{i+1}",
+                is_active=True
+            )
+            categories.append(category)
+
+        # Создаем товары с разным распределением
+        # Категория 1: 5 товаров
+        # Категория 2: 3 товара
+        # Категория 3: 2 товара
+        product_counts = [5, 3, 2]
+
+        product_counter = 1
+        for category, count in zip(categories, product_counts):
+            for i in range(count):
+                Product.objects.create(
+                    name=f"Товар {product_counter}",
+                    slug=f"product-{product_counter}",
+                    description="Описание",
+                    price=Decimal('1000.00'),
+                    category=category,
+                    is_active=True
+                )
+                product_counter += 1
+
+        # Проверяем количество товаров в каждой категории
+        for category, expected_count in zip(categories, product_counts):
+            actual_count = Product.objects.filter(category=category).count()
+            self.assertEqual(actual_count, expected_count)
+
+
+# Добавляем существующие тесты из предыдущей версии
+class ProductViewsTest(TestCase):
+    """Тест представлений для товаров и категорий"""
+
+    def setUp(self):
+        """Создание тестовых данных"""
+        self.client = Client()
+
+        # Создаем категорию
+        self.category = Category.objects.create(
+            name="Тестовая категория",
+            slug="test-category",
+            description="Описание тестовой категории",
+            is_active=True
+        )
+
+        # Создаем товары (больше, чем помещается на одну страницу)
+        for i in range(15):
+            Product.objects.create(
+                name=f"Тестовый товар {i}",
+                slug=f"test-product-{i}",
+                description=f"Описание товара {i}",
+                price=Decimal('1000.00'),
+                category=self.category,
+                is_active=True,
+                in_stock=True,
+                rating=Decimal('4.5')
+            )
+
+    def test_home_page(self):
+        """Тест главной страницы"""
+        response = self.client.get(reverse('mybiz_core:home'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'home.html')
+        self.assertContains(response, 'Тестовый товар')
+
+    def test_product_list_page(self):
+        """Тест страницы списка товаров"""
+        response = self.client.get(reverse('mybiz_core:product_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'products/product_list.html')
+
+        # Проверяем пагинацию (12 товаров на странице)
+        self.assertEqual(len(response.context['products']), 12)
+
+    def test_product_detail_page(self):
+        """Тест детальной страницы товара"""
+        product = Product.objects.first()
+        response = self.client.get(reverse('mybiz_core:product_detail', args=[product.slug]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'products/product_detail.html')
+        self.assertContains(response, product.name)
+
+    def test_category_filter(self):
+        """Тест фильтрации по категории"""
+        response = self.client.get(
+            reverse('mybiz_core:product_list_by_category', args=[self.category.slug])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        # Все товары должны принадлежать тестовой категории
+        for product in response.context['products']:
+            self.assertEqual(product.category, self.category)
+
+    def test_ajax_load_more(self):
+        """Тест AJAX-подгрузки товаров"""
+        # Первый запрос (первая страница)
+        response = self.client.get(
+            reverse('mybiz_core:load_more_products'),
+            {'page': 1},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertTrue(data['has_next'])
+
+        # Второй запрос (вторая страница)
+        response = self.client.get(
+            reverse('mybiz_core:load_more_products'),
+            {'page': 2},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        # На второй странице должно быть 3 товара (15 всего - 12 на первой)
+        self.assertIn('html', data)
+        self.assertFalse(data['has_next'])  # Больше страниц нет
+
+
+class ProductModelTest(TestCase):
+    def setUp(self):
+        self.category = Category.objects.create(
+            name="Категория",
+            slug="category"
+        )
+
+        self.product = Product.objects.create(
+            name="Товар",
+            slug="product",
+            price=Decimal('1000.00'),
+            discount_price=Decimal('800.00'),
+            category=self.category
+        )
+
+    def test_discount_percentage(self):
+        """Тест расчета процента скидки"""
+        # (1000 - 800) / 1000 * 100 = 20%
+        self.assertEqual(self.product.get_discount_percentage(), 20)
+
+    def test_absolute_urls(self):
+        """Тест генерации URL"""
+        category_url = self.category.get_absolute_url()
+        product_url = self.product.get_absolute_url()
+
+        self.assertIn(self.category.slug, category_url)
+        self.assertIn(self.product.slug, product_url)
+
+
+class TemplateTagsTest(TestCase):
+    def test_category_context_processor(self):
+        """Тест контекстного процессора категорий"""
+        Category.objects.create(name="Категория 1", is_active=True)
+        Category.objects.create(name="Категория 2", is_active=True)
+        Category.objects.create(name="Категория 3", is_active=False)  # Неактивная
+
+        # Создаем запрос для получения контекста
+        from mybiz_core.context_processors import categories
+        context = categories(None)
+
+        # В контексте должны быть только активные категории
+        self.assertIn('categories', context)
+        self.assertEqual(len(context['categories']), 2)
+        self.assertEqual(context['categories'][0].name, "Категория 1")
+        self.assertEqual(context['categories'][1].name, "Категория 2")
+
+
+class SiteSettingsTest(TestCase):
+    def test_site_settings_load(self):
+        """Тест загрузки настроек сайта"""
+        from content.models import SiteSettings
+
+        # Первый вызов должен создать объект
+        settings = SiteSettings.load()
+        self.assertIsNotNone(settings)
+        self.assertEqual(settings.site_name, "MyBiz")
+
+        # Второй вызов должен вернуть тот же объект
+        settings2 = SiteSettings.load()
+        self.assertEqual(settings.pk, settings2.pk)
+
+class URLTests(TestCase):
+
+    def test_urls_available(self):
+        """Тест доступности всех URL"""
+        urls_to_test = [
+            ('mybiz_core:home', None, 200),
+            ('mybiz_core:product_list', None, 200),
+            ('mybiz_core:load_more_products', None, 400),  # Без AJAX заголовка вернет 400
+        ]
+
+        for url_name, args, expected_status in urls_to_test:
+            with self.subTest(url_name=url_name):
+                try:
+                    url = reverse(url_name, args=args)
+                    response = self.client.get(url)
+                    self.assertEqual(
+                        response.status_code,
+                        expected_status,
+                        f"URL {url_name} вернул {response.status_code}, ожидалось {expected_status}"
+                    )
+                except Exception as e:
+                    self.fail(f"Ошибка при тестировании URL {url_name}: {str(e)}")
+
+    def test_ajax_url_works(self):
+        """Тест, что AJAX URL существует и работает"""
+        # Создаем тестовые данные
+        category = Category.objects.create(
+            name="Тестовая категория",
+            slug="test-category",
+            is_active=True
+        )
+
+        for i in range(15):
+            Product.objects.create(
+                name=f"Тестовый товар {i}",
+                slug=f"test-product-{i}",
+                description="Описание",
+                price=1000,
+                category=category,
+                is_active=True
+            )
+
+        # Проверяем URL с AJAX заголовком
+        url = reverse('mybiz_core:load_more_products')
+
+        # Вариант 1: Через headers (более современный)
+        response = self.client.get(
+            url,
+            {'page': 2},
+            headers={'X-Requested-With': 'XMLHttpRequest'}
+        )
+
+        # Если вариант 1 не сработал, пробуем вариант 2
+        if response.status_code == 404:
+            # Вариант 2: Через HTTP_X_REQUESTED_WITH
+            response = self.client.get(
+                url,
+                {'page': 2},
+                HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+            )
+
+        self.assertEqual(
+            response.status_code,
+            200,
+            f"AJAX URL вернул {response.status_code}. Проверьте настройки URL."
+        )
+
+
+================================================================================
+ФАЙЛ: ./mybiz_core/urls.py
+================================================================================
+
+from django.urls import path, re_path
+from . import views
+
+app_name = 'mybiz_core'
+
+urlpatterns = [
+    path('', views.home, name='home'),
+    path('products/', views.product_list, name='product_list'),
+    path('products/load-more/', views.load_more_products, name='load_more_products'),
+    re_path(r'^products/category/(?P<category_slug>[-\w]+)/$', views.product_list, name='product_list_by_category'),
+    re_path(r'^products/(?P<product_slug>[-\w]+)/$', views.product_detail, name='product_detail'),
+]
+
+
+================================================================================
+ФАЙЛ: ./mybiz_core/views.py
+================================================================================
+
+from django.shortcuts import render, get_object_or_404
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.http import JsonResponse
+from django.template.loader import render_to_string
+from django.views.decorators.http import require_GET
+from .models import Product, Category
+import json
+
+def home(request):
+    """Главная страница сайта"""
+    # Получаем последние активные товары для главной страницы
+    featured_products = Product.objects.filter(is_active=True).order_by('-created_at')[:8]
+
+    context = {
+        'featured_products': featured_products,
+        'title': 'Главная',
+    }
+    return render(request, 'home.html', context)
+
+def product_list(request, category_slug=None):
+    """Список товаров с возможностью фильтрации по категории"""
+    category = None
+
+    # ИСПРАВЛЕНИЕ: Всегда инициализируем products
+    products = Product.objects.filter(is_active=True)
+
+    if category_slug:
+        category = get_object_or_404(Category, slug=category_slug, is_active=True)
+        products = products.filter(category=category)
+
+    # Пагинация - 12 товаров на страницу
+    page = request.GET.get('page', 1)
+    paginator = Paginator(products, 12)
+
+    try:
+        products_page = paginator.page(page)
+    except PageNotAnInteger:
+        products_page = paginator.page(1)
+    except EmptyPage:
+        products_page = paginator.page(paginator.num_pages)
+
+    context = {
+        'category': category,
+        'products': products_page,
+        'title': category.name if category else 'Все товары',
+    }
+    return render(request, 'products/product_list.html', context)
+
+def product_detail(request, product_slug):
+    """Детальная страница товара"""
+    product = get_object_or_404(Product, slug=product_slug, is_active=True)
+
+    # Получаем похожие товары из той же категории
+    related_products = Product.objects.filter(
+        category=product.category,
+        is_active=True
+    ).exclude(id=product.id)[:4]
+
+    context = {
+        'product': product,
+        'related_products': related_products,
+        'title': product.name,
+    }
+    return render(request, 'products/product_detail.html', context)
+
+@require_GET
+def load_more_products(request):
+    """AJAX-представление для подгрузки товаров (кнопка 'Показать ещё')"""
+    # Проверяем, является ли запрос AJAX
+    # Способ 1: Через headers (для современных клиентов)
+    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+
+    # Способ 2: Через META (для старых клиентов и тестов Django)
+    if not is_ajax:
+        is_ajax = request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+
+    # Способ 3: Для отладки и тестов - параметр ?debug=ajax
+    debug_mode = request.GET.get('debug') == 'ajax'
+
+    if is_ajax or debug_mode:
+        page = request.GET.get('page', 2)  # По умолчанию загружаем вторую страницу
+        category_slug = request.GET.get('category', None)
+
+        products = Product.objects.filter(is_active=True)
+
+        if category_slug and category_slug != 'all':
+            try:
+                category = Category.objects.get(slug=category_slug, is_active=True)
+                products = products.filter(category=category)
+            except Category.DoesNotExist:
+                category = None
+
+        paginator = Paginator(products, 12)
+
+        try:
+            products_page = paginator.page(page)
+        except (EmptyPage, PageNotAnInteger):
+            return JsonResponse({'html': '', 'has_next': False, 'next_page': None})
+
+        # Рендерим только HTML с товарами
+        html = render_to_string('products/product_items.html', {'products': products_page})
+
+        return JsonResponse({
+            'html': html,
+            'has_next': products_page.has_next(),
+            'next_page': products_page.next_page_number() if products_page.has_next() else None
+        })
+
+    # Если запрос не AJAX, возвращаем ошибку 400
+    return JsonResponse({
+        'error': 'This endpoint requires an AJAX request',
+        'detail': 'Set X-Requested-With header to XMLHttpRequest'
+    }, status=400)
+
+
+================================================================================
+ФАЙЛ: ./mybiz_core/migrations/0001_initial.py
+================================================================================
+
+# Generated by Django 5.2 on 2025-12-15 11:01
+
+import django.db.models.deletion
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    initial = True
+
+    dependencies = [
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name='Category',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(max_length=200, verbose_name='Название категории')),
+                ('slug', models.SlugField(blank=True, max_length=200, unique=True, verbose_name='URL')),
+                ('description', models.TextField(blank=True, verbose_name='Описание')),
+                ('image', models.ImageField(blank=True, null=True, upload_to='categories/', verbose_name='Изображение')),
+                ('is_active', models.BooleanField(default=True, verbose_name='Активна')),
+                ('order', models.IntegerField(default=0, verbose_name='Порядок отображения')),
+                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')),
+                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Дата обновления')),
+            ],
+            options={
+                'verbose_name': 'Категория',
+                'verbose_name_plural': 'Категории',
+                'ordering': ['order', 'name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='Product',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(max_length=200, verbose_name='Название товара')),
+                ('slug', models.SlugField(blank=True, max_length=200, unique=True, verbose_name='URL')),
+                ('description', models.TextField(verbose_name='Описание')),
+                ('short_description', models.CharField(blank=True, max_length=300, verbose_name='Краткое описание')),
+                ('price', models.DecimalField(decimal_places=2, max_digits=10, verbose_name='Цена')),
+                ('old_price', models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True, verbose_name='Старая цена')),
+                ('image', models.ImageField(upload_to='products/', verbose_name='Основное изображение')),
+                ('is_active', models.BooleanField(default=True, verbose_name='Активен')),
+                ('is_featured', models.BooleanField(default=False, verbose_name='Рекомендуемый')),
+                ('stock', models.IntegerField(default=0, verbose_name='Остаток на складе')),
+                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')),
+                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Дата обновления')),
+                ('sku', models.CharField(blank=True, max_length=100, verbose_name='Артикул')),
+                ('brand', models.CharField(blank=True, max_length=200, verbose_name='Бренд')),
+                ('rating', models.DecimalField(decimal_places=1, default=0, max_digits=3, verbose_name='Рейтинг')),
+                ('review_count', models.IntegerField(default=0, verbose_name='Количество отзывов')),
+                ('is_new', models.BooleanField(default=False, verbose_name='Новинка')),
+                ('in_stock', models.BooleanField(default=True, verbose_name='В наличии')),
+                ('discount_price', models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True, verbose_name='Цена со скидкой')),
+                ('category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='products', to='mybiz_core.category', verbose_name='Категория')),
+            ],
+            options={
+                'verbose_name': 'Товар',
+                'verbose_name_plural': 'Товары',
+                'ordering': ['-created_at'],
+            },
+        ),
+    ]
+
+
+================================================================================
+ФАЙЛ: ./mybiz_core/migrations/__init__.py
+================================================================================
+
+[БИНАРНЫЙ ФАЙЛ - содержимое не показано]
+
+
+================================================================================
+ФАЙЛ: ./mybiz_core/__init__.py
+================================================================================
+
+[БИНАРНЫЙ ФАЙЛ - содержимое не показано]
+
+
+================================================================================
+ФАЙЛ: ./mybiz_core/apps.py
+================================================================================
+
+from django.apps import AppConfig
+
+
+class MybizCoreConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'mybiz_core'
+
+
+================================================================================
+ФАЙЛ: ./requirements.txt
+================================================================================
+
+asgiref==3.11.0
+Django==5.2
+django-ckeditor==6.7.3
+django-js-asset==3.1.2
+pillow==12.0.0
+sqlparse==0.5.4
+typing_extensions==4.15.0
+
+
+================================================================================
+ФАЙЛ: ./manage.py
+================================================================================
+
+#!/usr/bin/env python
+"""Django's command-line utility for administrative tasks."""
+import os
+import sys
+
+
+def main():
+    """Run administrative tasks."""
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+    try:
+        from django.core.management import execute_from_command_line
+    except ImportError as exc:
+        raise ImportError(
+            "Couldn't import Django. Are you sure it's installed and "
+            "available on your PYTHONPATH environment variable? Did you "
+            "forget to activate a virtual environment?"
+        ) from exc
+    execute_from_command_line(sys.argv)
+
+
+if __name__ == '__main__':
+    main()
+
+
+================================================================================
+ФАЙЛ: ./.env
+================================================================================
+
+[БИНАРНЫЙ ФАЙЛ - содержимое не показано]
+
+
+=== СТРУКТУРА ПРОЕКТА (дерево директорий) ===
+
+.
+- config
+- content
+- - migrations
+- mybiz_core
+- - management
+- - - commands
+- - migrations
+- pages
+- - migrations
+- static
+- - admin
+- - - css
+- - - js
+- - css
+- - images
+- - js
+- templates
+- - includes
+- - pages
+- - products
+
+=== ИНФОРМАЦИЯ О СРЕДЕ ===
+
+Python версия:
+
+Установленные пакеты Django:
+
+Зависимости проекта:
+asgiref==3.11.0
+Django==5.2
+django-ckeditor==6.7.3
+django-js-asset==3.1.2
+pillow==12.0.0
+sqlparse==0.5.4
+typing_extensions==4.15.0

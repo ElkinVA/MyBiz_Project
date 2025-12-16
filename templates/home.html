@@ -20,9 +20,9 @@
                     {{ site_settings.site_tagline|default:'Лучшие товары по доступным ценам' }}
                 </p>
                 <a href="{% url 'mybiz_core:product_list' %}"
-                   class="inline-block bg-accent text-white px-8 py-3 rounded-lg font-semibold hover:bg-accent-dark transition duration-300">
-                    Смотреть товары
-                </a>
+   class="inline-block btn-primary font-semibold hover:bg-primary transition duration-300">
+    Смотреть товары
+</a>
             </div>
             <div class="md:w-1/2">
                 {% if site_settings.hero_image %}
@@ -144,9 +144,9 @@
 
         <div class="text-center mt-10">
             <a href="{% url 'mybiz_core:product_list' %}"
-               class="inline-block bg-gray-800 text-white px-8 py-3 rounded-lg font-medium hover:bg-gray-900 transition duration-300">
-                Все товары
-            </a>
+   class="inline-block btn-primary font-medium hover:bg-primary transition duration-300">
+    Все товары
+</a>
         </div>
         {% else %}
         <div class="text-center py-12">

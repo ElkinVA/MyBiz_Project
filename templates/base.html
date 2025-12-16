@@ -24,28 +24,90 @@
         <link rel="icon" href="{{ site_settings.favicon.url }}" type="image/x-icon">
     {% endif %}
 
-    <!-- Custom styles -->
+    <!-- Custom styles with dynamic colors -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap');
 
+        :root {
+            --primary-color: {{ site_settings.primary_color|default:'#3b82f6' }};
+            --secondary-color: {{ site_settings.secondary_color|default:'#8b5cf6' }};
+            --accent-color: {{ site_settings.accent_color|default:'#10b981' }};
+            --text-color: {{ site_settings.text_color|default:'#1f2937' }};
+            --background-color: {{ site_settings.background_color|default:'#f9fafb' }};
+            --header-bg-color: {{ site_settings.header_bg_color|default:'#ffffff' }};
+            --footer-bg-color: {{ site_settings.footer_bg_color|default:'#111827' }};
+        }
+
         body {
             font-family: 'Inter', sans-serif;
+            color: var(--text-color);
+            background-color: var(--background-color);
         }
 
         h1, h2, h3, h4, h5, h6 {
             font-family: 'Poppins', sans-serif;
         }
 
+        /* Динамические классы для цветов */
         .btn-primary {
-            @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-300;
+            background-color: var(--accent-color);
+            color: white;
+            font-weight: 500;
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-color);
+        }
+
+        .text-primary {
+            color: var(--primary-color);
+        }
+
+        .text-secondary {
+            color: var(--secondary-color);
+        }
+
+        .text-accent {
+            color: var(--accent-color);
+        }
+
+        .bg-primary {
+            background-color: var(--primary-color);
+        }
+
+        .bg-secondary {
+            background-color: var(--secondary-color);
+        }
+
+        .bg-accent {
+            background-color: var(--accent-color);
+        }
+
+        .border-primary {
+            border-color: var(--primary-color);
+        }
+
+        .border-accent {
+            border-color: var(--accent-color);
         }
 
         .card {
-            @apply bg-white rounded-xl shadow-md hover:shadow-lg transition duration-300 overflow-hidden;
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: box-shadow 0.3s;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
         .text-gradient {
-            background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%);
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -53,23 +115,29 @@
 
     {% block extra_css %}{% endblock %}
 </head>
-<body class="bg-gray-50 text-gray-800">
-    <!-- Header -->
-    {% include 'includes/header.html' %}
+<body>
+    <!-- Header with dynamic background -->
+    <header style="background-color: var(--header-bg-color);">
+        {% include 'includes/header.html' %}
+    </header>
 
     <!-- Main Content -->
     <main class="min-h-screen">
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
-    {% include 'includes/footer.html' %}
-<div x-data="{ showScrollTop: false }"
+    <!-- Footer with dynamic background -->
+    <footer style="background-color: var(--footer-bg-color);">
+        {% include 'includes/footer.html' %}
+    </footer>
+
+    <!-- Кнопка "Наверх" -->
+    <div x-data="{ showScrollTop: false }"
          x-init="window.addEventListener('scroll', () => { showScrollTop = window.scrollY > 300 })"
          class="fixed bottom-8 right-8 z-50">
         <button x-show="showScrollTop"
                 @click="window.scrollTo({ top: 0, behavior: 'smooth' })"
-                class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 transform hover:scale-110"
+                class="bg-accent hover:bg-primary text-white p-3 rounded-full shadow-lg transition-all duration-300 transform hover:scale-110"
                 style="display: none;"
                 x-transition:enter="transition ease-out duration-300"
                 x-transition:enter-start="opacity-0 transform scale-90"

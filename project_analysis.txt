@@ -1,5 +1,5 @@
 === СНИМОК ПРОЕКТА MYBIZ ===
-Дата создания: Tue Dec 16 12:46:44 MSK 2025
+Дата создания: Tue Dec 16 15:54:05 MSK 2025
 Для анализа AI-ассистентом
 
 === 1. КОНФИГУРАЦИОННЫЕ ФАЙЛЫ ===
@@ -82,6 +82,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'content.context_processors.site_settings',
                 'content.context_processors.promotions',
+                'content.context_processors.header_pages',  # ДОБАВИЛИ
                 'mybiz_core.context_processors.categories',
             ],
         },
@@ -324,19 +325,70 @@ class Promotion(models.Model):
             self.slug = slugify(self.title, allow_unicode=True)
         super().save(*args, **kwargs)
 
+
 class SiteSettings(models.Model):
     site_name = models.CharField(max_length=100, default="MyBiz", verbose_name="Название сайта")
     site_tagline = models.CharField(max_length=200, blank=True, verbose_name="Слоган сайта")
     logo = models.ImageField(upload_to='site/', blank=True, null=True, verbose_name="Логотип")
     favicon = models.ImageField(upload_to='site/', blank=True, null=True, verbose_name="Фавикон")
     hero_image = models.ImageField(upload_to='site/', blank=True, null=True, verbose_name="Главное изображение")
+
+    # Цветовая палитра
+    primary_color = models.CharField(
+        max_length=7,
+        default='#3b82f6',
+        verbose_name="Основной цвет (Primary)",
+        help_text="Основной цвет бренда"
+    )
+    secondary_color = models.CharField(
+        max_length=7,
+        default='#8b5cf6',
+        verbose_name="Вторичный цвет (Secondary)",
+        help_text="Дополнительный цвет"
+    )
+    accent_color = models.CharField(
+        max_length=7,
+        default='#10b981',
+        verbose_name="Акцентный цвет (Accent)",
+        help_text="Цвет для кнопок и важных элементов"
+    )
+    text_color = models.CharField(
+        max_length=7,
+        default='#1f2937',
+        verbose_name="Цвет текста",
+        help_text="Основной цвет текста"
+    )
+    background_color = models.CharField(
+        max_length=7,
+        default='#f9fafb',
+        verbose_name="Цвет фона",
+        help_text="Фоновый цвет сайта"
+    )
+    header_bg_color = models.CharField(
+        max_length=7,
+        default='#ffffff',
+        verbose_name="Фон шапки",
+        help_text="Фон верхней части сайта"
+    )
+    footer_bg_color = models.CharField(
+        max_length=7,
+        default='#111827',
+        verbose_name="Фон подвала",
+        help_text="Фон нижней части сайта"
+    )
+
+    # Контактная информация
     contact_email = models.EmailField(blank=True, verbose_name="Контактный email")
     contact_phone = models.CharField(max_length=20, blank=True, verbose_name="Контактный телефон")
     contact_address = models.TextField(blank=True, verbose_name="Контактный адрес")
     working_hours = models.CharField(max_length=100, blank=True, verbose_name="Время работы")
+
+    # Социальные сети
     facebook_url = models.URLField(blank=True, verbose_name="Facebook")
     instagram_url = models.URLField(blank=True, verbose_name="Instagram")
     twitter_url = models.URLField(blank=True, verbose_name="Twitter")
+
+    # SEO
     meta_title = models.CharField(max_length=200, blank=True, verbose_name="Мета-заголовок")
     meta_description = models.TextField(blank=True, verbose_name="Мета-описание")
     meta_keywords = models.TextField(blank=True, verbose_name="Мета-ключевые слова")
@@ -376,9 +428,16 @@ class Page(models.Model):
     excerpt = models.TextField('Краткое описание', blank=True)
     meta_title = models.CharField('Мета-заголовок', max_length=200, blank=True)
     meta_description = models.TextField('Мета-описание', blank=True)
+    meta_keywords = models.TextField('Мета-ключевые слова', blank=True)
     is_active = models.BooleanField('Активно', default=True)
+    show_in_header = models.BooleanField('Показывать в шапке', default=False)  # НОВОЕ ПОЛЕ
     created_at = models.DateTimeField('Создано', auto_now_add=True)
     updated_at = models.DateTimeField('Обновлено', auto_now=True)
+
+    @classmethod
+    def get_header_pages(cls):
+        """Возвращает страницы для отображения в шапке"""
+        return cls.objects.filter(is_active=True, show_in_header=True).order_by('title')
 
     @classmethod
     def get_footer_pages(cls):
@@ -636,6 +695,7 @@ from django.utils.html import format_html
 from ckeditor.widgets import CKEditorWidget
 from django import forms
 from .models import Promotion, SiteSettings
+from .widgets import ColorPickerWidget
 
 
 class PromotionForm(forms.ModelForm):
@@ -662,12 +722,55 @@ class PromotionAdmin(admin.ModelAdmin):
     image_preview.short_description = 'Превью изображения'
 
 
+class SiteSettingsForm(forms.ModelForm):
+    class Meta:
+        model = SiteSettings
+        fields = '__all__'
+        widgets = {
+            'meta_description': forms.Textarea(attrs={'rows': 3}),
+            'meta_keywords': forms.Textarea(attrs={'rows': 3}),
+            'primary_color': ColorPickerWidget(),
+            'secondary_color': ColorPickerWidget(),
+            'accent_color': ColorPickerWidget(),
+            'text_color': ColorPickerWidget(),
+            'background_color': ColorPickerWidget(),
+            'header_bg_color': ColorPickerWidget(),
+            'footer_bg_color': ColorPickerWidget(),
+        }
+
+
 @admin.register(SiteSettings)
 class SiteSettingsAdmin(admin.ModelAdmin):
-    list_display = ('site_name', 'contact_email', 'contact_phone')
+    form = SiteSettingsForm
+    list_display = ('site_name', 'contact_email', 'contact_phone', 'color_preview')
+
     fieldsets = (
         ('Основные настройки', {
             'fields': ('site_name', 'site_tagline', 'logo', 'favicon', 'hero_image')
+        }),
+        ('Цветовая палитра', {
+            'fields': (
+                'primary_color',
+                'secondary_color',
+                'accent_color',
+                'text_color',
+                'background_color',
+                'header_bg_color',
+                'footer_bg_color',
+            ),
+            'classes': ('wide', 'color-palette-section'),
+            'description': '''
+                <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+                    <strong>🎨 Настройка цветов сайта:</strong><br>
+                    1. <strong>Основной цвет</strong> - основной цвет бренда<br>
+                    2. <strong>Вторичный цвет</strong> - дополнительный цвет<br>
+                    3. <strong>Акцентный цвет</strong> - для кнопок и важных элементов<br>
+                    4. <strong>Цвет текста</strong> - основной цвет текста<br>
+                    5. <strong>Цвет фона</strong> - фоновый цвет сайта<br>
+                    6. <strong>Фон шапки</strong> - фон верхней части сайта<br>
+                    7. <strong>Фон подвала</strong> - фон нижней части сайта
+                </div>
+            '''
         }),
         ('Контактная информация', {
             'fields': ('contact_email', 'contact_phone', 'contact_address', 'working_hours')
@@ -683,6 +786,35 @@ class SiteSettingsAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         # Разрешаем только один объект настроек
         return not SiteSettings.objects.exists()
+
+    def color_preview(self, obj):
+        """Предпросмотр цветовой палитры в списке"""
+        if obj.primary_color:
+            return format_html(
+                '''
+                <div style="display: flex; gap: 2px; align-items: center;">
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div style="width: 20px; height: 20px; background-color: {}; border: 1px solid #ccc;"></div>
+                        <small style="font-size: 8px;">Primary</small>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div style="width: 20px; height: 20px; background-color: {}; border: 1px solid #ccc;"></div>
+                        <small style="font-size: 8px;">Accent</small>
+                    </div>
+                </div>
+                ''',
+                obj.primary_color, obj.accent_color
+            )
+        return "Не настроено"
+
+    color_preview.short_description = 'Цвета'
+
+    class Media:
+        css = {
+            'all': ('admin/css/color-picker-widget.css',)
+        }
+        js = ('admin/js/color-picker-widget.js',)
+        
 
 
 ================================================================================
@@ -707,19 +839,22 @@ class PageForm(forms.ModelForm):
 @admin.register(Page)
 class PageAdmin(admin.ModelAdmin):
     form = PageForm
-    list_display = ('title', 'slug', 'is_active', 'created_at')
-    list_filter = ('is_active', 'created_at')
+    list_display = ('title', 'slug', 'is_active', 'show_in_header', 'created_at')  # Добавили show_in_header
+    list_filter = ('is_active', 'show_in_header', 'created_at')  # Добавили фильтр
     search_fields = ('title', 'content', 'meta_description')
     prepopulated_fields = {'slug': ('title',)}
     fieldsets = (
         ('Основная информация', {
-            'fields': ('title', 'slug', 'content')
+            'fields': ('title', 'slug', 'content', 'excerpt')
         }),
         ('SEO', {
             'fields': ('meta_title', 'meta_description', 'meta_keywords')
         }),
+        ('Отображение', {
+            'fields': ('is_active', 'show_in_header')  # Добавили show_in_header
+        }),
         ('Дополнительно', {
-            'fields': ('is_active', 'created_at', 'updated_at')
+            'fields': ('created_at', 'updated_at')
         }),
     )
 
@@ -758,22 +893,17 @@ from pages.models import Page
 def site_settings(request):
     """Добавляет настройки сайта в контекст всех шаблонов"""
     settings = SiteSettings.load()
-    # Добавляем страницы для футера
-    footer_pages = Page.objects.filter(is_active=True)[:4]
-    return {
-        'site_settings': settings,
-        'pages': footer_pages
-    }
-
-def site_settings(request):
-    """Добавляет настройки сайта в контекст всех шаблонов"""
-    settings = SiteSettings.load()
     return {'site_settings': settings}
 
 def promotions(request):
     """Добавляет активные промо-акции в контекст"""
     active_promotions = Promotion.objects.filter(is_active=True).order_by('-created_at')[:3]
     return {'promotions': active_promotions}
+
+def header_pages(request):
+    """Добавляет страницы для шапки сайта"""
+    pages = Page.get_header_pages()
+    return {'header_pages': pages}
 
 
 === 7. ШАБЛОНЫ ===
@@ -808,28 +938,90 @@ def promotions(request):
         <link rel="icon" href="{{ site_settings.favicon.url }}" type="image/x-icon">
     {% endif %}
 
-    <!-- Custom styles -->
+    <!-- Custom styles with dynamic colors -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap');
 
+        :root {
+            --primary-color: {{ site_settings.primary_color|default:'#3b82f6' }};
+            --secondary-color: {{ site_settings.secondary_color|default:'#8b5cf6' }};
+            --accent-color: {{ site_settings.accent_color|default:'#10b981' }};
+            --text-color: {{ site_settings.text_color|default:'#1f2937' }};
+            --background-color: {{ site_settings.background_color|default:'#f9fafb' }};
+            --header-bg-color: {{ site_settings.header_bg_color|default:'#ffffff' }};
+            --footer-bg-color: {{ site_settings.footer_bg_color|default:'#111827' }};
+        }
+
         body {
             font-family: 'Inter', sans-serif;
+            color: var(--text-color);
+            background-color: var(--background-color);
         }
 
         h1, h2, h3, h4, h5, h6 {
             font-family: 'Poppins', sans-serif;
         }
 
+        /* Динамические классы для цветов */
         .btn-primary {
-            @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-300;
+            background-color: var(--accent-color);
+            color: white;
+            font-weight: 500;
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-color);
+        }
+
+        .text-primary {
+            color: var(--primary-color);
+        }
+
+        .text-secondary {
+            color: var(--secondary-color);
+        }
+
+        .text-accent {
+            color: var(--accent-color);
+        }
+
+        .bg-primary {
+            background-color: var(--primary-color);
+        }
+
+        .bg-secondary {
+            background-color: var(--secondary-color);
+        }
+
+        .bg-accent {
+            background-color: var(--accent-color);
+        }
+
+        .border-primary {
+            border-color: var(--primary-color);
+        }
+
+        .border-accent {
+            border-color: var(--accent-color);
         }
 
         .card {
-            @apply bg-white rounded-xl shadow-md hover:shadow-lg transition duration-300 overflow-hidden;
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: box-shadow 0.3s;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
         .text-gradient {
-            background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%);
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -837,17 +1029,41 @@ def promotions(request):
 
     {% block extra_css %}{% endblock %}
 </head>
-<body class="bg-gray-50 text-gray-800">
-    <!-- Header -->
-    {% include 'includes/header.html' %}
+<body>
+    <!-- Header with dynamic background -->
+    <header style="background-color: var(--header-bg-color);">
+        {% include 'includes/header.html' %}
+    </header>
 
     <!-- Main Content -->
     <main class="min-h-screen">
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
-    {% include 'includes/footer.html' %}
+    <!-- Footer with dynamic background -->
+    <footer style="background-color: var(--footer-bg-color);">
+        {% include 'includes/footer.html' %}
+    </footer>
+
+    <!-- Кнопка "Наверх" -->
+    <div x-data="{ showScrollTop: false }"
+         x-init="window.addEventListener('scroll', () => { showScrollTop = window.scrollY > 300 })"
+         class="fixed bottom-8 right-8 z-50">
+        <button x-show="showScrollTop"
+                @click="window.scrollTo({ top: 0, behavior: 'smooth' })"
+                class="bg-accent hover:bg-primary text-white p-3 rounded-full shadow-lg transition-all duration-300 transform hover:scale-110"
+                style="display: none;"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 transform scale-90"
+                x-transition:enter-end="opacity-100 transform scale-100"
+                x-transition:leave="transition ease-in duration-300"
+                x-transition:leave-start="opacity-100 transform scale-100"
+                x-transition:leave-end="opacity-0 transform scale-90">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+            </svg>
+        </button>
+    </div>
 
     {% block extra_js %}{% endblock %}
 </body>
@@ -881,9 +1097,9 @@ def promotions(request):
                     {{ site_settings.site_tagline|default:'Лучшие товары по доступным ценам' }}
                 </p>
                 <a href="{% url 'mybiz_core:product_list' %}"
-                   class="inline-block bg-accent text-white px-8 py-3 rounded-lg font-semibold hover:bg-accent-dark transition duration-300">
-                    Смотреть товары
-                </a>
+   class="inline-block btn-primary font-semibold hover:bg-primary transition duration-300">
+    Смотреть товары
+</a>
             </div>
             <div class="md:w-1/2">
                 {% if site_settings.hero_image %}
@@ -1005,9 +1221,9 @@ def promotions(request):
 
         <div class="text-center mt-10">
             <a href="{% url 'mybiz_core:product_list' %}"
-               class="inline-block bg-gray-800 text-white px-8 py-3 rounded-lg font-medium hover:bg-gray-900 transition duration-300">
-                Все товары
-            </a>
+   class="inline-block btn-primary font-medium hover:bg-primary transition duration-300">
+    Все товары
+</a>
         </div>
         {% else %}
         <div class="text-center py-12">
@@ -1212,7 +1428,7 @@ function addToCart(productId) {
                     </button>
 
                     <p class="text-gray-500 text-sm mt-3">
-                        Показано {{ products|length }} из {{ products.paginator.count }} товаров
+                        Показано <span x-text="loadedCount">{{ products|length }}</span> из {{ products.paginator.count }} товаров
                         <span x-show="!hasNext" x-cloak class="text-green-600 font-medium ml-2">• Все товары загружены</span>
                     </p>
                 </div>
@@ -1249,6 +1465,7 @@ document.addEventListener('alpine:init', () => {
         nextPage: {% if products.has_next %}{{ products.next_page_number }}{% else %}null{% endif %},
         hasNext: {{ products.has_next|yesno:"true,false" }},
         categorySlug: '',
+        loadedCount: {{ products|length }}, // Начальное количество загруженных товаров
 
         init(categorySlug) {
             this.categorySlug = categorySlug;
@@ -1274,6 +1491,12 @@ document.addEventListener('alpine:init', () => {
                 if (data.html) {
                     const productGrid = document.getElementById('product-grid');
                     productGrid.insertAdjacentHTML('beforeend', data.html);
+
+                    // Обновляем счетчик загруженных товаров
+                    const newItems = document.createElement('div');
+                    newItems.innerHTML = data.html;
+                    const itemCount = newItems.querySelectorAll('.bg-white.rounded-lg').length;
+                    this.loadedCount += itemCount;
 
                     this.hasNext = data.has_next;
                     this.nextPage = data.next_page || null;
@@ -1657,7 +1880,7 @@ function addToCart(productId) {
 ОПИСАНИЕ: Шаблон хедера
 ================================================================================
 
-<header class="sticky top-0 z-50 bg-white/90 backdrop-blur-sm shadow-sm">
+<header class="bg-white/90 backdrop-blur-sm shadow-sm">
     <nav class="container mx-auto px-4 py-4">
         <div class="flex items-center justify-between">
             <!-- Logo -->
@@ -1667,16 +1890,16 @@ function addToCart(productId) {
                         <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.site_name }}" class="h-10 w-auto">
                     </a>
                 {% endif %}
-                <a href="/" class="text-2xl font-bold text-gradient">{{ site_settings.site_name }}</a>
+                <a href="/" class="text-2xl font-bold text-primary">{{ site_settings.site_name }}</a>
             </div>
 
             <!-- Navigation Menu -->
             <div class="hidden md:flex items-center space-x-8">
-                <a href="/" class="text-gray-700 hover:text-blue-600 font-medium transition">Главная</a>
+                <a href="/" class="text-gray-700 hover:text-primary font-medium transition">Главная</a>
 
                 <!-- Categories Dropdown -->
                 <div x-data="{ open: false }" class="relative">
-                    <button @click="open = !open" class="text-gray-700 hover:text-blue-600 font-medium flex items-center transition">
+                    <button @click="open = !open" class="text-gray-700 hover:text-primary font-medium flex items-center transition">
                         Категории
                         <svg class="w-4 h-4 ml-1" :class="{ 'transform rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -1688,7 +1911,7 @@ function addToCart(productId) {
                         {% for category in categories %}
                             {% if category.is_active %}
                                 <a href="{{ category.get_absolute_url }}"
-                                   class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition">
+                                   class="block px-4 py-2 text-gray-700 hover:bg-primary hover:text-white transition">
                                     {{ category.name }}
                                 </a>
                             {% endif %}
@@ -1696,7 +1919,13 @@ function addToCart(productId) {
                     </div>
                 </div>
 
-                <a href="#contact" class="text-gray-700 hover:text-blue-600 font-medium transition">Контакты</a>
+                <!-- SEO страницы для шапки -->
+                {% for page in header_pages %}
+                <a href="{% url 'pages:page_detail' page_slug=page.slug %}"
+                   class="text-gray-700 hover:text-primary font-medium transition">
+                    {{ page.title }}
+                </a>
+                {% endfor %}
             </div>
 
             <!-- Mobile Menu Button -->
@@ -1711,10 +1940,10 @@ function addToCart(productId) {
         <!-- Mobile Menu -->
         <div x-show="mobileMenuOpen" x-cloak class="md:hidden mt-4 pb-4">
             <div class="flex flex-col space-y-4">
-                <a href="/" class="text-gray-700 hover:text-blue-600 font-medium transition">Главная</a>
+                <a href="/" class="text-gray-700 hover:text-primary font-medium transition">Главная</a>
 
                 <div x-data="{ open: false }" class="relative">
-                    <button @click="open = !open" class="text-gray-700 hover:text-blue-600 font-medium flex items-center justify-between w-full">
+                    <button @click="open = !open" class="text-gray-700 hover:text-primary font-medium flex items-center justify-between w-full">
                         Категории
                         <svg class="w-4 h-4" :class="{ 'transform rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -1725,7 +1954,7 @@ function addToCart(productId) {
                         {% for category in categories %}
                             {% if category.is_active %}
                                 <a href="{{ category.get_absolute_url }}"
-                                   class="block py-2 text-gray-600 hover:text-blue-600 transition">
+                                   class="block py-2 text-gray-600 hover:text-primary transition">
                                     {{ category.name }}
                                 </a>
                             {% endif %}
@@ -1733,7 +1962,13 @@ function addToCart(productId) {
                     </div>
                 </div>
 
-                <a href="#contact" class="text-gray-700 hover:text-blue-600 font-medium transition">Контакты</a>
+                <!-- SEO страницы для мобильного меню -->
+                {% for page in header_pages %}
+                <a href="{% url 'pages:page_detail' page_slug=page.slug %}"
+                   class="text-gray-700 hover:text-primary font-medium transition">
+                    {{ page.title }}
+                </a>
+                {% endfor %}
             </div>
         </div>
     </nav>
@@ -1798,19 +2033,14 @@ function addToCart(productId) {
                 </div>
             </div>
 
-            <!-- Quick Links -->
+            <!-- Быстрые ссылки (без заголовка) -->
             <div>
-                <h4 class="text-xl font-bold mb-6">Быстрые ссылки</h4>
                 <ul class="space-y-3">
                     <li><a href="/" class="text-gray-400 hover:text-white transition">Главная</a></li>
                     <li><a href="{% url 'mybiz_core:product_list' %}" class="text-gray-400 hover:text-white transition">Товары</a></li>
-        <!-- Исправлено: теперь используется правильная переменная pages -->
-                    {% for page in pages %}
-                    <li><a href="{{ page.get_absolute_url }}" class="text-gray-400 hover:text-white transition">{{ page.title }}</a></li>
-                    {% endfor %}
-                    <li><a href="#contact" class="text-gray-400 hover:text-white transition">Контакты</a></li>
                 </ul>
             </div>
+
             <!-- Contact Info -->
             <div id="contact">
                 <h4 class="text-xl font-bold mb-6">Контакты</h4>
@@ -2481,114 +2711,81 @@ class Migration(migrations.Migration):
 
 
 ================================================================================
-ФАЙЛ: content/migrations/0001_initial.py
+ФАЙЛ: content/migrations/0003_alter_sitesettings_accent_color_and_more.py
 ОПИСАНИЕ: Последняя миграция для content
 ================================================================================
 
-# Generated by Django 5.2 on 2025-12-15 11:01
+# Generated by Django 5.2 on 2025-12-16 12:18
 
-import ckeditor.fields
 from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
 
-    initial = True
-
     dependencies = [
+        ('content', '0002_sitesettings_accent_color_and_more'),
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='Promotion',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=200, verbose_name='Заголовок')),
-                ('slug', models.SlugField(blank=True, max_length=200, unique=True, verbose_name='URL')),
-                ('image', models.ImageField(upload_to='promotions/', verbose_name='Изображение')),
-                ('description', ckeditor.fields.RichTextField(verbose_name='Описание')),
-                ('short_description', models.CharField(blank=True, max_length=300, verbose_name='Краткое описание')),
-                ('button_text', models.CharField(blank=True, max_length=50, verbose_name='Текст кнопки')),
-                ('button_url', models.CharField(blank=True, max_length=200, verbose_name='URL кнопки')),
-                ('is_active', models.BooleanField(default=True, verbose_name='Активна')),
-                ('start_date', models.DateField(blank=True, null=True, verbose_name='Дата начала')),
-                ('end_date', models.DateField(blank=True, null=True, verbose_name='Дата окончания')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Дата обновления')),
-            ],
-            options={
-                'verbose_name': 'Промо-акция',
-                'verbose_name_plural': 'Промо-акции',
-                'ordering': ['-created_at'],
-            },
+        migrations.AlterField(
+            model_name='sitesettings',
+            name='accent_color',
+            field=models.CharField(default='#10b981', help_text='Цвет для кнопок и важных элементов', max_length=7, verbose_name='Акцентный цвет (Accent)'),
         ),
-        migrations.CreateModel(
-            name='SiteSettings',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('site_name', models.CharField(default='MyBiz', max_length=100, verbose_name='Название сайта')),
-                ('site_tagline', models.CharField(blank=True, max_length=200, verbose_name='Слоган сайта')),
-                ('logo', models.ImageField(blank=True, null=True, upload_to='site/', verbose_name='Логотип')),
-                ('favicon', models.ImageField(blank=True, null=True, upload_to='site/', verbose_name='Фавикон')),
-                ('hero_image', models.ImageField(blank=True, null=True, upload_to='site/', verbose_name='Главное изображение')),
-                ('contact_email', models.EmailField(blank=True, max_length=254, verbose_name='Контактный email')),
-                ('contact_phone', models.CharField(blank=True, max_length=20, verbose_name='Контактный телефон')),
-                ('contact_address', models.TextField(blank=True, verbose_name='Контактный адрес')),
-                ('working_hours', models.CharField(blank=True, max_length=100, verbose_name='Время работы')),
-                ('facebook_url', models.URLField(blank=True, verbose_name='Facebook')),
-                ('instagram_url', models.URLField(blank=True, verbose_name='Instagram')),
-                ('twitter_url', models.URLField(blank=True, verbose_name='Twitter')),
-                ('meta_title', models.CharField(blank=True, max_length=200, verbose_name='Мета-заголовок')),
-                ('meta_description', models.TextField(blank=True, verbose_name='Мета-описание')),
-                ('meta_keywords', models.TextField(blank=True, verbose_name='Мета-ключевые слова')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Дата обновления')),
-            ],
-            options={
-                'verbose_name': 'Настройки сайта',
-                'verbose_name_plural': 'Настройки сайта',
-            },
+        migrations.AlterField(
+            model_name='sitesettings',
+            name='background_color',
+            field=models.CharField(default='#f9fafb', help_text='Фоновый цвет сайта', max_length=7, verbose_name='Цвет фона'),
+        ),
+        migrations.AlterField(
+            model_name='sitesettings',
+            name='footer_bg_color',
+            field=models.CharField(default='#111827', help_text='Фон нижней части сайта', max_length=7, verbose_name='Фон подвала'),
+        ),
+        migrations.AlterField(
+            model_name='sitesettings',
+            name='header_bg_color',
+            field=models.CharField(default='#ffffff', help_text='Фон верхней части сайта', max_length=7, verbose_name='Фон шапки'),
+        ),
+        migrations.AlterField(
+            model_name='sitesettings',
+            name='primary_color',
+            field=models.CharField(default='#3b82f6', help_text='Основной цвет бренда', max_length=7, verbose_name='Основной цвет (Primary)'),
+        ),
+        migrations.AlterField(
+            model_name='sitesettings',
+            name='secondary_color',
+            field=models.CharField(default='#8b5cf6', help_text='Дополнительный цвет', max_length=7, verbose_name='Вторичный цвет (Secondary)'),
+        ),
+        migrations.AlterField(
+            model_name='sitesettings',
+            name='text_color',
+            field=models.CharField(default='#1f2937', help_text='Основной цвет текста', max_length=7, verbose_name='Цвет текста'),
         ),
     ]
 
 
 ================================================================================
-ФАЙЛ: pages/migrations/0001_initial.py
+ФАЙЛ: pages/migrations/0003_page_show_in_header.py
 ОПИСАНИЕ: Последняя миграция для pages
 ================================================================================
 
-# Generated by Django 5.2 on 2025-12-15 11:02
+# Generated by Django 5.2 on 2025-12-16 11:05
 
-import ckeditor.fields
 from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
 
-    initial = True
-
     dependencies = [
+        ('pages', '0002_page_meta_keywords'),
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='Page',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=200, verbose_name='Заголовок')),
-                ('slug', models.SlugField(max_length=200, unique=True, verbose_name='URL')),
-                ('content', ckeditor.fields.RichTextField(blank=True, verbose_name='Содержание')),
-                ('excerpt', models.TextField(blank=True, verbose_name='Краткое описание')),
-                ('meta_title', models.CharField(blank=True, max_length=200, verbose_name='Мета-заголовок')),
-                ('meta_description', models.TextField(blank=True, verbose_name='Мета-описание')),
-                ('is_active', models.BooleanField(default=True, verbose_name='Активно')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Создано')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Обновлено')),
-            ],
-            options={
-                'verbose_name': 'SEO-страница',
-                'verbose_name_plural': 'SEO-страницы',
-                'ordering': ['title'],
-            },
+        migrations.AddField(
+            model_name='page',
+            name='show_in_header',
+            field=models.BooleanField(default=False, verbose_name='Показывать в шапке'),
         ),
     ]
 
@@ -3285,9 +3482,20 @@ class URLTests(TestCase):
 ./.git/logs/HEAD
 ./.git/logs/refs/heads/main
 ./.git/logs/refs/remotes/origin/main
+./.git/objects/01/f93d630ec489e15e14838ab6db96efaf270023
+./.git/objects/05/2f787ef6f08c5a40c6b75938aefd25ad42f4e6
+./.git/objects/06/0ef14e3bb66cbb32db9eac744120982539698a
 ./.git/objects/07/693b0e75aaf324a21df56b23060ccc6874b355
+./.git/objects/08/a7fcc9dce0ac6826a901573532a1998d759d1a
+./.git/objects/09/cc884091f0c91ef8681bb0756efbef505a0a9f
+./.git/objects/0a/d4ab22c803a4d049da7bd7639a89d3a62b08ce
 ./.git/objects/0b/2858cf6cb519f77f0c6dfd9410fe935e902ef9
+./.git/objects/0b/ac7b8f8ce831dc28c0896a9b38bf710e3cfed2
+./.git/objects/10/0a5bd2c3b7d3af3ff9ff7c2a9bf678c894ba56
+./.git/objects/10/f03a1374df16437b99583bbcd5e8e96845e134
+./.git/objects/10/fa7260aa2aa083d80fbb60323ff16b80c7cd17
 ./.git/objects/12/1f1aba1c9b2b25e8915f8c4f1ee4901da074f3
+./.git/objects/17/60464731393d6e72572fa9c635a9df5a052bac
 ./.git/objects/19/2ce9b4a49390ecdebc6e7c7e8a1c4c1b098a54
 ./.git/objects/25/96fd7af1526773d97057009d9c51c98bdd73e7
 ./.git/objects/27/3d1694a0511e2460ae1b00204b63965d3f5fbb
@@ -3295,24 +3503,13 @@ class URLTests(TestCase):
 ./.git/objects/2f/89e486bac225c2dbb7e701e79bca5325fa3ffd
 ./.git/objects/30/717ffaf4d4b71bf240db1e2c8444a90aaa1601
 ./.git/objects/30/a17a8ac47202d313306b9d6e769f54cb47da32
+./.git/objects/32/020326f7c34c6500ebe61542eb39c46a287447
+./.git/objects/32/6b8d0904b65256bb93c72720654a932001321a
 ./.git/objects/34/ec84d73daa38aa970d4fe91ac8ea46abd0da65
+./.git/objects/3e/22da80038c8fc2a61f06ffdcfeca79021f888e
 ./.git/objects/3e/6fac18a7902e032804a9619106f55f1bc3da65
 ./.git/objects/3f/25399bae257d5cd6b2a0588b5d5f482c8d0773
-./.git/objects/49/f3d173dbd5d644ad448c24486a62dc0fcb6b1f
-./.git/objects/4d/03164965b127b03c53fc58a760d327ac9d027e
-./.git/objects/50/55327d58107ed707a60a24b48d0346fce08752
-./.git/objects/54/4cd2545f0fd63d4a6d8ca266e681834ce333c7
-./.git/objects/57/8107cf7a76fc70a0609fa2b9fec4ce4885d49a
-./.git/objects/5a/768f27f27a5bafafb0d2c22184cef9eb3103b7
-./.git/objects/5d/42fb22e1c45d4011d1ac8c7eaec59f7e175fa0
-./.git/objects/62/64a380d0e9a3baec6994864bb6a811b0bbea2b
-./.git/objects/67/231acd2dc94184651799955af0c64b350dbd0c
-./.git/objects/76/46de1b26d65e502143cd7980ae1b1275e64945
-./.git/objects/79/b1391b4faee2e0c1bc833536528104e97aa5b7
-./.git/objects/7a/58fe4c4ea93e2cb714f896575d77f3f5e9c57a
-./.git/objects/7c/e503c2dd97ba78597f6ff6e4393132753573f6
-./.git/objects/83/42ea658925a6ec8b6fbac038478170322324da
-./.git/objects/87/057f05fedaeeca37708c3d0dada4bd670962cb
+./.git/objects/45/0830ea683a2c0e2169147b4b87a4f4a974c942
 
 === ИНФОРМАЦИЯ О СРЕДЕ ===
 

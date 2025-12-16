@@ -1,0 +1,22 @@
+{% load static %}
+<div class="color-picker-widget">
+    <div class="color-picker-container">
+        <input type="{{ widget.type }}"
+               name="{{ widget.name }}"
+               id="id_{{ widget.name }}"
+               class="color-picker-input"
+               value="{{ widget.value|default:'#3b82f6' }}"
+               style="width: 40px; height: 40px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;">
+
+        <div class="color-picker-text">
+            <input type="text"
+                   class="color-hex-input"
+                   value="{{ widget.value|default:'#3b82f6' }}"
+                   style="width: 120px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-left: 10px;"
+                   maxlength="7">
+            <div class="color-preview"
+                 style="display: inline-block; width: 30px; height: 30px; background-color: {{ widget.value|default:'#3b82f6' }};
+                        border: 1px solid #ddd; border-radius: 4px; margin-left: 10px; vertical-align: middle;"></div>
+        </div>
+    </div>
+</div>
