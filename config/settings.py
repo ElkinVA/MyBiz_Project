@@ -72,6 +72,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'content.context_processors.site_settings',
                 'content.context_processors.promotions',
+                'content.context_processors.header_pages',  # ДОБАВИЛИ
                 'mybiz_core.context_processors.categories',
             ],
         },

@@ -15,19 +15,22 @@ class PageForm(forms.ModelForm):
 @admin.register(Page)
 class PageAdmin(admin.ModelAdmin):
     form = PageForm
-    list_display = ('title', 'slug', 'is_active', 'created_at')
-    list_filter = ('is_active', 'created_at')
+    list_display = ('title', 'slug', 'is_active', 'show_in_header', 'created_at')  # Добавили show_in_header
+    list_filter = ('is_active', 'show_in_header', 'created_at')  # Добавили фильтр
     search_fields = ('title', 'content', 'meta_description')
     prepopulated_fields = {'slug': ('title',)}
     fieldsets = (
         ('Основная информация', {
-            'fields': ('title', 'slug', 'content')
+            'fields': ('title', 'slug', 'content', 'excerpt')
         }),
         ('SEO', {
             'fields': ('meta_title', 'meta_description', 'meta_keywords')
         }),
+        ('Отображение', {
+            'fields': ('is_active', 'show_in_header')  # Добавили show_in_header
+        }),
         ('Дополнительно', {
-            'fields': ('is_active', 'created_at', 'updated_at')
+            'fields': ('created_at', 'updated_at')
         }),
     )
 

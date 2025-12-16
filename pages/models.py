@@ -9,11 +9,17 @@ class Page(models.Model):
     excerpt = models.TextField('Краткое описание', blank=True)
     meta_title = models.CharField('Мета-заголовок', max_length=200, blank=True)
     meta_description = models.TextField('Мета-описание', blank=True)
-    meta_keywords = models.TextField('Мета-ключевые слова', blank=True)  # ДОБАВЛЕНО
+    meta_keywords = models.TextField('Мета-ключевые слова', blank=True)
     is_active = models.BooleanField('Активно', default=True)
+    show_in_header = models.BooleanField('Показывать в шапке', default=False)  # НОВОЕ ПОЛЕ
     created_at = models.DateTimeField('Создано', auto_now_add=True)
     updated_at = models.DateTimeField('Обновлено', auto_now=True)
-    
+
+    @classmethod
+    def get_header_pages(cls):
+        """Возвращает страницы для отображения в шапке"""
+        return cls.objects.filter(is_active=True, show_in_header=True).order_by('title')
+
     @classmethod
     def get_footer_pages(cls):
         """Возвращает страницы для отображения в футере"""
