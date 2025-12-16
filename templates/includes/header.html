@@ -1,0 +1,91 @@
+<header class="sticky top-0 z-50 bg-white/90 backdrop-blur-sm shadow-sm">
+    <nav class="container mx-auto px-4 py-4">
+        <div class="flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center space-x-3">
+                {% if site_settings.logo %}
+                    <a href="/" class="flex items-center">
+                        <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.site_name }}" class="h-10 w-auto">
+                    </a>
+                {% endif %}
+                <a href="/" class="text-2xl font-bold text-gradient">{{ site_settings.site_name }}</a>
+            </div>
+
+            <!-- Navigation Menu -->
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="/" class="text-gray-700 hover:text-blue-600 font-medium transition">Главная</a>
+
+                <!-- Categories Dropdown -->
+                <div x-data="{ open: false }" class="relative">
+                    <button @click="open = !open" class="text-gray-700 hover:text-blue-600 font-medium flex items-center transition">
+                        Категории
+                        <svg class="w-4 h-4 ml-1" :class="{ 'transform rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+
+                    <div x-show="open" @click.away="open = false"
+                         class="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-10">
+                        {% for category in categories %}
+                            {% if category.is_active %}
+                                <a href="{{ category.get_absolute_url }}"
+                                   class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition">
+                                    {{ category.name }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <a href="#contact" class="text-gray-700 hover:text-blue-600 font-medium transition">Контакты</a>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-gray-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          :d="mobileMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div x-show="mobileMenuOpen" x-cloak class="md:hidden mt-4 pb-4">
+            <div class="flex flex-col space-y-4">
+                <a href="/" class="text-gray-700 hover:text-blue-600 font-medium transition">Главная</a>
+
+                <div x-data="{ open: false }" class="relative">
+                    <button @click="open = !open" class="text-gray-700 hover:text-blue-600 font-medium flex items-center justify-between w-full">
+                        Категории
+                        <svg class="w-4 h-4" :class="{ 'transform rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+
+                    <div x-show="open" class="mt-2 ml-4 space-y-2">
+                        {% for category in categories %}
+                            {% if category.is_active %}
+                                <a href="{{ category.get_absolute_url }}"
+                                   class="block py-2 text-gray-600 hover:text-blue-600 transition">
+                                    {{ category.name }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <a href="#contact" class="text-gray-700 hover:text-blue-600 font-medium transition">Контакты</a>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<script>
+    // Инициализация Alpine.js для хедера
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('header', () => ({
+            mobileMenuOpen: false,
+            categoriesOpen: false
+        }))
+    })
+</script>

@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if category %}{{ category.name }} - {% endif %}Товары - {{ site_settings.site_name }}
+{% endblock %}
+
+{% block meta %}
+{% if category %}
+<meta name="description" content="{{ category.meta_description|default:category.description }}">
+{% else %}
+<meta name="description" content="Каталог товаров {{ site_settings.site_name }}">
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Хлебные крошки -->
+    <nav class="flex mb-6" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a href="{% url 'mybiz_core:home' %}" class="text-gray-700 hover:text-gray-900">
+                    Главная
+                </a>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    <a href="{% url 'mybiz_core:product_list' %}" class="ml-1 text-gray-700 hover:text-gray-900">
+                        Товары
+                    </a>
+                </div>
+            </li>
+            {% if category %}
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="ml-1 text-gray-400">{{ category.name }}</span>
+                </div>
+            </li>
+            {% endif %}
+        </ol>
+    </nav>
+
+    <!-- Заголовок и фильтры -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+        <h1 class="text-3xl font-bold mb-4 md:mb-0">
+            {% if category %}
+                {{ category.name }}
+            {% else %}
+                Все товары
+            {% endif %}
+            <span class="text-gray-500 text-lg ml-2">({{ products.paginator.count|default:0 }})</span>
+        </h1>
+
+        <div class="flex space-x-4">
+            <select class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent">
+                <option>Сортировать по</option>
+                <option value="price_asc">Цена (по возрастанию)</option>
+                <option value="price_desc">Цена (по убыванию)</option>
+                <option value="name_asc">Название (А-Я)</option>
+                <option value="name_desc">Название (Я-А)</option>
+                <option value="newest">Сначала новые</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Категории (для мобильной фильтрации) -->
+    <div class="mb-8 md:hidden">
+        <details class="border border-gray-300 rounded-lg">
+            <summary class="px-4 py-3 font-medium cursor-pointer">Категории</summary>
+            <div class="p-4 border-t">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="{% url 'mybiz_core:product_list' %}"
+                           class="block py-2 px-3 rounded {% if not category %}bg-gray-100{% endif %}">
+                            Все товары
+                        </a>
+                    </li>
+                    {% for cat in categories %}
+                    <li>
+                        <a href="{{ cat.get_absolute_url }}"
+                           class="block py-2 px-3 rounded {% if category and category.slug == cat.slug %}bg-gray-100{% endif %}">
+                            {{ cat.name }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="flex flex-col md:flex-row">
+        <!-- Сайдбар с категориями -->
+        <aside class="md:w-1/4 mb-8 md:mb-0 md:mr-8">
+            <div class="hidden md:block sticky top-4">
+                <h3 class="font-bold text-lg mb-4">Категории</h3>
+                <ul class="space-y-2">
+                    <li>
+                        <a href="{% url 'mybiz_core:product_list' %}"
+                           class="block py-2 px-3 rounded-lg hover:bg-gray-100 {% if not category %}bg-gray-100 font-medium{% endif %}">
+                            Все товары
+                        </a>
+                    </li>
+                    {% for cat in categories %}
+                    <li>
+                        <a href="{{ cat.get_absolute_url }}"
+                           class="block py-2 px-3 rounded-lg hover:bg-gray-100 {% if category and category.slug == cat.slug %}bg-gray-100 font-medium{% endif %}">
+                            {{ cat.name }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Сетка товаров -->
+        <div class="md:w-3/4">
+            {% if products %}
+            <!-- Alpine компонент для кнопки "Показать ещё" -->
+            <div x-data="productLoader"
+                 x-init="init('{{ category.slug|default:"all" }}')">
+
+                <!-- Сетка товаров -->
+                <div id="product-grid"
+                     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% include 'products/product_items.html' with products=products %}
+                </div>
+
+                <!-- Кнопка "Показать ещё" -->
+                {% if products.has_next %}
+                <div class="text-center mt-12">
+                    <button @click="loadMore()"
+        :disabled="loading"
+        class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center">
+                        <template x-if="!loading">
+                            <span class="flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                Показать ещё
+                            </span>
+                        </template>
+                        <template x-if="loading">
+                            <span class="flex items-center">
+                                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Загрузка...
+                            </span>
+                        </template>
+                    </button>
+
+                    <p class="text-gray-500 text-sm mt-3">
+                        Показано {{ products|length }} из {{ products.paginator.count }} товаров
+                        <span x-show="!hasNext" x-cloak class="text-green-600 font-medium ml-2">• Все товары загружены</span>
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+            <!-- Конец Alpine компонента -->
+
+            {% else %}
+            <div class="text-center py-16">
+                <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                </svg>
+                <h3 class="text-xl font-medium text-gray-900 mb-2">Товары не найдены</h3>
+                <p class="text-gray-500">
+                    {% if category %}
+                        В категории "{{ category.name }}" пока нет товаров.
+                    {% else %}
+                        В каталоге пока нет товаров.
+                    {% endif %}
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Alpine.js компонент для кнопки "Показать ещё"
+document.addEventListener('alpine:init', () => {
+    Alpine.data('productLoader', () => ({
+        loading: false,
+        nextPage: {% if products.has_next %}{{ products.next_page_number }}{% else %}null{% endif %},
+        hasNext: {{ products.has_next|yesno:"true,false" }},
+        categorySlug: '',
+
+        init(categorySlug) {
+            this.categorySlug = categorySlug;
+        },
+
+        async loadMore() {
+            if (this.loading || !this.hasNext || !this.nextPage) return;
+
+            this.loading = true;
+
+            try {
+                const url = `/products/load-more/?page=${this.nextPage}&category=${this.categorySlug}`;
+                const response = await fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (!response.ok) throw new Error('Ошибка сети');
+
+                const data = await response.json();
+
+                if (data.html) {
+                    const productGrid = document.getElementById('product-grid');
+                    productGrid.insertAdjacentHTML('beforeend', data.html);
+
+                    this.hasNext = data.has_next;
+                    this.nextPage = data.next_page || null;
+                }
+            } catch (error) {
+                console.error('Ошибка при загрузке товаров:', error);
+                alert('Произошла ошибка при загрузке товаров');
+            } finally {
+                this.loading = false;
+            }
+        }
+    }));
+});
+</script>
+
+<!-- Стиль для скрытия элементов до инициализации Alpine -->
+<style>
+    [x-cloak] { display: none !important; }
+</style>
+{% endblock %}

@@ -1,0 +1,63 @@
+=== Начало сбора файлов проекта MyBiz ===
+Tue Dec 16 09:40:59 MSK 2025
+
+Обработка: config/settings.py
+✓ Успешно добавлен
+Обработка: config/urls.py
+✓ Успешно добавлен
+Обработка: requirements.txt
+✓ Успешно добавлен
+Обработка: mybiz_core/models.py
+✓ Успешно добавлен
+Обработка: content/models.py
+✓ Успешно добавлен
+Обработка: pages/models.py
+✓ Успешно добавлен
+Обработка: mybiz_core/views.py
+✓ Успешно добавлен
+Обработка: pages/views.py
+✓ Успешно добавлен
+Обработка: mybiz_core/urls.py
+✓ Успешно добавлен
+Обработка: pages/urls.py
+✓ Успешно добавлен
+Обработка: mybiz_core/admin.py
+✓ Успешно добавлен
+Обработка: content/admin.py
+✓ Успешно добавлен
+Обработка: pages/admin.py
+✓ Успешно добавлен
+Обработка: mybiz_core/context_processors.py
+✓ Успешно добавлен
+Обработка: content/context_processors.py
+✓ Успешно добавлен
+Обработка: templates/base.html
+✓ Успешно добавлен
+Обработка: templates/home.html
+✓ Успешно добавлен
+Обработка: templates/products/product_list.html
+✓ Успешно добавлен
+Обработка: templates/products/product_detail.html
+✓ Успешно добавлен
+Обработка: templates/products/product_items.html
+✓ Успешно добавлен
+Обработка: templates/includes/header.html
+✓ Успешно добавлен
+Обработка: templates/includes/footer.html
+✓ Успешно добавлен
+Обработка: mybiz_core/management/commands/seed_data.py
+✓ Успешно добавлен
+Обработка: mybiz_core/migrations/0001_initial.py
+✓ Успешно добавлен
+Обработка: content/migrations/0001_initial.py
+✓ Успешно добавлен
+Обработка: pages/migrations/0001_initial.py
+✓ Успешно добавлен
+Обработка: mybiz_core/tests.py
+✓ Успешно добавлен
+
+=== Завершение сбора файлов ===
+Всего файлов обработано: 27
+Файлов найдено: 27
+Файлов не найдено: 0
+Итоговый файл: project_analysis.txt (3316 строк)

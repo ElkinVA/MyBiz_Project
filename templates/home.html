@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Главная - {{ site_settings.site_name }}{% endblock %}
+
+{% block meta %}
+<meta name="description" content="{{ site_settings.meta_description|default:'Добро пожаловать в наш интернет-магазин' }}">
+{% endblock %}
+
+{% block content %}
+<!-- Герой секция -->
+<section class="relative bg-gradient-to-r from-blue-50 to-gray-100 py-16 md:py-24">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-12 md:mb-0">
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                    {{ site_settings.site_name|default:'MyBiz' }}
+                </h1>
+                <p class="text-xl text-gray-600 mb-8">
+                    {{ site_settings.site_tagline|default:'Лучшие товары по доступным ценам' }}
+                </p>
+                <a href="{% url 'mybiz_core:product_list' %}"
+                   class="inline-block bg-accent text-white px-8 py-3 rounded-lg font-semibold hover:bg-accent-dark transition duration-300">
+                    Смотреть товары
+                </a>
+            </div>
+            <div class="md:w-1/2">
+                {% if site_settings.hero_image %}
+                <img src="{{ site_settings.hero_image.url }}"
+                     alt="{{ site_settings.site_name }}"
+                     class="rounded-lg shadow-xl w-full">
+                {% else %}
+                <div class="bg-gray-200 rounded-lg shadow-xl w-full h-64 md:h-96 flex items-center justify-center">
+                    <span class="text-gray-400 text-lg">Главное изображение</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Промо-акции -->
+{% if promotions %}
+<section class="py-12 md:py-16">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-8">Специальные предложения</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {% for promo in promotions %}
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300">
+                {% if promo.image %}
+                <img src="{{ promo.image.url }}" alt="{{ promo.title }}" class="w-full h-48 object-cover">
+                {% endif %}
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold mb-3">{{ promo.title }}</h3>
+                    <div class="prose prose-sm mb-4">
+                        {{ promo.description|safe|truncatewords:30 }}
+                    </div>
+                    {% if promo.button_url %}
+                    <a href="{{ promo.button_url }}" class="text-accent font-medium hover:text-accent-dark">
+                        {{ promo.button_text|default:'Подробнее →' }}
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Популярные товары -->
+<section class="py-12 md:py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-8">Популярные товары</h2>
+
+        {% if featured_products %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {% for product in featured_products %}
+            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300 group">
+                <a href="{{ product.get_absolute_url }}" class="block">
+                    <div class="relative overflow-hidden">
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}"
+                             alt="{{ product.name }}"
+                             class="w-full h-48 object-cover group-hover:scale-105 transition duration-300">
+                        {% else %}
+                        <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+                            <span class="text-gray-400">Нет изображения</span>
+                        </div>
+                        {% endif %}
+
+                        {% if product.is_new %}
+                        <span class="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
+                            NEW
+                        </span>
+                        {% endif %}
+
+                        {% if product.discount_price %}
+                        <span class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                            -{{ product.get_discount_percentage }}%
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-2 group-hover:text-accent transition">
+                            {{ product.name }}
+                        </h3>
+
+                        <div class="flex items-center mb-2">
+                            <span class="text-gray-600 text-sm">
+                                {{ product.category.name }}
+                            </span>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div>
+                                {% if product.discount_price %}
+                                <span class="text-xl font-bold text-accent">
+                                    {{ product.discount_price }} ₽
+                                </span>
+                                <span class="text-gray-400 line-through ml-2">
+                                    {{ product.price }} ₽
+                                </span>
+                                {% else %}
+                                <span class="text-xl font-bold text-gray-900">
+                                    {{ product.price }} ₽
+                                </span>
+                                {% endif %}
+                            </div>
+
+                            {% comment %} <button class="bg-gray-800 text-white p-2 rounded-full hover:bg-gray-900 transition"
+                                    onclick="event.preventDefault(); addToCart({{ product.id }})">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                            </button>  {% endcomment %}
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mt-10">
+            <a href="{% url 'mybiz_core:product_list' %}"
+               class="inline-block bg-gray-800 text-white px-8 py-3 rounded-lg font-medium hover:bg-gray-900 transition duration-300">
+                Все товары
+            </a>
+        </div>
+        {% else %}
+        <div class="text-center py-12">
+            <p class="text-gray-500 text-lg">Товары скоро появятся</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- SEO текстовый блок -->
+<section class="py-12 md:py-16">
+    <div class="container mx-auto px-4">
+        <div class="max-w-3xl mx-auto text-center">
+            <h2 class="text-3xl font-bold mb-6">Добро пожаловать в {{ site_settings.site_name }}</h2>
+            <div class="prose prose-lg mx-auto">
+                <p class="text-gray-600 mb-6">
+                    Мы предлагаем широкий ассортимент качественных товаров по доступным ценам.
+                    Наша команда стремится обеспечить лучший сервис для каждого клиента.
+                </p>
+                <p class="text-gray-600">
+                    Используйте удобную навигацию по категориям, чтобы найти нужный товар,
+                    или свяжитесь с нами для получения дополнительной информации.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function addToCart(productId) {
+    // Заглушка для функции добавления в корзину
+    alert('Товар добавлен в корзину!');
+    // В реальном проекте здесь будет AJAX-запрос
+}
+</script>
+{% endblock %}
