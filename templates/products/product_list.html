@@ -157,7 +157,7 @@
                     </button>
 
                     <p class="text-gray-500 text-sm mt-3">
-                        Показано {{ products|length }} из {{ products.paginator.count }} товаров
+                        Показано <span x-text="loadedCount">{{ products|length }}</span> из {{ products.paginator.count }} товаров
                         <span x-show="!hasNext" x-cloak class="text-green-600 font-medium ml-2">• Все товары загружены</span>
                     </p>
                 </div>
@@ -194,6 +194,7 @@ document.addEventListener('alpine:init', () => {
         nextPage: {% if products.has_next %}{{ products.next_page_number }}{% else %}null{% endif %},
         hasNext: {{ products.has_next|yesno:"true,false" }},
         categorySlug: '',
+        loadedCount: {{ products|length }}, // Начальное количество загруженных товаров
 
         init(categorySlug) {
             this.categorySlug = categorySlug;
@@ -219,6 +220,12 @@ document.addEventListener('alpine:init', () => {
                 if (data.html) {
                     const productGrid = document.getElementById('product-grid');
                     productGrid.insertAdjacentHTML('beforeend', data.html);
+
+                    // Обновляем счетчик загруженных товаров
+                    const newItems = document.createElement('div');
+                    newItems.innerHTML = data.html;
+                    const itemCount = newItems.querySelectorAll('.bg-white.rounded-lg').length;
+                    this.loadedCount += itemCount;
 
                     this.hasNext = data.has_next;
                     this.nextPage = data.next_page || null;

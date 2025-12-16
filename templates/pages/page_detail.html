@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ page.title }} - {{ site_settings.site_name }}{% endblock %}
+{% block title %}{{ page.meta_title|default:page.title }} - {{ site_settings.site_name }}{% endblock %}
 
 {% block meta %}
-<meta name="description" content="{{ page.meta_description|default:page.excerpt }}">
-{% if page.meta_title %}
-<meta property="og:title" content="{{ page.meta_title }}">
+<meta name="description" content="{{ page.meta_description }}">
+{% if page.meta_keywords %}
+<meta name="keywords" content="{{ page.meta_keywords }}">
 {% endif %}
 {% endblock %}
 
@@ -31,23 +31,26 @@
         </ol>
     </nav>
 
-    <article class="max-w-4xl mx-auto">
-        <header class="mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{{ page.title }}</h1>
-            {% if page.excerpt %}
-            <p class="text-lg text-gray-600">{{ page.excerpt }}</p>
-            {% endif %}
-        </header>
+    <!-- Контент страницы -->
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl md:text-4xl font-bold mb-6">{{ page.title }}</h1>
+
+        {% if page.excerpt %}
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-8">
+            <p class="text-gray-700 italic">{{ page.excerpt }}</p>
+        </div>
+        {% endif %}
 
         <div class="prose prose-lg max-w-none">
             {{ page.content|safe }}
         </div>
 
-        <footer class="mt-12 pt-8 border-t border-gray-200">
+        <!-- Мета-информация -->
+        <div class="mt-12 pt-8 border-t border-gray-200">
             <p class="text-gray-500 text-sm">
                 Обновлено: {{ page.updated_at|date:"d.m.Y" }}
             </p>
-        </footer>
-    </article>
+        </div>
+    </div>
 </div>
 {% endblock %}

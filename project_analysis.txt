@@ -1,5 +1,5 @@
 === СНИМОК ПРОЕКТА MYBIZ ===
-Дата создания: Tue Dec 16 09:40:59 MSK 2025
+Дата создания: Tue Dec 16 12:46:44 MSK 2025
 Для анализа AI-ассистентом
 
 === 1. КОНФИГУРАЦИОННЫЕ ФАЙЛЫ ===
@@ -161,6 +161,11 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 SILENCED_SYSTEM_CHECKS = ['ckeditor.W001']
 
 SLUG_UNICODE = True
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
 
 
 ================================================================================
@@ -757,9 +762,9 @@ def site_settings(request):
     footer_pages = Page.objects.filter(is_active=True)[:4]
     return {
         'site_settings': settings,
-        'footer_pages': footer_pages
+        'pages': footer_pages
     }
-    
+
 def site_settings(request):
     """Добавляет настройки сайта в контекст всех шаблонов"""
     settings = SiteSettings.load()
@@ -985,12 +990,12 @@ def promotions(request):
                                 {% endif %}
                             </div>
 
-                            <button class="bg-gray-800 text-white p-2 rounded-full hover:bg-gray-900 transition"
+                            {% comment %} <button class="bg-gray-800 text-white p-2 rounded-full hover:bg-gray-900 transition"
                                     onclick="event.preventDefault(); addToCart({{ product.id }})">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                                 </svg>
-                            </button> 
+                            </button>  {% endcomment %}
                         </div>
                     </div>
                 </a>
@@ -1795,17 +1800,17 @@ function addToCart(productId) {
 
             <!-- Quick Links -->
             <div>
-    <h4 class="text-xl font-bold mb-6">Быстрые ссылки</h4>
-    <ul class="space-y-3">
-        <li><a href="/" class="text-gray-400 hover:text-white transition">Главная</a></li>
-        <li><a href="{% url 'mybiz_core:product_list' %}" class="text-gray-400 hover:text-white transition">Товары</a></li>
-        <!-- ИСПРАВЛЕНО: Правильное получение страниц для футера -->
-        {% for page in pages %}
-        <li><a href="{{ page.get_absolute_url }}" class="text-gray-400 hover:text-white transition">{{ page.title }}</a></li>
-        {% endfor %}
-        <li><a href="#contact" class="text-gray-400 hover:text-white transition">Контакты</a></li>
-    </ul>
-</div>
+                <h4 class="text-xl font-bold mb-6">Быстрые ссылки</h4>
+                <ul class="space-y-3">
+                    <li><a href="/" class="text-gray-400 hover:text-white transition">Главная</a></li>
+                    <li><a href="{% url 'mybiz_core:product_list' %}" class="text-gray-400 hover:text-white transition">Товары</a></li>
+        <!-- Исправлено: теперь используется правильная переменная pages -->
+                    {% for page in pages %}
+                    <li><a href="{{ page.get_absolute_url }}" class="text-gray-400 hover:text-white transition">{{ page.title }}</a></li>
+                    {% endfor %}
+                    <li><a href="#contact" class="text-gray-400 hover:text-white transition">Контакты</a></li>
+                </ul>
+            </div>
             <!-- Contact Info -->
             <div id="contact">
                 <h4 class="text-xl font-bold mb-6">Контакты</h4>
@@ -3258,56 +3263,56 @@ class URLTests(TestCase):
 Директории проекта:
 
 Файлы проекта (первые 50):
-./.vscode/settings.json
-./collect_project.sh
-./collection_log.txt
-./config/__init__.py
-./config/__pycache__/__init__.cpython-310.pyc
-./config/__pycache__/settings.cpython-310.pyc
-./config/__pycache__/urls.cpython-310.pyc
-./config/__pycache__/wsgi.cpython-310.pyc
-./config/asgi.py
-./config/settings.py
-./config/urls.py
-./config/wsgi.py
-./content/__init__.py
-./content/__pycache__/__init__.cpython-310.pyc
-./content/__pycache__/admin.cpython-310.pyc
-./content/__pycache__/apps.cpython-310.pyc
-./content/__pycache__/context_processors.cpython-310.pyc
-./content/__pycache__/models.cpython-310.pyc
-./content/admin.py
-./content/apps.py
-./content/context_processors.py
-./content/migrations/0001_initial.py
-./content/migrations/__init__.py
-./content/migrations/__pycache__/0001_initial.cpython-310.pyc
-./content/migrations/__pycache__/__init__.cpython-310.pyc
-./content/models.py
-./content/tests.py
-./content/views.py
-./db.sqlite3
-./manage.py
-./media/site/Без_имени-2.png
-./mybiz_core/__init__.py
-./mybiz_core/__pycache__/__init__.cpython-310.pyc
-./mybiz_core/__pycache__/admin.cpython-310.pyc
-./mybiz_core/__pycache__/apps.cpython-310.pyc
-./mybiz_core/__pycache__/context_processors.cpython-310.pyc
-./mybiz_core/__pycache__/models.cpython-310.pyc
-./mybiz_core/__pycache__/tests.cpython-310.pyc
-./mybiz_core/__pycache__/urls.cpython-310.pyc
-./mybiz_core/__pycache__/views.cpython-310.pyc
-./mybiz_core/admin.py
-./mybiz_core/apps.py
-./mybiz_core/context_processors.py
-./mybiz_core/management/commands/__pycache__/seed_data.cpython-310.pyc
-./mybiz_core/management/commands/seed_data.py
-./mybiz_core/migrations/0001_initial.py
-./mybiz_core/migrations/__init__.py
-./mybiz_core/migrations/__pycache__/0001_initial.cpython-310.pyc
-./mybiz_core/migrations/__pycache__/__init__.cpython-310.pyc
-./mybiz_core/models.py
+./.git/COMMIT_EDITMSG
+./.git/HEAD
+./.git/config
+./.git/description
+./.git/hooks/applypatch-msg.sample
+./.git/hooks/commit-msg.sample
+./.git/hooks/fsmonitor-watchman.sample
+./.git/hooks/post-update.sample
+./.git/hooks/pre-applypatch.sample
+./.git/hooks/pre-commit.sample
+./.git/hooks/pre-merge-commit.sample
+./.git/hooks/pre-push.sample
+./.git/hooks/pre-rebase.sample
+./.git/hooks/pre-receive.sample
+./.git/hooks/prepare-commit-msg.sample
+./.git/hooks/push-to-checkout.sample
+./.git/hooks/update.sample
+./.git/index
+./.git/info/exclude
+./.git/logs/HEAD
+./.git/logs/refs/heads/main
+./.git/logs/refs/remotes/origin/main
+./.git/objects/07/693b0e75aaf324a21df56b23060ccc6874b355
+./.git/objects/0b/2858cf6cb519f77f0c6dfd9410fe935e902ef9
+./.git/objects/12/1f1aba1c9b2b25e8915f8c4f1ee4901da074f3
+./.git/objects/19/2ce9b4a49390ecdebc6e7c7e8a1c4c1b098a54
+./.git/objects/25/96fd7af1526773d97057009d9c51c98bdd73e7
+./.git/objects/27/3d1694a0511e2460ae1b00204b63965d3f5fbb
+./.git/objects/29/14fad21513df1d95bf59f21f332961a39822bf
+./.git/objects/2f/89e486bac225c2dbb7e701e79bca5325fa3ffd
+./.git/objects/30/717ffaf4d4b71bf240db1e2c8444a90aaa1601
+./.git/objects/30/a17a8ac47202d313306b9d6e769f54cb47da32
+./.git/objects/34/ec84d73daa38aa970d4fe91ac8ea46abd0da65
+./.git/objects/3e/6fac18a7902e032804a9619106f55f1bc3da65
+./.git/objects/3f/25399bae257d5cd6b2a0588b5d5f482c8d0773
+./.git/objects/49/f3d173dbd5d644ad448c24486a62dc0fcb6b1f
+./.git/objects/4d/03164965b127b03c53fc58a760d327ac9d027e
+./.git/objects/50/55327d58107ed707a60a24b48d0346fce08752
+./.git/objects/54/4cd2545f0fd63d4a6d8ca266e681834ce333c7
+./.git/objects/57/8107cf7a76fc70a0609fa2b9fec4ce4885d49a
+./.git/objects/5a/768f27f27a5bafafb0d2c22184cef9eb3103b7
+./.git/objects/5d/42fb22e1c45d4011d1ac8c7eaec59f7e175fa0
+./.git/objects/62/64a380d0e9a3baec6994864bb6a811b0bbea2b
+./.git/objects/67/231acd2dc94184651799955af0c64b350dbd0c
+./.git/objects/76/46de1b26d65e502143cd7980ae1b1275e64945
+./.git/objects/79/b1391b4faee2e0c1bc833536528104e97aa5b7
+./.git/objects/7a/58fe4c4ea93e2cb714f896575d77f3f5e9c57a
+./.git/objects/7c/e503c2dd97ba78597f6ff6e4393132753573f6
+./.git/objects/83/42ea658925a6ec8b6fbac038478170322324da
+./.git/objects/87/057f05fedaeeca37708c3d0dada4bd670962cb
 
 === ИНФОРМАЦИЯ О СРЕДЕ ===
 
