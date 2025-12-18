@@ -1,3 +1,4 @@
+# mybiz_core/admin.py
 from django.contrib import admin
 from django.utils.html import format_html
 from .models import Category, Product
@@ -18,18 +19,62 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ('is_active', 'category', 'created_at')
     search_fields = ('name', 'description', 'category__name')
     prepopulated_fields = {'slug': ('name',)}
-    readonly_fields = ('image_preview',)
-    fieldsets = (
-        ('Основная информация', {
-            'fields': ('name', 'slug', 'category', 'description', 'price')
-        }),
-        ('Изображения', {
-            'fields': ('image', 'image_preview')
-        }),
-        ('Дополнительно', {
-            'fields': ('is_active', 'created_at', 'updated_at')
-        }),
-    )
+    readonly_fields = ('image_preview', 'created_at', 'updated_at')
+
+    def get_fieldsets(self, request, obj=None):
+        """Определяем разные fieldsets для создания и редактирования"""
+        if obj:  # Редактирование существующего товара
+            fieldsets = (
+                ('Основная информация', {
+                    'fields': ('name', 'slug', 'category', 'description', 'price', 'discount_price')
+                }),
+                ('Изображения', {
+                    'fields': ('image', 'image_preview')
+                }),
+                ('Статус и наличие', {
+                    'fields': ('is_active', 'in_stock', 'is_new', 'is_featured')
+                }),
+                ('Дополнительная информация', {
+                    'fields': ('sku', 'brand', 'short_description', 'old_price', 'stock')
+                }),
+                ('Рейтинги', {
+                    'fields': ('rating', 'review_count')
+                }),
+                ('Системные поля (только чтение)', {
+                    'fields': ('created_at', 'updated_at'),
+                    'classes': ('collapse',)  # Сворачиваемый блок
+                }),
+            )
+        else:  # Создание нового товара
+            fieldsets = (
+                ('Основная информация', {
+                    'fields': ('name', 'slug', 'category', 'description', 'price', 'discount_price')
+                }),
+                ('Изображения', {
+                    'fields': ('image',)
+                }),
+                ('Статус и наличие', {
+                    'fields': ('is_active', 'in_stock', 'is_new', 'is_featured')
+                }),
+                ('Дополнительная информация', {
+                    'fields': ('sku', 'brand', 'short_description', 'old_price', 'stock')
+                }),
+                ('Рейтинги', {
+                    'fields': ('rating', 'review_count')
+                }),
+            )
+        return fieldsets
+
+    def get_readonly_fields(self, request, obj=None):
+        """Определяем поля только для чтения"""
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+
+        if obj:  # При редактировании
+            readonly_fields.append('created_at')
+            readonly_fields.append('updated_at')
+
+        readonly_fields.append('image_preview')
+        return readonly_fields
 
     def image_preview(self, obj):
         if obj.image:
@@ -37,10 +82,3 @@ class ProductAdmin(admin.ModelAdmin):
         return "Нет изображения"
 
     image_preview.short_description = 'Превью'
-
-    def get_readonly_fields(self, request, obj=None):
-        readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj:  # Если объект уже существует
-            readonly_fields.append('created_at')
-            readonly_fields.append('updated_at')
-        return readonly_fields

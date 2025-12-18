@@ -1,7 +1,13 @@
+# config/urls.py
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+
+# =========== НАСТРОЙКИ АДМИНКИ ===========
+admin.site.site_title = "Администрирование"
+admin.site.site_header = "Администрирование"
+admin.site.index_title = "Панель управления"
 
 urlpatterns = [
     path('admin/', admin.site.urls),

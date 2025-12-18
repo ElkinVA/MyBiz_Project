@@ -1,0 +1,16 @@
+<!-- templates/404.html -->
+{% extends 'base.html' %}
+
+{% block title %}Страница не найдена | {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-16 text-center">
+    <h1 class="text-4xl font-bold text-yellow-600 mb-4">404</h1>
+    <h2 class="text-2xl font-semibold mb-6">Страница не найдена</h2>
+    <p class="text-gray-600 mb-8">Запрашиваемая страница не существует или была перемещена.</p>
+    <div class="space-x-4">
+        <a href="{% url 'mybiz_core:home' %}" class="btn-primary inline-block">На главную</a>
+        <a href="{% url 'mybiz_core:product_list' %}" class="btn-primary inline-block bg-gray-600 hover:bg-gray-700">К товарам</a>
+    </div>
+</div>
+{% endblock %}

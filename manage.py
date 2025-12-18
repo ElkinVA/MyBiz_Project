@@ -3,6 +3,11 @@
 import os
 import sys
 
+try:
+    from copyright_notice import CopyrightProtection
+    CopyrightProtection.display_copyright()
+except ImportError:
+    pass
 
 def main():
     """Run administrative tasks."""

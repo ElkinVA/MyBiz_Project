@@ -131,40 +131,6 @@
                 {{ product.description|safe }}
             </div>
 
-            {% comment %} {% if product.in_stock %}
-            <div class="flex items-center space-x-4 mb-8">
-                <div class="flex items-center border border-gray-300 rounded-lg">
-                    <button class="px-4 py-2 text-gray-600 hover:text-gray-900" onclick="decreaseQuantity()">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
-                        </svg>
-                    </button>
-                    <input type="number"
-                           id="quantity"
-                           value="1"
-                           min="1"
-                           max="99"
-                           class="w-16 text-center border-0 focus:ring-0">
-                    <button class="px-4 py-2 text-gray-600 hover:text-gray-900" onclick="increaseQuantity()">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                        </svg>
-                    </button>
-                </div>
-
-                <button onclick="addToCart({{ product.id }})"
-                        class="flex-1 bg-accent text-white px-8 py-3 rounded-lg font-semibold hover:bg-accent-dark transition duration-300">
-                    Добавить в корзину
-                </button>
-
-                <button class="p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
-                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                    </svg>
-                </button>
-            </div>
-            {% endif %} {% endcomment %}
-
             <!-- Дополнительная информация -->
             <div class="border-t border-gray-200 pt-6">
                 <h3 class="font-bold text-lg mb-4">Детали товара</h3>
@@ -230,44 +196,4 @@
     </div>
     {% endif %}
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-{% comment %} function increaseQuantity() {
-    const input = document.getElementById('quantity');
-    let value = parseInt(input.value);
-    if (value < 99) {
-        input.value = value + 1;
-    }
-}
-
-function decreaseQuantity() {
-    const input = document.getElementById('quantity');
-    let value = parseInt(input.value);
-    if (value > 1) {
-        input.value = value - 1;
-    }
-}
-
-function addToCart(productId) {
-    const quantity = document.getElementById('quantity').value;
-
-    // Заглушка для функции добавления в корзину
-    alert(`Добавлено ${quantity} товар(ов) в корзину!`);
-
-    // В реальном проекте здесь будет AJAX-запрос
-    // fetch('/cart/add/', {
-    //     method: 'POST',
-    //     headers: {
-    //         'Content-Type': 'application/json',
-    //         'X-CSRFToken': getCookie('csrftoken')
-    //     },
-    //     body: JSON.stringify({
-    //         product_id: productId,
-    //         quantity: quantity
-    //     })
-    // })
-} {% endcomment %}
-</script>
 {% endblock %}

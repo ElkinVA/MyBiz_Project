@@ -1,10 +1,10 @@
+# content/admin.py
 from django.contrib import admin
 from django.utils.html import format_html
 from ckeditor.widgets import CKEditorWidget
 from django import forms
 from .models import Promotion, SiteSettings
-from .widgets import ColorPickerWidget  # Этот импорт должен работать
-
+from .widgets import ColorPickerWidget
 
 class PromotionForm(forms.ModelForm):
     description = forms.CharField(widget=CKEditorWidget())
@@ -77,7 +77,18 @@ class SiteSettingsAdmin(admin.ModelAdmin):
                 'fields': ('contact_email', 'contact_phone', 'contact_address', 'working_hours')
             }),
             ('Социальные сети', {
-                'fields': ('facebook_url', 'instagram_url', 'twitter_url')
+                'fields': (
+                    ('telegram_url', 'telegram_visible'),
+                    ('vk_url', 'vk_visible'),
+                    ('max_url', 'max_visible'),
+                    ('instagram_url', 'instagram_visible'),
+                ),
+                'description': '''
+                    <div style="background: #f5f5f5; padding: 10px; border-radius: 4px; margin-bottom: 10px; font-size: 13px;">
+                        <strong>🔗 Настройка социальных сетей:</strong><br>
+                        Для каждой соцсети укажите ссылку и включите/выключите отображение.
+                    </div>
+                '''
             }),
             ('SEO', {
                 'fields': ('meta_title', 'meta_description', 'meta_keywords')

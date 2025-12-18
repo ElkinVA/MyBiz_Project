@@ -1,0 +1,48 @@
+/* static/social/social.css - стили для социальных иконок */
+.social-icon {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+    transition: fill 0.3s ease;
+}
+
+.social-icon:hover {
+    transform: scale(1.1);
+    opacity: 0.9;
+}
+
+/* Убедимся что SVG принимает цвет */
+svg.social-icon {
+    fill: currentColor !important;
+}
+
+/* Специфичные стили для разных соцсетей */
+a:hover .social-icon {
+    fill: white !important;
+}
+
+/* Адаптация для разных тем */
+@media (prefers-color-scheme: dark) {
+    .social-icon {
+        fill: #d1d5db; /* серый для темной темы */
+    }
+}
+.flex.space-x-4 {
+    align-items: center;
+    min-height: 2rem; /* Гарантируем минимальную высоту */
+}
+
+/* Принудительное наследование цвета для SVG */
+footer a svg {
+    fill: currentColor;
+    flex-shrink: 0; /* Не даем SVG сжиматься в flex-контейнере */
+}
+
+/* Гарантируем что SVG имеет правильный размер */
+footer .w-6 {
+    width: 1.5rem !important;
+}
+
+footer .h-6 {
+    height: 1.5rem !important;
+}

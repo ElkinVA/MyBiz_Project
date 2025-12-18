@@ -4,7 +4,12 @@ from pages.models import Page
 def site_settings(request):
     """Добавляет настройки сайта в контекст всех шаблонов"""
     settings = SiteSettings.load()
-    return {'site_settings': settings}
+    # Добавляем видимые соцсети в контекст
+    social_links = settings.get_visible_social_links()
+    return {
+        'site_settings': settings,
+        'visible_social_links': social_links,
+    }
 
 def promotions(request):
     """Добавляет активные промо-акции в контекст"""

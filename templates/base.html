@@ -1,20 +1,24 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{{ site_settings.site_name }}{% endblock %}</title>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}{{ site_settings.site_name }}{% endblock %}</title>
 
-    <!-- Meta tags -->
-    {% block meta %}
+        <!-- Загружаем статические файлы -->
+        {% load static %}
+
+        <!-- Meta tags -->
+        {% block meta %}
         <meta name="description" content="{{ site_settings.meta_description }}">
         {% if site_settings.meta_keywords %}
         <meta name="keywords" content="{{ site_settings.meta_keywords }}">
         {% endif %}
-    {% endblock %}
+        {% endblock %}
 
-    <!-- Tailwind CSS CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <!-- Tailwind CSS CDN -->
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="{% static 'social/social.css' %}">
 
     <!-- Alpine.js CDN -->
     <script src="https://unpkg.com/alpinejs@3.13.5/dist/cdn.min.js" defer></script>

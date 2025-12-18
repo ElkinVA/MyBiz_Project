@@ -1,5 +1,5 @@
 === ПОЛНЫЙ СНИМОК ПРОЕКТА MYBIZ ===
-Дата создания: Tue Dec 16 16:06:42 MSK 2025
+Дата создания: Thu Dec 18 18:37:59 MSK 2025
 Полная рекурсивная коллекция всех файлов
 
 ================================================================================
@@ -39,12 +39,68 @@ Thumbs.db
 ФАЙЛ: ./.env.example
 ================================================================================
 
-[БИНАРНЫЙ ФАЙЛ - содержимое не показано]
+SECRET_KEY=your-secret-key-here
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
+DB_ENGINE=django.db.backends.sqlite3
+DB_NAME=db.sqlite3
+# Для PostgreSQL:
+# DB_ENGINE=django.db.backends.postgresql
+# DB_NAME=mydatabase
+# DB_USER=myuser
+# DB_PASSWORD=mypassword
+# DB_HOST=localhost
+# DB_PORT=5432
+
+
+================================================================================
+ФАЙЛ: ./README.md
+================================================================================
+
+# MyBiz Website Builder
+
+Простой конструктор сайтов-витрин на Django для не-программистов.
+
+## 🚀 Быстрый старт
+
+### Для Windows:
+1. Скачайте проект
+2. Запустите `start_project.bat`
+3. Следуйте инструкциям
+
+### Для Linux/Mac:
+1. Скачайте проект
+2. В терминале выполните:
+```bash
+chmod +x start_project.sh
+./start_project.sh
+
+
+================================================================================
+ФАЙЛ: ./templates/500.html
+================================================================================
+
+<!-- templates/500.html -->
+{% extends 'base.html' %}
+
+{% block title %}Ошибка сервера | {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-16 text-center">
+    <h1 class="text-4xl font-bold text-red-600 mb-4">500</h1>
+    <h2 class="text-2xl font-semibold mb-6">Внутренняя ошибка сервера</h2>
+    <p class="text-gray-600 mb-8">Произошла непредвиденная ошибка. Мы уже работаем над ее устранением.</p>
+    <a href="{% url 'mybiz_core:home' %}" class="btn-primary inline-block">На главную</a>
+</div>
+{% endblock %}
 
 
 ================================================================================
 ФАЙЛ: ./templates/includes/footer.html
 ================================================================================
+
+<!-- templates/includes/footer.html -->
+{% load social_tags %}
 
 <footer class="bg-gray-900 text-white">
     <div class="container mx-auto px-4 py-12">
@@ -63,29 +119,13 @@ Thumbs.db
 
                 <!-- Social Links -->
                 <div class="flex space-x-4">
-                    {% if site_settings.facebook_url %}
-                        <a href="{{ site_settings.facebook_url }}" target="_blank" class="text-gray-400 hover:text-white transition">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                            </svg>
+                    {% for social in site_settings.get_visible_social_links %}
+                        <a href="{{ social.url }}" target="_blank"
+                           class="text-gray-400 hover:text-white transition"
+                           title="{{ social.title }}">
+                            {% social_icon social.icon %}
                         </a>
-                    {% endif %}
-
-                    {% if site_settings.instagram_url %}
-                        <a href="{{ site_settings.instagram_url }}" target="_blank" class="text-gray-400 hover:text-white transition">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM5.838 12a6.162 6.162 0 1112.324 0 6.162 6.162 0 01-12.324 0zM12 16a4 4 0 110-8 4 4 0 010 8zm4.965-10.405a1.44 1.44 0 112.881.001 1.44 1.44 0 01-2.881-.001z"/>
-                            </svg>
-                        </a>
-                    {% endif %}
-
-                    {% if site_settings.twitter_url %}
-                        <a href="{{ site_settings.twitter_url }}" target="_blank" class="text-gray-400 hover:text-white transition">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.213c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
-                            </svg>
-                        </a>
-                    {% endif %}
+                    {% endfor %}
                 </div>
             </div>
 
@@ -97,7 +137,8 @@ Thumbs.db
                 </ul>
             </div>
 
-            <!-- Contact Info -->
+            <!-- Contact Info - Показываем только если есть хотя бы один контакт -->
+            {% if site_settings.contact_address or site_settings.contact_phone or site_settings.contact_email or site_settings.working_hours %}
             <div id="contact">
                 <h4 class="text-xl font-bold mb-6">Контакты</h4>
                 <ul class="space-y-4">
@@ -143,6 +184,7 @@ Thumbs.db
                     {% endif %}
                 </ul>
             </div>
+            {% endif %}
         </div>
 
         <!-- Copyright -->
@@ -157,6 +199,7 @@ Thumbs.db
 ФАЙЛ: ./templates/includes/header.html
 ================================================================================
 
+<!-- templates/includes/header.html -->
 <header class="bg-white/90 backdrop-blur-sm shadow-sm">
     <nav class="container mx-auto px-4 py-4">
         <div class="flex items-center justify-between">
@@ -263,10 +306,44 @@ Thumbs.db
 
 
 ================================================================================
-ФАЙЛ: ./templates/includes/navigation.html
+ФАЙЛ: ./templates/403.html
 ================================================================================
 
-[БИНАРНЫЙ ФАЙЛ - содержимое не показано]
+<!-- templates/403.html -->
+{% extends 'base.html' %}
+
+{% block title %}Доступ запрещен | {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-16 text-center">
+    <h1 class="text-4xl font-bold text-red-600 mb-4">403</h1>
+    <h2 class="text-2xl font-semibold mb-6">Доступ запрещен</h2>
+    <p class="text-gray-600 mb-8">У вас недостаточно прав для доступа к этой странице.</p>
+    <a href="{% url 'mybiz_core:home' %}" class="btn-primary inline-block">На главную</a>
+</div>
+{% endblock %}
+
+
+================================================================================
+ФАЙЛ: ./templates/404.html
+================================================================================
+
+<!-- templates/404.html -->
+{% extends 'base.html' %}
+
+{% block title %}Страница не найдена | {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-16 text-center">
+    <h1 class="text-4xl font-bold text-yellow-600 mb-4">404</h1>
+    <h2 class="text-2xl font-semibold mb-6">Страница не найдена</h2>
+    <p class="text-gray-600 mb-8">Запрашиваемая страница не существует или была перемещена.</p>
+    <div class="space-x-4">
+        <a href="{% url 'mybiz_core:home' %}" class="btn-primary inline-block">На главную</a>
+        <a href="{% url 'mybiz_core:product_list' %}" class="btn-primary inline-block bg-gray-600 hover:bg-gray-700">К товарам</a>
+    </div>
+</div>
+{% endblock %}
 
 
 ================================================================================
@@ -275,21 +352,25 @@ Thumbs.db
 
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{{ site_settings.site_name }}{% endblock %}</title>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}{{ site_settings.site_name }}{% endblock %}</title>
 
-    <!-- Meta tags -->
-    {% block meta %}
+        <!-- Загружаем статические файлы -->
+        {% load static %}
+
+        <!-- Meta tags -->
+        {% block meta %}
         <meta name="description" content="{{ site_settings.meta_description }}">
         {% if site_settings.meta_keywords %}
         <meta name="keywords" content="{{ site_settings.meta_keywords }}">
         {% endif %}
-    {% endblock %}
+        {% endblock %}
 
-    <!-- Tailwind CSS CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <!-- Tailwind CSS CDN -->
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="{% static 'social/social.css' %}">
 
     <!-- Alpine.js CDN -->
     <script src="https://unpkg.com/alpinejs@3.13.5/dist/cdn.min.js" defer></script>
@@ -628,12 +709,7 @@ Thumbs.db
                                 {% endif %}
                             </div>
 
-                            {% comment %} <button class="bg-gray-800 text-white p-2 rounded-full hover:bg-gray-900 transition"
-                                    onclick="event.preventDefault(); addToCart({{ product.id }})">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                </svg>
-                            </button>  {% endcomment %}
+                            <!-- Убрана кнопка добавления в корзину -->
                         </div>
                     </div>
                 </a>
@@ -673,16 +749,6 @@ Thumbs.db
         </div>
     </div>
 </section>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-function addToCart(productId) {
-    // Заглушка для функции добавления в корзину
-    alert('Товар добавлен в корзину!');
-    // В реальном проекте здесь будет AJAX-запрос
-}
-</script>
 {% endblock %}
 
 
@@ -747,13 +813,7 @@ function addToCart(productId) {
                     </span>
                     {% endif %}
                 </div>
-
-                {% comment %} <button class="bg-gray-800 text-white p-2 rounded-full hover:bg-gray-900 transition"
-                        onclick="event.preventDefault(); addToCart({{ product.id }})">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                    </svg>
-                </button> {% endcomment %}
+                <!-- Кнопка добавления в корзину УДАЛЕНА -->
             </div>
         </div>
     </a>
@@ -765,254 +825,68 @@ function addToCart(productId) {
 ФАЙЛ: ./templates/products/product_list.html
 ================================================================================
 
-{% extends 'base.html' %}
-{% load static %}
-
-{% block title %}
-    {% if category %}{{ category.name }} - {% endif %}Товары - {{ site_settings.site_name }}
-{% endblock %}
-
-{% block meta %}
-{% if category %}
-<meta name="description" content="{{ category.meta_description|default:category.description }}">
-{% else %}
-<meta name="description" content="Каталог товаров {{ site_settings.site_name }}">
-{% endif %}
-{% endblock %}
-
-{% block content %}
-<div class="container mx-auto px-4 py-8">
-    <!-- Хлебные крошки -->
-    <nav class="flex mb-6" aria-label="Breadcrumb">
-        <ol class="inline-flex items-center space-x-1 md:space-x-3">
-            <li class="inline-flex items-center">
-                <a href="{% url 'mybiz_core:home' %}" class="text-gray-700 hover:text-gray-900">
-                    Главная
-                </a>
-            </li>
-            <li>
-                <div class="flex items-center">
-                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-                    </svg>
-                    <a href="{% url 'mybiz_core:product_list' %}" class="ml-1 text-gray-700 hover:text-gray-900">
-                        Товары
-                    </a>
-                </div>
-            </li>
-            {% if category %}
-            <li aria-current="page">
-                <div class="flex items-center">
-                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-                    </svg>
-                    <span class="ml-1 text-gray-400">{{ category.name }}</span>
-                </div>
-            </li>
-            {% endif %}
-        </ol>
-    </nav>
-
-    <!-- Заголовок и фильтры -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-        <h1 class="text-3xl font-bold mb-4 md:mb-0">
-            {% if category %}
-                {{ category.name }}
+{% for product in products %}
+<div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300 group">
+    <a href="{{ product.get_absolute_url }}" class="block">
+        <div class="relative overflow-hidden">
+            {% if product.image %}
+            <img src="{{ product.image.url }}"
+                 alt="{{ product.name }}"
+                 class="w-full h-48 object-cover group-hover:scale-105 transition duration-300">
             {% else %}
-                Все товары
+            <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+                <span class="text-gray-400">Нет изображения</span>
+            </div>
             {% endif %}
-            <span class="text-gray-500 text-lg ml-2">({{ products.paginator.count|default:0 }})</span>
-        </h1>
 
-        <div class="flex space-x-4">
-            <select class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent">
-                <option>Сортировать по</option>
-                <option value="price_asc">Цена (по возрастанию)</option>
-                <option value="price_desc">Цена (по убыванию)</option>
-                <option value="name_asc">Название (А-Я)</option>
-                <option value="name_desc">Название (Я-А)</option>
-                <option value="newest">Сначала новые</option>
-            </select>
+            {% if product.is_new %}
+            <span class="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
+                NEW
+            </span>
+            {% endif %}
+
+            {% if product.discount_price %}
+            <span class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                -{{ product.get_discount_percentage }}%
+            </span>
+            {% endif %}
         </div>
-    </div>
 
-    <!-- Категории (для мобильной фильтрации) -->
-    <div class="mb-8 md:hidden">
-        <details class="border border-gray-300 rounded-lg">
-            <summary class="px-4 py-3 font-medium cursor-pointer">Категории</summary>
-            <div class="p-4 border-t">
-                <ul class="space-y-2">
-                    <li>
-                        <a href="{% url 'mybiz_core:product_list' %}"
-                           class="block py-2 px-3 rounded {% if not category %}bg-gray-100{% endif %}">
-                            Все товары
-                        </a>
-                    </li>
-                    {% for cat in categories %}
-                    <li>
-                        <a href="{{ cat.get_absolute_url }}"
-                           class="block py-2 px-3 rounded {% if category and category.slug == cat.slug %}bg-gray-100{% endif %}">
-                            {{ cat.name }}
-                        </a>
-                    </li>
-                    {% endfor %}
-                </ul>
+        <div class="p-4">
+            <h3 class="font-semibold text-lg mb-2 group-hover:text-accent transition">
+                {{ product.name }}
+            </h3>
+
+            <div class="flex items-center mb-2">
+                <span class="text-gray-600 text-sm">
+                    {{ product.category.name }}
+                </span>
             </div>
-        </details>
-    </div>
 
-    <div class="flex flex-col md:flex-row">
-        <!-- Сайдбар с категориями -->
-        <aside class="md:w-1/4 mb-8 md:mb-0 md:mr-8">
-            <div class="hidden md:block sticky top-4">
-                <h3 class="font-bold text-lg mb-4">Категории</h3>
-                <ul class="space-y-2">
-                    <li>
-                        <a href="{% url 'mybiz_core:product_list' %}"
-                           class="block py-2 px-3 rounded-lg hover:bg-gray-100 {% if not category %}bg-gray-100 font-medium{% endif %}">
-                            Все товары
-                        </a>
-                    </li>
-                    {% for cat in categories %}
-                    <li>
-                        <a href="{{ cat.get_absolute_url }}"
-                           class="block py-2 px-3 rounded-lg hover:bg-gray-100 {% if category and category.slug == cat.slug %}bg-gray-100 font-medium{% endif %}">
-                            {{ cat.name }}
-                        </a>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </aside>
+            <p class="text-gray-500 text-sm mb-3 line-clamp-2">
+                {{ product.short_description|default:'' }}
+            </p>
 
-        <!-- Сетка товаров -->
-        <div class="md:w-3/4">
-            {% if products %}
-            <!-- Alpine компонент для кнопки "Показать ещё" -->
-            <div x-data="productLoader"
-                 x-init="init('{{ category.slug|default:"all" }}')">
-
-                <!-- Сетка товаров -->
-                <div id="product-grid"
-                     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {% include 'products/product_items.html' with products=products %}
-                </div>
-
-                <!-- Кнопка "Показать ещё" -->
-                {% if products.has_next %}
-                <div class="text-center mt-12">
-                    <button @click="loadMore()"
-        :disabled="loading"
-        class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center">
-                        <template x-if="!loading">
-                            <span class="flex items-center">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                </svg>
-                                Показать ещё
-                            </span>
-                        </template>
-                        <template x-if="loading">
-                            <span class="flex items-center">
-                                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                Загрузка...
-                            </span>
-                        </template>
-                    </button>
-
-                    <p class="text-gray-500 text-sm mt-3">
-                        Показано <span x-text="loadedCount">{{ products|length }}</span> из {{ products.paginator.count }} товаров
-                        <span x-show="!hasNext" x-cloak class="text-green-600 font-medium ml-2">• Все товары загружены</span>
-                    </p>
-                </div>
-                {% endif %}
-            </div>
-            <!-- Конец Alpine компонента -->
-
-            {% else %}
-            <div class="text-center py-16">
-                <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
-                </svg>
-                <h3 class="text-xl font-medium text-gray-900 mb-2">Товары не найдены</h3>
-                <p class="text-gray-500">
-                    {% if category %}
-                        В категории "{{ category.name }}" пока нет товаров.
+            <div class="flex items-center justify-between">
+                <div>
+                    {% if product.discount_price %}
+                    <span class="text-xl font-bold text-accent">
+                        {{ product.discount_price }} ₽
+                    </span>
+                    <span class="text-gray-400 line-through ml-2">
+                        {{ product.price }} ₽
+                    </span>
                     {% else %}
-                        В каталоге пока нет товаров.
+                    <span class="text-xl font-bold text-gray-900">
+                        {{ product.price }} ₽
+                    </span>
                     {% endif %}
-                </p>
+                </div>
             </div>
-            {% endif %}
         </div>
-    </div>
+    </a>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-// Alpine.js компонент для кнопки "Показать ещё"
-document.addEventListener('alpine:init', () => {
-    Alpine.data('productLoader', () => ({
-        loading: false,
-        nextPage: {% if products.has_next %}{{ products.next_page_number }}{% else %}null{% endif %},
-        hasNext: {{ products.has_next|yesno:"true,false" }},
-        categorySlug: '',
-        loadedCount: {{ products|length }}, // Начальное количество загруженных товаров
-
-        init(categorySlug) {
-            this.categorySlug = categorySlug;
-        },
-
-        async loadMore() {
-            if (this.loading || !this.hasNext || !this.nextPage) return;
-
-            this.loading = true;
-
-            try {
-                const url = `/products/load-more/?page=${this.nextPage}&category=${this.categorySlug}`;
-                const response = await fetch(url, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                if (!response.ok) throw new Error('Ошибка сети');
-
-                const data = await response.json();
-
-                if (data.html) {
-                    const productGrid = document.getElementById('product-grid');
-                    productGrid.insertAdjacentHTML('beforeend', data.html);
-
-                    // Обновляем счетчик загруженных товаров
-                    const newItems = document.createElement('div');
-                    newItems.innerHTML = data.html;
-                    const itemCount = newItems.querySelectorAll('.bg-white.rounded-lg').length;
-                    this.loadedCount += itemCount;
-
-                    this.hasNext = data.has_next;
-                    this.nextPage = data.next_page || null;
-                }
-            } catch (error) {
-                console.error('Ошибка при загрузке товаров:', error);
-                alert('Произошла ошибка при загрузке товаров');
-            } finally {
-                this.loading = false;
-            }
-        }
-    }));
-});
-</script>
-
-<!-- Стиль для скрытия элементов до инициализации Alpine -->
-<style>
-    [x-cloak] { display: none !important; }
-</style>
-{% endblock %}
+{% endfor %}
 
 
 ================================================================================
@@ -1152,40 +1026,6 @@ document.addEventListener('alpine:init', () => {
                 {{ product.description|safe }}
             </div>
 
-            {% comment %} {% if product.in_stock %}
-            <div class="flex items-center space-x-4 mb-8">
-                <div class="flex items-center border border-gray-300 rounded-lg">
-                    <button class="px-4 py-2 text-gray-600 hover:text-gray-900" onclick="decreaseQuantity()">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
-                        </svg>
-                    </button>
-                    <input type="number"
-                           id="quantity"
-                           value="1"
-                           min="1"
-                           max="99"
-                           class="w-16 text-center border-0 focus:ring-0">
-                    <button class="px-4 py-2 text-gray-600 hover:text-gray-900" onclick="increaseQuantity()">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                        </svg>
-                    </button>
-                </div>
-
-                <button onclick="addToCart({{ product.id }})"
-                        class="flex-1 bg-accent text-white px-8 py-3 rounded-lg font-semibold hover:bg-accent-dark transition duration-300">
-                    Добавить в корзину
-                </button>
-
-                <button class="p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
-                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                    </svg>
-                </button>
-            </div>
-            {% endif %} {% endcomment %}
-
             <!-- Дополнительная информация -->
             <div class="border-t border-gray-200 pt-6">
                 <h3 class="font-bold text-lg mb-4">Детали товара</h3>
@@ -1253,214 +1093,6 @@ document.addEventListener('alpine:init', () => {
 </div>
 {% endblock %}
 
-{% block extra_js %}
-<script>
-{% comment %} function increaseQuantity() {
-    const input = document.getElementById('quantity');
-    let value = parseInt(input.value);
-    if (value < 99) {
-        input.value = value + 1;
-    }
-}
-
-function decreaseQuantity() {
-    const input = document.getElementById('quantity');
-    let value = parseInt(input.value);
-    if (value > 1) {
-        input.value = value - 1;
-    }
-}
-
-function addToCart(productId) {
-    const quantity = document.getElementById('quantity').value;
-
-    // Заглушка для функции добавления в корзину
-    alert(`Добавлено ${quantity} товар(ов) в корзину!`);
-
-    // В реальном проекте здесь будет AJAX-запрос
-    // fetch('/cart/add/', {
-    //     method: 'POST',
-    //     headers: {
-    //         'Content-Type': 'application/json',
-    //         'X-CSRFToken': getCookie('csrftoken')
-    //     },
-    //     body: JSON.stringify({
-    //         product_id: productId,
-    //         quantity: quantity
-    //     })
-    // })
-} {% endcomment %}
-</script>
-{% endblock %}
-
-
-================================================================================
-ФАЙЛ: ./collect_project.sh
-================================================================================
-
-#!/bin/bash
-
-# Скрипт для сбора всех файлов проекта MyBiz в один текстовый файл
-# Для использования в WSL Ubuntu
-
-OUTPUT_FILE="project_analysis.txt"
-LOG_FILE="collection_log.txt"
-
-echo "=== Начало сбора файлов проекта MyBiz ===" > "$LOG_FILE"
-date >> "$LOG_FILE"
-echo "" >> "$LOG_FILE"
-
-# Функция для добавления файла в отчет
-add_file() {
-    local file_path=$1
-    local description=$2
-
-    echo "Обработка: $file_path" | tee -a "$LOG_FILE"
-
-    echo "================================================================================" >> "$OUTPUT_FILE"
-    echo "ФАЙЛ: $file_path" >> "$OUTPUT_FILE"
-    echo "ОПИСАНИЕ: $description" >> "$OUTPUT_FILE"
-    echo "================================================================================" >> "$OUTPUT_FILE"
-    echo "" >> "$OUTPUT_FILE"
-
-    if [ -f "$file_path" ]; then
-        cat "$file_path" >> "$OUTPUT_FILE"
-        echo "✓ Успешно добавлен" >> "$LOG_FILE"
-    else
-        echo "✗ Файл не найден: $file_path" >> "$OUTPUT_FILE"
-        echo "✗ Файл не найден" >> "$LOG_FILE"
-    fi
-
-    echo "" >> "$OUTPUT_FILE"
-    echo "" >> "$OUTPUT_FILE"
-}
-
-# Создаем или очищаем выходной файл
-> "$OUTPUT_FILE"
-
-echo "=== СНИМОК ПРОЕКТА MYBIZ ===" >> "$OUTPUT_FILE"
-echo "Дата создания: $(date)" >> "$OUTPUT_FILE"
-echo "Для анализа AI-ассистентом" >> "$OUTPUT_FILE"
-echo "" >> "$OUTPUT_FILE"
-
-# 1. КОНФИГУРАЦИОННЫЕ ФАЙЛЫ
-echo "=== 1. КОНФИГУРАЦИОННЫЕ ФАЙЛЫ ===" >> "$OUTPUT_FILE"
-
-add_file "config/settings.py" "Основные настройки Django проекта"
-add_file "config/urls.py" "Главные URL-маршруты проекта"
-add_file "requirements.txt" "Зависимости Python проекта"
-
-# 2. МОДЕЛИ ДАННЫХ
-echo "=== 2. МОДЕЛИ ДАННЫХ ===" >> "$OUTPUT_FILE"
-
-add_file "mybiz_core/models.py" "Модели для товаров и категорий"
-add_file "content/models.py" "Модели для контента и настроек сайта"
-add_file "pages/models.py" "Модели для SEO-страниц"
-
-# 3. ПРЕДСТАВЛЕНИЯ (VIEWS)
-echo "=== 3. ПРЕДСТАВЛЕНИЯ (VIEWS) ===" >> "$OUTPUT_FILE"
-
-add_file "mybiz_core/views.py" "Представления для товаров и категорий"
-add_file "pages/views.py" "Представления для SEO-страниц"
-
-# 4. URL-МАРШРУТЫ
-echo "=== 4. URL-МАРШРУТЫ ===" >> "$OUTPUT_FILE"
-
-add_file "mybiz_core/urls.py" "URL-маршруты приложения mybiz_core"
-add_file "pages/urls.py" "URL-маршруты приложения pages"
-
-# 5. АДМИН-ПАНЕЛЬ
-echo "=== 5. АДМИН-ПАНЕЛЬ ===" >> "$OUTPUT_FILE"
-
-add_file "mybiz_core/admin.py" "Админка для товаров и категорий"
-add_file "content/admin.py" "Админка для контента и настроек"
-add_file "pages/admin.py" "Админка для SEO-страниц"
-
-# 6. КОНТЕКСТНЫЕ ПРОЦЕССОРЫ
-echo "=== 6. КОНТЕКСТНЫЕ ПРОЦЕССОРЫ ===" >> "$OUTPUT_FILE"
-
-add_file "mybiz_core/context_processors.py" "Контекстный процессор для категорий"
-add_file "content/context_processors.py" "Контекстные процессоры для настроек и промо-акций"
-
-# 7. ШАБЛОНЫ
-echo "=== 7. ШАБЛОНЫ ===" >> "$OUTPUT_FILE"
-
-add_file "templates/base.html" "Базовый шаблон сайта"
-add_file "templates/home.html" "Шаблон главной страницы"
-add_file "templates/products/product_list.html" "Шаблон списка товаров"
-add_file "templates/products/product_detail.html" "Шаблон детальной страницы товара"
-add_file "templates/products/product_items.html" "Шаблон для AJAX-подгрузки товаров"
-add_file "templates/includes/header.html" "Шаблон хедера"
-add_file "templates/includes/footer.html" "Шаблон футера"
-
-# 8. КОМАНДА ДЛЯ ТЕСТОВЫХ ДАННЫХ
-echo "=== 8. КОМАНДА ДЛЯ ТЕСТОВЫХ ДАННЫХ ===" >> "$OUTPUT_FILE"
-
-add_file "mybiz_core/management/commands/seed_data.py" "Команда для генерации тестовых данных"
-
-# 9. ФАЙЛЫ МИГРАЦИЙ (последние)
-echo "=== 9. ФАЙЛЫ МИГРАЦИЙ ===" >> "$OUTPUT_FILE"
-
-# Находим последние файлы миграций для каждого приложения
-find_migration() {
-    local app=$1
-    local migration_file=$(find "$app/migrations" -name "*.py" ! -name "__init__.py" | sort -V | tail -1)
-
-    if [ -n "$migration_file" ]; then
-        add_file "$migration_file" "Последняя миграция для $app"
-    else
-        echo "================================================================================" >> "$OUTPUT_FILE"
-        echo "ФАЙЛ: $app/migrations/ (нет миграций или приложение не найдено)" >> "$OUTPUT_FILE"
-        echo "================================================================================" >> "$OUTPUT_FILE"
-        echo "" >> "$OUTPUT_FILE"
-    fi
-}
-
-find_migration "mybiz_core"
-find_migration "content"
-find_migration "pages"
-
-# 10. ТЕСТЫ
-echo "=== 10. ТЕСТЫ ===" >> "$OUTPUT_FILE"
-
-add_file "mybiz_core/tests.py" "Тесты для приложения mybiz_core"
-
-# Добавляем информацию о структуре проекта
-echo "=== СТРУКТУРА ПРОЕКТА ===" >> "$OUTPUT_FILE"
-echo "" >> "$OUTPUT_FILE"
-echo "Директории проекта:" >> "$OUTPUT_FILE"
-find . -type d -name ".*" -prune -o -type d -print | sort | head -30 >> "$OUTPUT_FILE"
-echo "" >> "$OUTPUT_FILE"
-
-echo "Файлы проекта (первые 50):" >> "$OUTPUT_FILE"
-find . -type f -name ".*" -prune -o -type f -print | sort | head -50 >> "$OUTPUT_FILE"
-
-# Добавляем информацию о Python-пакетах
-echo "" >> "$OUTPUT_FILE"
-echo "=== ИНФОРМАЦИЯ О СРЕДЕ ===" >> "$OUTPUT_FILE"
-echo "" >> "$OUTPUT_FILE"
-echo "Python версия:" >> "$OUTPUT_FILE"
-python3 --version 2>> "$OUTPUT_FILE" || echo "Python не найден" >> "$OUTPUT_FILE"
-echo "" >> "$OUTPUT_FILE"
-
-echo "Установленные пакеты (Django):" >> "$OUTPUT_FILE"
-python3 -c "import django; print(f'Django версия: {django.__version__}')" 2>> "$OUTPUT_FILE" || echo "Django не установлен" >> "$OUTPUT_FILE"
-
-# Завершаем лог
-echo "" >> "$LOG_FILE"
-echo "=== Завершение сбора файлов ===" >> "$LOG_FILE"
-echo "Всего файлов обработано: $(grep -c "Обработка:" "$LOG_FILE")" >> "$LOG_FILE"
-echo "Файлов найдено: $(grep -c "✓ Успешно добавлен" "$LOG_FILE")" >> "$LOG_FILE"
-echo "Файлов не найдено: $(grep -c "✗ Файл не найден" "$LOG_FILE")" >> "$LOG_FILE"
-echo "Итоговый файл: $OUTPUT_FILE ($(wc -l < "$OUTPUT_FILE") строк)" >> "$LOG_FILE"
-
-echo ""
-echo "✅ Сбор файлов проекта завершен!"
-echo "📁 Основной файл: $OUTPUT_FILE"
-echo "📋 Лог сбора: $LOG_FILE"
-echo ""
-echo "Отправьте содержимое файла '$OUTPUT_FILE' AI-ассистенту для анализа"
-
 
 ================================================================================
 ФАЙЛ: ./config/asgi.py
@@ -1488,10 +1120,16 @@ application = get_asgi_application()
 ФАЙЛ: ./config/urls.py
 ================================================================================
 
+# config/urls.py
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+
+# =========== НАСТРОЙКИ АДМИНКИ ===========
+admin.site.site_title = "Администрирование"
+admin.site.site_header = "Администрирование"
+admin.site.index_title = "Панель управления"
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -1506,6 +1144,86 @@ if settings.DEBUG:
 
 
 ================================================================================
+ФАЙЛ: ./config/settings/production.py
+================================================================================
+
+"""
+Production settings for MyBiz
+"""
+
+# ==================== БЕЗОПАСНОСТЬ ====================
+from config.settings import BASE_DIR
+
+
+DEBUG = False
+ALLOWED_HOSTS = ['yourdomain.com', 'www.yourdomain.com']  # ЗАМЕНИТЕ на ваш домен
+
+# HTTPS settings
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+CSRF_TRUSTED_ORIGINS = [f'https://{host}' for host in ALLOWED_HOSTS]
+
+# HSTS settings
+SECURE_HSTS_SECONDS = 31536000  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# Other security settings
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+
+# Database (пример для PostgreSQL, закомментирован)
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv('DB_NAME'),
+#         'USER': os.getenv('DB_USER'),
+#         'PASSWORD': os.getenv('DB_PASSWORD'),
+#         'HOST': os.getenv('DB_HOST', 'localhost'),
+#         'PORT': os.getenv('DB_PORT', '5432'),
+#     }
+# }
+
+# Logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs/django_errors.log',
+        },
+        'security_file': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs/security.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django.security': {
+            'handlers': ['security_file'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'csp': {
+            'handlers': ['security_file'],
+            'level': 'WARNING',
+            'propagate': True,
+        },
+    },
+}
+
+
+================================================================================
 ФАЙЛ: ./config/settings.py
 ================================================================================
 
@@ -1513,34 +1231,32 @@ if settings.DEBUG:
 Django settings for config project.
 
 Generated by 'django-admin startproject' using Django 5.2.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/5.2/topics/settings/
-
-For the full list of settings and their values, see
-https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config, Csv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-bw1_iw#sqnnd5)lk+e+##+=mt-d%ocpk^i939_i$x*q@m0!8yh'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='', cast=Csv())
 
+# Database
+DATABASES = {
+    'default': {
+        'ENGINE': config('DB_ENGINE', default='django.db.backends.sqlite3'),
+        'NAME': config('DB_NAME', default=BASE_DIR / 'db.sqlite3'),
+    }
+}
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -1583,7 +1299,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'content.context_processors.site_settings',
                 'content.context_processors.promotions',
-                'content.context_processors.header_pages',  # ДОБАВИЛИ
+                'content.context_processors.header_pages',
                 'mybiz_core.context_processors.categories',
             ],
         },
@@ -1592,21 +1308,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-
 # Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -1622,21 +1324,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
-LANGUAGE_CODE = 'ru-ru'  # Измените на 'en-us' если предпочитаете английский
-
-TIME_ZONE = 'Europe/Moscow'  # Измените на ваш часовой пояс
-
+LANGUAGE_CODE = 'ru-ru'
+TIME_ZONE = 'Europe/Moscow'
 USE_I18N = True
-
 USE_TZ = True
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Настройки CKEditor
@@ -1663,11 +1357,28 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 SILENCED_SYSTEM_CHECKS = ['ckeditor.W001']
 
 SLUG_UNICODE = True
+
+# Кэширование (простая версия для разработки)
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
     }
 }
+
+# Настройки для production
+if not DEBUG:
+    # Безопасные настройки для продакшена
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
 
 
 ================================================================================
@@ -1709,7 +1420,12 @@ from pages.models import Page
 def site_settings(request):
     """Добавляет настройки сайта в контекст всех шаблонов"""
     settings = SiteSettings.load()
-    return {'site_settings': settings}
+    # Добавляем видимые соцсети в контекст
+    social_links = settings.get_visible_social_links()
+    return {
+        'site_settings': settings,
+        'visible_social_links': social_links,
+    }
 
 def promotions(request):
     """Добавляет активные промо-акции в контекст"""
@@ -1726,13 +1442,13 @@ def header_pages(request):
 ФАЙЛ: ./content/admin.py
 ================================================================================
 
+# content/admin.py
 from django.contrib import admin
 from django.utils.html import format_html
 from ckeditor.widgets import CKEditorWidget
 from django import forms
 from .models import Promotion, SiteSettings
 from .widgets import ColorPickerWidget
-
 
 class PromotionForm(forms.ModelForm):
     description = forms.CharField(widget=CKEditorWidget())
@@ -1778,79 +1494,59 @@ class SiteSettingsForm(forms.ModelForm):
 @admin.register(SiteSettings)
 class SiteSettingsAdmin(admin.ModelAdmin):
     form = SiteSettingsForm
-    list_display = ('site_name', 'contact_email', 'contact_phone', 'color_preview')
 
-    fieldsets = (
-        ('Основные настройки', {
-            'fields': ('site_name', 'site_tagline', 'logo', 'favicon', 'hero_image')
-        }),
-        ('Цветовая палитра', {
-            'fields': (
-                'primary_color',
-                'secondary_color',
-                'accent_color',
-                'text_color',
-                'background_color',
-                'header_bg_color',
-                'footer_bg_color',
-            ),
-            'classes': ('wide', 'color-palette-section'),
-            'description': '''
-                <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
-                    <strong>🎨 Настройка цветов сайта:</strong><br>
-                    1. <strong>Основной цвет</strong> - основной цвет бренда<br>
-                    2. <strong>Вторичный цвет</strong> - дополнительный цвет<br>
-                    3. <strong>Акцентный цвет</strong> - для кнопок и важных элементов<br>
-                    4. <strong>Цвет текста</strong> - основной цвет текста<br>
-                    5. <strong>Цвет фона</strong> - фоновый цвет сайта<br>
-                    6. <strong>Фон шапки</strong> - фон верхней части сайта<br>
-                    7. <strong>Фон подвала</strong> - фон нижней части сайта
-                </div>
-            '''
-        }),
-        ('Контактная информация', {
-            'fields': ('contact_email', 'contact_phone', 'contact_address', 'working_hours')
-        }),
-        ('Социальные сети', {
-            'fields': ('facebook_url', 'instagram_url', 'twitter_url')
-        }),
-        ('SEO', {
-            'fields': ('meta_title', 'meta_description', 'meta_keywords')
-        }),
-    )
+    def get_fieldsets(self, request, obj=None):
+        return (
+            ('Основные настройки', {
+                'fields': ('site_name', 'site_tagline', 'logo', 'favicon', 'hero_image')
+            }),
+            ('Цветовая палитра', {
+                'fields': (
+                    'primary_color',
+                    'secondary_color',
+                    'accent_color',
+                    'text_color',
+                    'background_color',
+                    'header_bg_color',
+                    'footer_bg_color',
+                ),
+                'classes': ('wide',),
+                'description': '''
+                    <div style="background: #f5f5f5; padding: 10px; border-radius: 4px; margin-bottom: 10px; font-size: 13px;">
+                        <strong>🎨 Настройка цветов сайта:</strong><br>
+                    </div>
+                '''
+            }),
+            ('Контактная информация', {
+                'fields': ('contact_email', 'contact_phone', 'contact_address', 'working_hours')
+            }),
+            ('Социальные сети', {
+                'fields': (
+                    ('telegram_url', 'telegram_visible'),
+                    ('vk_url', 'vk_visible'),
+                    ('max_url', 'max_visible'),
+                    ('instagram_url', 'instagram_visible'),
+                ),
+                'description': '''
+                    <div style="background: #f5f5f5; padding: 10px; border-radius: 4px; margin-bottom: 10px; font-size: 13px;">
+                        <strong>🔗 Настройка социальных сетей:</strong><br>
+                        Для каждой соцсети укажите ссылку и включите/выключите отображение.
+                    </div>
+                '''
+            }),
+            ('SEO', {
+                'fields': ('meta_title', 'meta_description', 'meta_keywords')
+            }),
+        )
 
     def has_add_permission(self, request):
-        # Разрешаем только один объект настроек
         return not SiteSettings.objects.exists()
-
-    def color_preview(self, obj):
-        """Предпросмотр цветовой палитры в списке"""
-        if obj.primary_color:
-            return format_html(
-                '''
-                <div style="display: flex; gap: 2px; align-items: center;">
-                    <div style="display: flex; flex-direction: column; align-items: center;">
-                        <div style="width: 20px; height: 20px; background-color: {}; border: 1px solid #ccc;"></div>
-                        <small style="font-size: 8px;">Primary</small>
-                    </div>
-                    <div style="display: flex; flex-direction: column; align-items: center;">
-                        <div style="width: 20px; height: 20px; background-color: {}; border: 1px solid #ccc;"></div>
-                        <small style="font-size: 8px;">Accent</small>
-                    </div>
-                </div>
-                ''',
-                obj.primary_color, obj.accent_color
-            )
-        return "Не настроено"
-
-    color_preview.short_description = 'Цвета'
 
     class Media:
         css = {
-            'all': ('admin/css/color-picker-widget.css',)
+            'all': ('admin/css/color-picker.css',)
         }
-        js = ('admin/js/color-picker-widget.js',)
-        
+        js = ('admin/js/color-picker.js',)
 
 
 ================================================================================
@@ -1860,11 +1556,11 @@ class SiteSettingsAdmin(admin.ModelAdmin):
 from django.db import models
 from django.utils.text import slugify
 from ckeditor.fields import RichTextField
+from mybiz_core.validators import validate_image_extension, validate_image_size, validate_image_dimensions
 
 class Promotion(models.Model):
     title = models.CharField(max_length=200, verbose_name="Заголовок")
     slug = models.SlugField(max_length=200, unique=True, blank=True, verbose_name="URL")
-    image = models.ImageField(upload_to='promotions/', verbose_name="Изображение")
     description = RichTextField(verbose_name="Описание")
     short_description = models.CharField(max_length=300, blank=True, verbose_name="Краткое описание")
     button_text = models.CharField(max_length=50, blank=True, verbose_name="Текст кнопки")
@@ -1874,6 +1570,13 @@ class Promotion(models.Model):
     end_date = models.DateField(blank=True, null=True, verbose_name="Дата окончания")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+    image = models.ImageField(upload_to='promotions/', verbose_name="Изображение",
+        validators=[
+            validate_image_extension,
+            validate_image_size,
+            validate_image_dimensions,
+        ]
+    )
 
     class Meta:
         verbose_name = "Промо-акция"
@@ -1892,9 +1595,51 @@ class Promotion(models.Model):
 class SiteSettings(models.Model):
     site_name = models.CharField(max_length=100, default="MyBiz", verbose_name="Название сайта")
     site_tagline = models.CharField(max_length=200, blank=True, verbose_name="Слоган сайта")
-    logo = models.ImageField(upload_to='site/', blank=True, null=True, verbose_name="Логотип")
-    favicon = models.ImageField(upload_to='site/', blank=True, null=True, verbose_name="Фавикон")
-    hero_image = models.ImageField(upload_to='site/', blank=True, null=True, verbose_name="Главное изображение")
+    logo = models.ImageField(
+        upload_to='site/',
+        blank=True,
+        null=True,
+        verbose_name="Логотип",
+        validators=[
+            validate_image_extension,
+            validate_image_size,
+            validate_image_dimensions,
+        ]
+    )
+    favicon = models.ImageField(
+        upload_to='site/',
+        blank=True,
+        null=True,
+        verbose_name="Фавикон",
+        validators=[
+            validate_image_extension,
+            validate_image_size,
+        ]
+    )
+
+    logo = models.ImageField(
+        upload_to='site/',
+        blank=True,
+        null=True,
+        verbose_name="Логотип",
+        validators=[
+            validate_image_extension,
+            validate_image_size,
+            validate_image_dimensions,
+        ]
+    )
+    
+    hero_image = models.ImageField(
+        upload_to='site/',
+        blank=True,
+        null=True,
+        verbose_name="Главное изображение",
+        validators=[
+            validate_image_extension,
+            validate_image_size,
+            validate_image_dimensions,
+        ]
+    )
 
     # Цветовая палитра
     primary_color = models.CharField(
@@ -1946,10 +1691,15 @@ class SiteSettings(models.Model):
     contact_address = models.TextField(blank=True, verbose_name="Контактный адрес")
     working_hours = models.CharField(max_length=100, blank=True, verbose_name="Время работы")
 
-    # Социальные сети
-    facebook_url = models.URLField(blank=True, verbose_name="Facebook")
+    # Социальные сети с видимостью
+    telegram_url = models.URLField(blank=True, verbose_name="Telegram")
+    telegram_visible = models.BooleanField(default=True, verbose_name="Показывать Telegram")
+    vk_url = models.URLField(blank=True, verbose_name="VK")
+    vk_visible = models.BooleanField(default=True, verbose_name="Показывать VK")
+    max_url = models.URLField(blank=True, verbose_name="MAX")
+    max_visible = models.BooleanField(default=True, verbose_name="Показывать MAX")
     instagram_url = models.URLField(blank=True, verbose_name="Instagram")
-    twitter_url = models.URLField(blank=True, verbose_name="Twitter")
+    instagram_visible = models.BooleanField(default=True, verbose_name="Показывать Instagram")
 
     # SEO
     meta_title = models.CharField(max_length=200, blank=True, verbose_name="Мета-заголовок")
@@ -1974,14 +1724,43 @@ class SiteSettings(models.Model):
         obj, created = cls.objects.get_or_create(pk=1)
         return obj
 
+    def get_visible_social_links(self):
+        """Возвращает список видимых социальных сетей"""
+        social_links = []
 
-================================================================================
-ФАЙЛ: ./content/tests.py
-================================================================================
+        if self.telegram_url and self.telegram_visible:
+            social_links.append({
+                'name': 'Telegram',
+                'url': self.telegram_url,
+                'icon': 'telegram',
+                'title': 'Telegram'
+            })
 
-from django.test import TestCase
+        if self.vk_url and self.vk_visible:
+            social_links.append({
+                'name': 'VK',
+                'url': self.vk_url,
+                'icon': 'vk',
+                'title': 'ВКонтакте'
+            })
 
-# Create your tests here.
+        if self.max_url and self.max_visible:
+            social_links.append({
+                'name': 'MAX',
+                'url': self.max_url,
+                'icon': 'max',
+                'title': 'MAX (Мессенджер Mail.ru)'
+            })
+
+        if self.instagram_url and self.instagram_visible:
+            social_links.append({
+                'name': 'Instagram',
+                'url': self.instagram_url,
+                'icon': 'instagram',
+                'title': 'Instagram'
+            })
+
+        return social_links
 
 
 ================================================================================
@@ -1989,27 +1768,49 @@ from django.test import TestCase
 ================================================================================
 
 from django import forms
+from django.utils.safestring import mark_safe
 
 class ColorPickerWidget(forms.TextInput):
     """Виджет для выбора цвета с предпросмотром"""
 
+    def __init__(self, attrs=None):
+        default_attrs = {
+            'type': 'color',
+            'class': 'color-picker-input',
+        }
+        if attrs:
+            default_attrs.update(attrs)
+        super().__init__(default_attrs)
+
+    def render(self, name, value, attrs=None, renderer=None):
+        # Рендерим обычное поле ввода цвета
+        input_html = super().render(name, value, attrs, renderer)
+
+        # Добавляем наш кастомный HTML для пикера без лишнего квадратика
+        html = f'''
+        <div class="color-picker-widget">
+            <div class="color-picker-container">
+                {input_html}
+                <div class="color-picker-text">
+                    <input type="text"
+                           class="color-hex-input"
+                           value="{value or '#3b82f6'}"
+                           placeholder="#3b82f6"
+                           style="width: 120px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-left: 10px;"
+                           maxlength="7">
+                </div>
+            </div>
+        </div>
+        '''
+
+        # Помечаем HTML как безопасный для отображения
+        return mark_safe(html)
+
     class Media:
         css = {
-            'all': (
-                'admin/css/color-picker-widget.css',
-            )
+            'all': ('admin/css/color-picker.css',)
         }
-        js = (
-            'admin/js/color-picker-widget.js',
-        )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.attrs.update({
-            'type': 'color',
-            'style': 'width: 60px; height: 40px; border: none; cursor: pointer;',
-            'title': 'Нажмите для выбора цвета'
-        })
+        js = ('admin/js/color-picker.js',)
 
 
 ================================================================================
@@ -2022,55 +1823,41 @@ from django.shortcuts import render
 
 
 ================================================================================
-ФАЙЛ: ./content/migrations/0003_alter_sitesettings_accent_color_and_more.py
+ФАЙЛ: ./content/migrations/0002_alter_promotion_image_alter_sitesettings_favicon_and_more.py
 ================================================================================
 
-# Generated by Django 5.2 on 2025-12-16 12:18
+# Generated by Django 5.2 on 2025-12-17 08:22
 
+import mybiz_core.validators
 from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('content', '0002_sitesettings_accent_color_and_more'),
+        ('content', '0001_initial'),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='sitesettings',
-            name='accent_color',
-            field=models.CharField(default='#10b981', help_text='Цвет для кнопок и важных элементов', max_length=7, verbose_name='Акцентный цвет (Accent)'),
+            model_name='promotion',
+            name='image',
+            field=models.ImageField(upload_to='promotions/', validators=[mybiz_core.validators.validate_image_extension, mybiz_core.validators.validate_image_size, mybiz_core.validators.validate_image_dimensions], verbose_name='Изображение'),
         ),
         migrations.AlterField(
             model_name='sitesettings',
-            name='background_color',
-            field=models.CharField(default='#f9fafb', help_text='Фоновый цвет сайта', max_length=7, verbose_name='Цвет фона'),
+            name='favicon',
+            field=models.ImageField(blank=True, null=True, upload_to='site/', validators=[mybiz_core.validators.validate_image_extension, mybiz_core.validators.validate_image_size], verbose_name='Фавикон'),
         ),
         migrations.AlterField(
             model_name='sitesettings',
-            name='footer_bg_color',
-            field=models.CharField(default='#111827', help_text='Фон нижней части сайта', max_length=7, verbose_name='Фон подвала'),
+            name='hero_image',
+            field=models.ImageField(blank=True, null=True, upload_to='site/', validators=[mybiz_core.validators.validate_image_extension, mybiz_core.validators.validate_image_size, mybiz_core.validators.validate_image_dimensions], verbose_name='Главное изображение'),
         ),
         migrations.AlterField(
             model_name='sitesettings',
-            name='header_bg_color',
-            field=models.CharField(default='#ffffff', help_text='Фон верхней части сайта', max_length=7, verbose_name='Фон шапки'),
-        ),
-        migrations.AlterField(
-            model_name='sitesettings',
-            name='primary_color',
-            field=models.CharField(default='#3b82f6', help_text='Основной цвет бренда', max_length=7, verbose_name='Основной цвет (Primary)'),
-        ),
-        migrations.AlterField(
-            model_name='sitesettings',
-            name='secondary_color',
-            field=models.CharField(default='#8b5cf6', help_text='Дополнительный цвет', max_length=7, verbose_name='Вторичный цвет (Secondary)'),
-        ),
-        migrations.AlterField(
-            model_name='sitesettings',
-            name='text_color',
-            field=models.CharField(default='#1f2937', help_text='Основной цвет текста', max_length=7, verbose_name='Цвет текста'),
+            name='logo',
+            field=models.ImageField(blank=True, null=True, upload_to='site/', validators=[mybiz_core.validators.validate_image_extension, mybiz_core.validators.validate_image_size, mybiz_core.validators.validate_image_dimensions], verbose_name='Логотип'),
         ),
     ]
 
@@ -2079,7 +1866,7 @@ class Migration(migrations.Migration):
 ФАЙЛ: ./content/migrations/0001_initial.py
 ================================================================================
 
-# Generated by Django 5.2 on 2025-12-15 11:01
+# Generated by Django 5.2 on 2025-12-16 16:16
 
 import ckeditor.fields
 from django.db import migrations, models
@@ -2125,6 +1912,13 @@ class Migration(migrations.Migration):
                 ('logo', models.ImageField(blank=True, null=True, upload_to='site/', verbose_name='Логотип')),
                 ('favicon', models.ImageField(blank=True, null=True, upload_to='site/', verbose_name='Фавикон')),
                 ('hero_image', models.ImageField(blank=True, null=True, upload_to='site/', verbose_name='Главное изображение')),
+                ('primary_color', models.CharField(default='#3b82f6', help_text='Основной цвет бренда', max_length=7, verbose_name='Основной цвет (Primary)')),
+                ('secondary_color', models.CharField(default='#8b5cf6', help_text='Дополнительный цвет', max_length=7, verbose_name='Вторичный цвет (Secondary)')),
+                ('accent_color', models.CharField(default='#10b981', help_text='Цвет для кнопок и важных элементов', max_length=7, verbose_name='Акцентный цвет (Accent)')),
+                ('text_color', models.CharField(default='#1f2937', help_text='Основной цвет текста', max_length=7, verbose_name='Цвет текста')),
+                ('background_color', models.CharField(default='#f9fafb', help_text='Фоновый цвет сайта', max_length=7, verbose_name='Цвет фона')),
+                ('header_bg_color', models.CharField(default='#ffffff', help_text='Фон верхней части сайта', max_length=7, verbose_name='Фон шапки')),
+                ('footer_bg_color', models.CharField(default='#111827', help_text='Фон нижней части сайта', max_length=7, verbose_name='Фон подвала')),
                 ('contact_email', models.EmailField(blank=True, max_length=254, verbose_name='Контактный email')),
                 ('contact_phone', models.CharField(blank=True, max_length=20, verbose_name='Контактный телефон')),
                 ('contact_address', models.TextField(blank=True, verbose_name='Контактный адрес')),
@@ -2146,56 +1940,82 @@ class Migration(migrations.Migration):
 
 
 ================================================================================
-ФАЙЛ: ./content/migrations/0002_sitesettings_accent_color_and_more.py
+ФАЙЛ: ./content/migrations/0003_remove_sitesettings_facebook_url_and_more.py
 ================================================================================
 
-# Generated by Django 5.2 on 2025-12-16 11:36
+# Generated by Django 5.2 on 2025-12-17 16:23
 
-import django.core.validators
 from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('content', '0001_initial'),
+        ('content', '0002_alter_promotion_image_alter_sitesettings_favicon_and_more'),
+    ]
+
+    operations = [
+        migrations.RemoveField(
+            model_name='sitesettings',
+            name='facebook_url',
+        ),
+        migrations.RemoveField(
+            model_name='sitesettings',
+            name='twitter_url',
+        ),
+        migrations.AddField(
+            model_name='sitesettings',
+            name='max_url',
+            field=models.URLField(blank=True, verbose_name='MAX'),
+        ),
+        migrations.AddField(
+            model_name='sitesettings',
+            name='telegram_url',
+            field=models.URLField(blank=True, verbose_name='Telegram'),
+        ),
+        migrations.AddField(
+            model_name='sitesettings',
+            name='vk_url',
+            field=models.URLField(blank=True, verbose_name='VK'),
+        ),
+    ]
+
+
+================================================================================
+ФАЙЛ: ./content/migrations/0004_sitesettings_instagram_visible_and_more.py
+================================================================================
+
+# Generated by Django 5.2 on 2025-12-18 04:54
+
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('content', '0003_remove_sitesettings_facebook_url_and_more'),
     ]
 
     operations = [
         migrations.AddField(
             model_name='sitesettings',
-            name='accent_color',
-            field=models.CharField(default='#10b981', help_text='HEX-код акцентного цвета для кнопок (например, #10b981)', max_length=7, validators=[django.core.validators.RegexValidator('^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$', 'Введите корректный HEX-код цвета')], verbose_name='Акцентный цвет'),
+            name='instagram_visible',
+            field=models.BooleanField(default=True, verbose_name='Показывать Instagram'),
         ),
         migrations.AddField(
             model_name='sitesettings',
-            name='background_color',
-            field=models.CharField(default='#f9fafb', help_text='HEX-код фона сайта (например, #f9fafb)', max_length=7, validators=[django.core.validators.RegexValidator('^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$', 'Введите корректный HEX-код цвета')], verbose_name='Цвет фона'),
+            name='max_visible',
+            field=models.BooleanField(default=True, verbose_name='Показывать MAX'),
         ),
         migrations.AddField(
             model_name='sitesettings',
-            name='footer_bg_color',
-            field=models.CharField(default='#111827', help_text='HEX-код фона подвала сайта (например, #111827)', max_length=7, validators=[django.core.validators.RegexValidator('^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$', 'Введите корректный HEX-код цвета')], verbose_name='Фон подвала'),
+            name='telegram_visible',
+            field=models.BooleanField(default=True, verbose_name='Показывать Telegram'),
         ),
         migrations.AddField(
             model_name='sitesettings',
-            name='header_bg_color',
-            field=models.CharField(default='#ffffff', help_text='HEX-код фона шапки сайта (например, #ffffff)', max_length=7, validators=[django.core.validators.RegexValidator('^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$', 'Введите корректный HEX-код цвета')], verbose_name='Фон шапки'),
-        ),
-        migrations.AddField(
-            model_name='sitesettings',
-            name='primary_color',
-            field=models.CharField(default='#3b82f6', help_text='HEX-код основного цвета (например, #3b82f6)', max_length=7, validators=[django.core.validators.RegexValidator('^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$', 'Введите корректный HEX-код цвета')], verbose_name='Основной цвет'),
-        ),
-        migrations.AddField(
-            model_name='sitesettings',
-            name='secondary_color',
-            field=models.CharField(default='#8b5cf6', help_text='HEX-код вторичного цвета (например, #8b5cf6)', max_length=7, validators=[django.core.validators.RegexValidator('^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$', 'Введите корректный HEX-код цвета')], verbose_name='Вторичный цвет'),
-        ),
-        migrations.AddField(
-            model_name='sitesettings',
-            name='text_color',
-            field=models.CharField(default='#1f2937', help_text='HEX-код основного цвета текста (например, #1f2937)', max_length=7, validators=[django.core.validators.RegexValidator('^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$', 'Введите корректный HEX-код цвета')], verbose_name='Цвет текста'),
+            name='vk_visible',
+            field=models.BooleanField(default=True, verbose_name='Показывать VK'),
         ),
     ]
 
@@ -2236,17 +2056,13 @@ class ContentConfig(AppConfig):
 # Рекурсивно обходит все папки и подпапки
 
 OUTPUT_FILE="full_project_analysis.txt"
-LOG_FILE="full_collection_log.txt"
 
-echo "=== Начало полного сбора файлов проекта MyBiz ===" > "$LOG_FILE"
-date >> "$LOG_FILE"
-echo "" >> "$LOG_FILE"
-
+echo "-== Начало полного сбора файлов проекта MyBiz ==-"
 # Функция для добавления файла в отчет
 add_file() {
     local file_path=$1
 
-    echo "Обработка: $file_path" >> "$LOG_FILE"
+  #  echo "Обработка: $file_path"
 
     echo "================================================================================" >> "$OUTPUT_FILE"
     echo "ФАЙЛ: $file_path" >> "$OUTPUT_FILE"
@@ -2257,14 +2073,14 @@ add_file() {
         # Проверяем, является ли файл текстовым (не бинарным)
         if file "$file_path" | grep -q "text"; then
             cat "$file_path" >> "$OUTPUT_FILE"
-            echo "✓ Успешно добавлен (текстовый)" >> "$LOG_FILE"
+
         else
             echo "[БИНАРНЫЙ ФАЙЛ - содержимое не показано]" >> "$OUTPUT_FILE"
-            echo "✗ Бинарный файл, пропущен" >> "$LOG_FILE"
+
         fi
     else
         echo "✗ Файл не найден" >> "$OUTPUT_FILE"
-        echo "✗ Файл не найден" >> "$LOG_FILE"
+
     fi
 
     echo "" >> "$OUTPUT_FILE"
@@ -2301,10 +2117,7 @@ EXCLUDE_FILES=(
     "*.db"
     "*.sqlite3"
     "*.log"
-    "full_project_analysis.txt"
-    "full_collection_log.txt"
-    "project_analysis.txt"
-    "collection_log.txt"
+    "*.txt"
 )
 
 # Функция для проверки исключения директории
@@ -2334,21 +2147,21 @@ total_files=0
 added_files=0
 skipped_files=0
 
-echo "Начинаю рекурсивный обход всех файлов..." >> "$LOG_FILE"
+
 
 # Рекурсивный обход всех файлов
 find . -type f | while read -r file; do
     # Пропускаем исключенные директории
     dir=$(dirname "$file")
     if is_excluded_dir "$dir"; then
-        echo "Пропущена директория: $file" >> "$LOG_FILE"
+
         skipped_files=$((skipped_files + 1))
         continue
     fi
 
     # Пропускаем исключенные файлы
     if is_excluded_file "$file"; then
-        echo "Пропущен файл (по паттерну): $file" >> "$LOG_FILE"
+
         skipped_files=$((skipped_files + 1))
         continue
     fi
@@ -2365,9 +2178,7 @@ find . -type f | while read -r file; do
     added_files=$((added_files + 1))
 
     # Выводим прогресс каждые 10 файлов
-    if [ $((total_files % 10)) -eq 0 ]; then
-        echo "Обработано файлов: $total_files" >> "$LOG_FILE"
-    fi
+
 done
 
 # Добавляем информацию о структуре проекта
@@ -2395,62 +2206,103 @@ else
 fi
 
 # Завершаем лог
-echo "" >> "$LOG_FILE"
-echo "=== Завершение полного сбора файлов ===" >> "$LOG_FILE"
-echo "Всего найдено файлов: $total_files" >> "$LOG_FILE"
-echo "Файлов добавлено в отчет: $added_files" >> "$LOG_FILE"
-echo "Файлов пропущено: $skipped_files" >> "$LOG_FILE"
-echo "Итоговый файл: $OUTPUT_FILE ($(wc -l < "$OUTPUT_FILE") строк, $(wc -c < "$OUTPUT_FILE") символов)" >> "$LOG_FILE"
-echo "Размер выходного файла: $(du -h "$OUTPUT_FILE" | cut -f1)" >> "$LOG_FILE"
 
-echo ""
-echo "✅ Полный сбор файлов проекта завершен!"
+echo "Итоговый файл: $OUTPUT_FILE ($(wc -l < "$OUTPUT_FILE") строк, $(wc -c < "$OUTPUT_FILE") символов)"
+echo "Размер выходного файла: $(du -h "$OUTPUT_FILE" | cut -f1)"
+
+
 echo "📁 Основной файл: $OUTPUT_FILE"
-echo "📋 Лог сбора: $LOG_FILE"
-echo ""
-echo "📊 Статистика:"
-echo "   Всего файлов: $total_files"
-echo "   Добавлено: $added_files"
-echo "   Пропущено: $skipped_files"
-echo ""
+
 echo "Отправьте содержимое файла '$OUTPUT_FILE' AI-ассистенту для полного анализа"
 
 
 ================================================================================
-ФАЙЛ: ./static/admin/css/color-picker-widget.css
+ФАЙЛ: ./static/admin/css/color-picker.css
 ================================================================================
 
-/* Стили для виджета выбора цвета */
+/* Стили для цветового пикера в админке Django */
+.color-picker-widget {
+    margin: 10px 0;
+}
+
 .color-picker-container {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 5px;
+    gap: 15px;
+    padding: 10px;
+    background: #f5f5f5;
+    border-radius: 4px;
 }
 
-.color-picker-input {
-    width: 40px !important;
-    height: 40px !important;
-    border: 1px solid #ddd !important;
+.color-picker-input[type="color"] {
+    width: 50px !important;
+    height: 50px !important;
+    border: 2px solid #ddd !important;
     border-radius: 4px !important;
     cursor: pointer !important;
     padding: 0 !important;
+    transition: all 0.2s ease !important;
 }
 
-.color-picker-text {
-    flex-grow: 1;
+.color-picker-input[type="color"]:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
 }
 
-.color-picker-value {
-    font-family: monospace;
-    background: #f5f5f5;
-    padding: 5px 10px;
+.color-hex-input {
+    padding: 8px 10px !important;
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace !important;
+    font-size: 14px !important;
+    border: 1px solid #ccc !important;
+    border-radius: 3px !important;
+    width: 120px !important;
+    transition: border-color 0.2s ease !important;
+}
+
+.color-hex-input:focus {
+    outline: none !important;
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+}
+
+/* Для админки Django - улучшаем отображение полей цвета */
+.form-row.field-primary_color,
+.form-row.field-secondary_color,
+.form-row.field-accent_color,
+.form-row.field-text_color,
+.form-row.field-background_color,
+.form-row.field-header_bg_color,
+.form-row.field-footer_bg_color {
+    background: #f9f9f9;
+    padding: 15px;
     border-radius: 4px;
-    border: 1px solid #ddd;
-    font-size: 13px;
+    margin-bottom: 15px;
+    border: 1px solid #eee;
 }
 
-.color-picker-help {
+/* Убираем стандартные подписи полей, так как они есть в fieldset */
+.form-row.field-primary_color label,
+.form-row.field-secondary_color label,
+.form-row.field-accent_color label,
+.form-row.field-text_color label,
+.form-row.field-background_color label,
+.form-row.field-header_bg_color label,
+.form-row.field-footer_bg_color label {
+    font-weight: bold;
+    margin-bottom: 8px;
+    display: block;
+    color: #333;
+    font-size: 14px;
+}
+
+/* Подсказки */
+.form-row.field-primary_color .help,
+.form-row.field-secondary_color .help,
+.form-row.field-accent_color .help,
+.form-row.field-text_color .help,
+.form-row.field-background_color .help,
+.form-row.field-header_bg_color .help,
+.form-row.field-footer_bg_color .help {
     color: #666;
     font-size: 12px;
     margin-top: 5px;
@@ -2459,323 +2311,39 @@ echo "Отправьте содержимое файла '$OUTPUT_FILE' AI-ас�
 
 
 ================================================================================
-ФАЙЛ: ./static/admin/css/color-picker.css
+ФАЙЛ: ./static/admin/js/color-picker.js
 ================================================================================
 
-/* Дополнительные стили для цветовой палитры в админке */
-.color-palette-section .fieldBox {
-    margin-bottom: 20px;
-    padding: 15px;
-    background: #fff;
-    border: 1px solid #eee;
-    border-radius: 5px;
-}
-
-.color-palette-section label {
-    font-weight: bold;
-    display: block;
-    margin-bottom: 5px;
-}
-
-.color-palette-section .help {
-    color: #666;
-    font-size: 12px;
-    margin-top: 5px;
-    display: block;
-}
-
-/* Стили для предпросмотра цвета */
-.color-preview {
-    display: inline-block;
-    width: 30px;
-    height: 30px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    margin-right: 10px;
-    vertical-align: middle;
-}
-
-/* Группировка цветов */
-.form-row.field-primary_color,
-.form-row.field-secondary_color,
-.form-row.field-accent_color {
-    float: left;
-    width: 30%;
-    margin-right: 3%;
-}
-
-.form-row.field-text_color,
-.form-row.field-background_color {
-    float: left;
-    width: 47%;
-    margin-right: 3%;
-}
-
-.form-row.field-header_bg_color,
-.form-row.field-footer_bg_color {
-    float: left;
-    width: 47%;
-    margin-right: 3%;
-}
-
-/* Очистка float */
-.color-palette-section:after {
-    content: "";
-    display: table;
-    clear: both;
-}
-
-
-================================================================================
-ФАЙЛ: ./static/admin/js/color-picker-widget.js
-================================================================================
-
-// static/admin/js/color-picker-widget.js
+// static/admin/js/color-picker.js
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Инициализация всех цветовых пикеров на странице
+    // Функция для инициализации всех цветовых пикеров на странице
     function initializeColorPickers() {
-        const colorPickers = document.querySelectorAll('input[type="color"]');
+        // Находим все контейнеры цветовых пикеров
+        const colorPickers = document.querySelectorAll('.color-picker-widget');
 
-        colorPickers.forEach(function(picker) {
-            // Проверяем, инициализирован ли уже этот пикер
-            if (picker.dataset.initialized === 'true') {
-                return;
-            }
+        colorPickers.forEach(function(pickerContainer) {
+            const colorInput = pickerContainer.querySelector('input[type="color"]');
+            const hexInput = pickerContainer.querySelector('.color-hex-input');
 
-            // Помечаем как инициализированный
-            picker.dataset.initialized = 'true';
+            if (!colorInput || !hexInput) return;
 
-            // Находим контейнер поля
-            const fieldContainer = picker.closest('.fieldBox') || picker.closest('.form-row') || picker.parentNode;
-
-            // Создаем основной контейнер для цветового пикера
-            const pickerContainer = document.createElement('div');
-            pickerContainer.className = 'color-picker-widget-container';
-            pickerContainer.style.cssText = `
-                display: flex;
-                align-items: center;
-                gap: 15px;
-                margin: 10px 0;
-                padding: 15px;
-                background: #f9f9f9;
-                border-radius: 8px;
-                border: 1px solid #e0e0e0;
-            `;
-
-            // Создаем визуальную кнопку для выбора цвета
-            const colorButton = document.createElement('div');
-            colorButton.className = 'color-picker-visual-button';
-            colorButton.style.cssText = `
-                width: 60px;
-                height: 60px;
-                border-radius: 8px;
-                background-color: ${picker.value || '#ffffff'};
-                border: 3px solid ${picker.value ? darkenColor(picker.value, 0.2) : '#cccccc'};
-                cursor: pointer;
-                position: relative;
-                overflow: hidden;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-                transition: all 0.3s ease;
-            `;
-
-            // Добавляем эффект при наведении
-            colorButton.addEventListener('mouseenter', function() {
-                this.style.transform = 'scale(1.05)';
-                this.style.boxShadow = '0 4px 10px rgba(0,0,0,0.15)';
-            });
-
-            colorButton.addEventListener('mouseleave', function() {
-                this.style.transform = 'scale(1)';
-                this.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
-            });
-
-            // При клике на кнопку открываем нативный пикер
-            colorButton.addEventListener('click', function() {
-                picker.click();
-            });
-
-            // Создаем иконку карандаша для настройки
-            const editIcon = document.createElement('div');
-            editIcon.innerHTML = `
-                <svg style="position: absolute; bottom: 5px; right: 5px; width: 16px; height: 16px;"
-                     fill="white" viewBox="0 0 24 24">
-                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-                </svg>
-            `;
-            colorButton.appendChild(editIcon);
-
-            // Создаем контейнер для информации о цвете
-            const infoContainer = document.createElement('div');
-            infoContainer.style.cssText = `
-                flex-grow: 1;
-            `;
-
-            // Создаем текстовое поле для ввода HEX
-            const hexInput = document.createElement('input');
-            hexInput.type = 'text';
-            hexInput.className = 'color-picker-hex-input';
-            hexInput.value = picker.value || '#000000';
-            hexInput.maxLength = 7;
-            hexInput.style.cssText = `
-                width: 100%;
-                padding: 10px 12px;
-                font-size: 14px;
-                font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-                border: 2px solid #ddd;
-                border-radius: 6px;
-                margin-bottom: 8px;
-                box-sizing: border-box;
-                transition: border-color 0.3s;
-            `;
-
-            // Создаем метку для отображения названия цвета (если возможно)
-            const colorNameLabel = document.createElement('div');
-            colorNameLabel.className = 'color-picker-name';
-            colorNameLabel.style.cssText = `
-                font-size: 12px;
-                color: #666;
-                margin-top: 5px;
-                font-style: italic;
-            `;
-
-            // Определяем название цвета по HEX (основные цвета)
-            function getColorName(hex) {
-                const colors = {
-                    '#3b82f6': 'Синий (Primary)',
-                    '#8b5cf6': 'Фиолетовый (Secondary)',
-                    '#10b981': 'Зеленый (Accent)',
-                    '#1f2937': 'Темно-серый (Text)',
-                    '#f9fafb': 'Светло-серый (Background)',
-                    '#ffffff': 'Белый (Header)',
-                    '#111827': 'Темно-серый (Footer)',
-                    '#000000': 'Черный',
-                    '#ffffff': 'Белый',
-                    '#ff0000': 'Красный',
-                    '#00ff00': 'Зеленый',
-                    '#0000ff': 'Синий',
-                    '#ffff00': 'Желтый',
-                    '#ff00ff': 'Пурпурный',
-                    '#00ffff': 'Голубой'
-                };
-
-                return colors[hex.toLowerCase()] || 'Пользовательский цвет';
-            }
-
-            // Обновляем название цвета
-            function updateColorName() {
-                colorNameLabel.textContent = getColorName(picker.value);
-            }
-
-            // Создаем блок предварительного просмотра применения цвета
-            const previewContainer = document.createElement('div');
-            previewContainer.style.cssText = `
-                margin-top: 10px;
-                padding: 10px;
-                background: white;
-                border-radius: 6px;
-                border: 1px solid #eee;
-                display: flex;
-                gap: 10px;
-                flex-wrap: wrap;
-            `;
-
-            // Создаем примеры применения цвета
-            function createColorPreview() {
-                previewContainer.innerHTML = '';
-
-                const examples = [
-                    { label: 'Текст', style: `color: ${picker.value}; font-weight: bold;` },
-                    { label: 'Фон', style: `background-color: ${picker.value}; color: white; padding: 5px 10px; border-radius: 4px;` },
-                    { label: 'Кнопка', style: `background-color: ${picker.value}; color: white; padding: 6px 12px; border-radius: 6px; border: none; font-weight: bold;` },
-                    { label: 'Граница', style: `border: 2px solid ${picker.value}; padding: 5px 10px; border-radius: 4px;` }
-                ];
-
-                examples.forEach(example => {
-                    const exampleElement = document.createElement('div');
-                    exampleElement.style.cssText = `
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        gap: 5px;
-                        font-size: 11px;
-                    `;
-
-                    const previewElement = document.createElement('div');
-                    previewElement.textContent = example.label;
-                    previewElement.style.cssText = example.style + 'min-width: 60px; text-align: center;';
-
-                    exampleElement.appendChild(previewElement);
-                    previewContainer.appendChild(exampleElement);
-                });
-            }
-
-            // Функция для затемнения цвета (для границы)
-            function darkenColor(hex, percent) {
-                hex = hex.replace('#', '');
-
-                let r = parseInt(hex.substring(0, 2), 16);
-                let g = parseInt(hex.substring(2, 4), 16);
-                let b = parseInt(hex.substring(4, 6), 16);
-
-                r = Math.floor(r * (1 - percent));
-                g = Math.floor(g * (1 - percent));
-                b = Math.floor(b * (1 - percent));
-
-                return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
-            }
-
-            // Обновление визуального представления
-            function updateVisuals() {
-                const colorValue = picker.value;
-
-                // Обновляем кнопку
-                colorButton.style.backgroundColor = colorValue;
-                colorButton.style.borderColor = darkenColor(colorValue, 0.2);
-
-                // Обновляем текстовое поле
+            // Обновляем текстовое поле при изменении цвета
+            function updateFromColorInput() {
+                const colorValue = colorInput.value;
                 hexInput.value = colorValue;
-
-                // Обновляем цвет текстового поля (контрастный)
-                const textColor = getContrastColor(colorValue);
-                hexInput.style.color = textColor;
-                hexInput.style.backgroundColor = colorValue;
-                hexInput.style.borderColor = darkenColor(colorValue, 0.3);
-
-                // Обновляем название
-                updateColorName();
-
-                // Обновляем превью
-                createColorPreview();
+                // Также обновляем border цвета, чтобы показать текущий цвет
+                colorInput.style.borderColor = adjustBrightness(colorValue, -0.3);
             }
 
-            // Получение контрастного цвета (черный или белый)
-            function getContrastColor(hex) {
-                hex = hex.replace('#', '');
-
-                const r = parseInt(hex.substring(0, 2), 16);
-                const g = parseInt(hex.substring(2, 4), 16);
-                const b = parseInt(hex.substring(4, 6), 16);
-
-                // Яркость по формуле
-                const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-
-                return brightness > 128 ? '#000000' : '#ffffff';
-            }
-
-            // Обработчик изменения цвета в нативном пикере
-            picker.addEventListener('input', function() {
-                updateVisuals();
-            });
-
-            // Обработчик изменения в текстовом поле
-            hexInput.addEventListener('input', function() {
-                let value = this.value;
+            // Обновляем цветовой пикер при изменении текстового поля
+            function updateFromHexInput() {
+                let value = hexInput.value;
 
                 // Добавляем # если его нет
                 if (value && !value.startsWith('#')) {
                     value = '#' + value;
-                    this.value = value;
+                    hexInput.value = value;
                 }
 
                 // Проверяем корректность HEX кода
@@ -2783,49 +2351,50 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Если короткий формат (#RGB), преобразуем в полный (#RRGGBB)
                     if (value.length === 4) {
                         value = '#' + value[1] + value[1] + value[2] + value[2] + value[3] + value[3];
+                        hexInput.value = value;
                     }
 
-                    picker.value = value;
-                    updateVisuals();
+                    colorInput.value = value;
+                    colorInput.style.borderColor = adjustBrightness(value, -0.3);
                 }
-            });
+            }
 
-            // Подсказка при фокусе
-            hexInput.addEventListener('focus', function() {
-                this.style.outline = 'none';
-                this.style.borderColor = '#3b82f6';
-                this.style.boxShadow = '0 0 0 2px rgba(59, 130, 246, 0.2)';
-            });
+            // Функция для регулировки яркости цвета (для границы)
+            function adjustBrightness(hex, percent) {
+                hex = hex.replace('#', '');
 
-            hexInput.addEventListener('blur', function() {
-                this.style.boxShadow = 'none';
-            });
+                let r = parseInt(hex.substring(0, 2), 16);
+                let g = parseInt(hex.substring(2, 4), 16);
+                let b = parseInt(hex.substring(4, 6), 16);
 
-            // Вставляем все элементы в контейнер
-            infoContainer.appendChild(hexInput);
-            infoContainer.appendChild(colorNameLabel);
-            infoContainer.appendChild(previewContainer);
+                r = Math.min(255, Math.max(0, r + r * percent));
+                g = Math.min(255, Math.max(0, g + g * percent));
+                b = Math.min(255, Math.max(0, b + b * percent));
 
-            pickerContainer.appendChild(colorButton);
-            pickerContainer.appendChild(infoContainer);
+                return `#${Math.round(r).toString(16).padStart(2, '0')}${Math.round(g).toString(16).padStart(2, '0')}${Math.round(b).toString(16).padStart(2, '0')}`;
+            }
 
-            // Вставляем контейнер после оригинального поля и скрываем оригинальный input
-            fieldContainer.appendChild(pickerContainer);
-            picker.style.position = 'absolute';
-            picker.style.opacity = '0';
-            picker.style.width = '60px';
-            picker.style.height = '60px';
-            picker.style.pointerEvents = 'none';
+            // Связываем события
+            colorInput.addEventListener('input', updateFromColorInput);
+            hexInput.addEventListener('input', updateFromHexInput);
+            hexInput.addEventListener('blur', updateFromHexInput);
 
-            // Инициализация визуалов
-            updateVisuals();
+            // Устанавливаем стиль для цветового пикера
+            colorInput.style.width = '50px';
+            colorInput.style.height = '50px';
+            colorInput.style.borderRadius = '4px';
+            colorInput.style.border = '2px solid';
+            colorInput.style.cursor = 'pointer';
+
+            // Инициализируем начальное состояние
+            updateFromColorInput();
         });
     }
 
-    // Инициализация при загрузке
+    // Инициализация при загрузке страницы
     initializeColorPickers();
 
-    // Также инициализируем при динамическом добавлении полей (если есть)
+    // Также инициализируем при динамическом добавлении полей
     const observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
             if (mutation.addedNodes.length) {
@@ -2834,15 +2403,93 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Начинаем наблюдение за изменениями в DOM
     observer.observe(document.body, {
         childList: true,
         subtree: true
     });
-
-    // Добавляем глобальную функцию для ручной инициализации
-    window.initializeColorPickers = initializeColorPickers;
 });
+
+
+================================================================================
+ФАЙЛ: ./static/social/telegram.svg
+================================================================================
+
+[БИНАРНЫЙ ФАЙЛ - содержимое не показано]
+
+
+================================================================================
+ФАЙЛ: ./static/social/vk.svg
+================================================================================
+
+[БИНАРНЫЙ ФАЙЛ - содержимое не показано]
+
+
+================================================================================
+ФАЙЛ: ./static/social/max.svg
+================================================================================
+
+[БИНАРНЫЙ ФАЙЛ - содержимое не показано]
+
+
+================================================================================
+ФАЙЛ: ./static/social/instagram.svg
+================================================================================
+
+[БИНАРНЫЙ ФАЙЛ - содержимое не показано]
+
+
+================================================================================
+ФАЙЛ: ./static/social/social.css
+================================================================================
+
+/* static/social/social.css - стили для социальных иконок */
+.social-icon {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+    transition: fill 0.3s ease;
+}
+
+.social-icon:hover {
+    transform: scale(1.1);
+    opacity: 0.9;
+}
+
+/* Убедимся что SVG принимает цвет */
+svg.social-icon {
+    fill: currentColor !important;
+}
+
+/* Специфичные стили для разных соцсетей */
+a:hover .social-icon {
+    fill: white !important;
+}
+
+/* Адаптация для разных тем */
+@media (prefers-color-scheme: dark) {
+    .social-icon {
+        fill: #d1d5db; /* серый для темной темы */
+    }
+}
+.flex.space-x-4 {
+    align-items: center;
+    min-height: 2rem; /* Гарантируем минимальную высоту */
+}
+
+/* Принудительное наследование цвета для SVG */
+footer a svg {
+    fill: currentColor;
+    flex-shrink: 0; /* Не даем SVG сжиматься в flex-контейнере */
+}
+
+/* Гарантируем что SVG имеет правильный размер */
+footer .w-6 {
+    width: 1.5rem !important;
+}
+
+footer .h-6 {
+    height: 1.5rem !important;
+}
 
 
 ================================================================================
@@ -2866,30 +2513,52 @@ class PageForm(forms.ModelForm):
 @admin.register(Page)
 class PageAdmin(admin.ModelAdmin):
     form = PageForm
-    list_display = ('title', 'slug', 'is_active', 'show_in_header', 'created_at')  # Добавили show_in_header
-    list_filter = ('is_active', 'show_in_header', 'created_at')  # Добавили фильтр
+    list_display = ('title', 'slug', 'is_active', 'show_in_header', 'created_at')
+    list_filter = ('is_active', 'show_in_header', 'created_at')
     search_fields = ('title', 'content', 'meta_description')
     prepopulated_fields = {'slug': ('title',)}
-    fieldsets = (
-        ('Основная информация', {
-            'fields': ('title', 'slug', 'content', 'excerpt')
-        }),
-        ('SEO', {
-            'fields': ('meta_title', 'meta_description', 'meta_keywords')
-        }),
-        ('Отображение', {
-            'fields': ('is_active', 'show_in_header')  # Добавили show_in_header
-        }),
-        ('Дополнительно', {
-            'fields': ('created_at', 'updated_at')
-        }),
-    )
+    readonly_fields = ('created_at', 'updated_at')  # Поля только для чтения
+
+    def get_fieldsets(self, request, obj=None):
+        """Разные fieldsets для создания и редактирования"""
+        if obj:  # Редактирование существующей страницы
+            fieldsets = (
+                ('Основная информация', {
+                    'fields': ('title', 'slug', 'content', 'excerpt')
+                }),
+                ('SEO', {
+                    'fields': ('meta_title', 'meta_description', 'meta_keywords')
+                }),
+                ('Отображение', {
+                    'fields': ('is_active', 'show_in_header')
+                }),
+                ('Системные поля (только чтение)', {
+                    'fields': ('created_at', 'updated_at'),
+                    'classes': ('collapse',)  # Свернутый блок
+                }),
+            )
+        else:  # Создание новой страницы
+            fieldsets = (
+                ('Основная информация', {
+                    'fields': ('title', 'slug', 'content', 'excerpt')
+                }),
+                ('SEO', {
+                    'fields': ('meta_title', 'meta_description', 'meta_keywords')
+                }),
+                ('Отображение', {
+                    'fields': ('is_active', 'show_in_header')
+                }),
+            )
+        return fieldsets
 
     def get_readonly_fields(self, request, obj=None):
+        """Определяем поля только для чтения"""
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj:  # Если объект уже существует
+
+        if obj:  # При редактировании
             readonly_fields.append('created_at')
             readonly_fields.append('updated_at')
+
         return readonly_fields
 
 
@@ -2937,15 +2606,6 @@ class Page(models.Model):
 
 
 ================================================================================
-ФАЙЛ: ./pages/tests.py
-================================================================================
-
-from django.test import TestCase
-
-# Create your tests here.
-
-
-================================================================================
 ФАЙЛ: ./pages/urls.py
 ================================================================================
 
@@ -2978,34 +2638,10 @@ def page_detail(request, page_slug):
 
 
 ================================================================================
-ФАЙЛ: ./pages/migrations/0003_page_show_in_header.py
-================================================================================
-
-# Generated by Django 5.2 on 2025-12-16 11:05
-
-from django.db import migrations, models
-
-
-class Migration(migrations.Migration):
-
-    dependencies = [
-        ('pages', '0002_page_meta_keywords'),
-    ]
-
-    operations = [
-        migrations.AddField(
-            model_name='page',
-            name='show_in_header',
-            field=models.BooleanField(default=False, verbose_name='Показывать в шапке'),
-        ),
-    ]
-
-
-================================================================================
 ФАЙЛ: ./pages/migrations/0001_initial.py
 ================================================================================
 
-# Generated by Django 5.2 on 2025-12-15 11:02
+# Generated by Django 5.2 on 2025-12-16 16:16
 
 import ckeditor.fields
 from django.db import migrations, models
@@ -3029,7 +2665,9 @@ class Migration(migrations.Migration):
                 ('excerpt', models.TextField(blank=True, verbose_name='Краткое описание')),
                 ('meta_title', models.CharField(blank=True, max_length=200, verbose_name='Мета-заголовок')),
                 ('meta_description', models.TextField(blank=True, verbose_name='Мета-описание')),
+                ('meta_keywords', models.TextField(blank=True, verbose_name='Мета-ключевые слова')),
                 ('is_active', models.BooleanField(default=True, verbose_name='Активно')),
+                ('show_in_header', models.BooleanField(default=False, verbose_name='Показывать в шапке')),
                 ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Создано')),
                 ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Обновлено')),
             ],
@@ -3038,30 +2676,6 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'SEO-страницы',
                 'ordering': ['title'],
             },
-        ),
-    ]
-
-
-================================================================================
-ФАЙЛ: ./pages/migrations/0002_page_meta_keywords.py
-================================================================================
-
-# Generated by Django 5.2 on 2025-12-16 10:00
-
-from django.db import migrations, models
-
-
-class Migration(migrations.Migration):
-
-    dependencies = [
-        ('pages', '0001_initial'),
-    ]
-
-    operations = [
-        migrations.AddField(
-            model_name='page',
-            name='meta_keywords',
-            field=models.TextField(blank=True, verbose_name='Мета-ключевые слова'),
         ),
     ]
 
@@ -3093,6 +2707,34 @@ class PagesConfig(AppConfig):
 
 
 ================================================================================
+ФАЙЛ: ./.env.production
+================================================================================
+
+# Production environment
+DEBUG=False
+SECRET_KEY=ваш_очень_сложный_секретный_ключ_минимум_50_символов
+ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
+
+# Database (для PostgreSQL)
+DB_ENGINE=django.db.backends.postgresql
+DB_NAME=mybiz_production
+DB_USER=mybiz_user
+DB_PASSWORD=очень_сложный_пароль
+DB_HOST=localhost
+DB_PORT=5432
+
+# Email settings
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_HOST_USER=your-email@gmail.com
+EMAIL_HOST_PASSWORD=ваш_пароль_приложения
+ADMIN_EMAIL=admin@yourdomain.com
+
+# Security
+CSRF_TRUSTED_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
+
+
+================================================================================
 ФАЙЛ: ./mybiz_core/context_processors.py
 ================================================================================
 
@@ -3110,6 +2752,7 @@ def categories(request):
 ФАЙЛ: ./mybiz_core/admin.py
 ================================================================================
 
+# mybiz_core/admin.py
 from django.contrib import admin
 from django.utils.html import format_html
 from .models import Category, Product
@@ -3130,18 +2773,62 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ('is_active', 'category', 'created_at')
     search_fields = ('name', 'description', 'category__name')
     prepopulated_fields = {'slug': ('name',)}
-    readonly_fields = ('image_preview',)
-    fieldsets = (
-        ('Основная информация', {
-            'fields': ('name', 'slug', 'category', 'description', 'price')
-        }),
-        ('Изображения', {
-            'fields': ('image', 'image_preview')
-        }),
-        ('Дополнительно', {
-            'fields': ('is_active', 'created_at', 'updated_at')
-        }),
-    )
+    readonly_fields = ('image_preview', 'created_at', 'updated_at')
+
+    def get_fieldsets(self, request, obj=None):
+        """Определяем разные fieldsets для создания и редактирования"""
+        if obj:  # Редактирование существующего товара
+            fieldsets = (
+                ('Основная информация', {
+                    'fields': ('name', 'slug', 'category', 'description', 'price', 'discount_price')
+                }),
+                ('Изображения', {
+                    'fields': ('image', 'image_preview')
+                }),
+                ('Статус и наличие', {
+                    'fields': ('is_active', 'in_stock', 'is_new', 'is_featured')
+                }),
+                ('Дополнительная информация', {
+                    'fields': ('sku', 'brand', 'short_description', 'old_price', 'stock')
+                }),
+                ('Рейтинги', {
+                    'fields': ('rating', 'review_count')
+                }),
+                ('Системные поля (только чтение)', {
+                    'fields': ('created_at', 'updated_at'),
+                    'classes': ('collapse',)  # Сворачиваемый блок
+                }),
+            )
+        else:  # Создание нового товара
+            fieldsets = (
+                ('Основная информация', {
+                    'fields': ('name', 'slug', 'category', 'description', 'price', 'discount_price')
+                }),
+                ('Изображения', {
+                    'fields': ('image',)
+                }),
+                ('Статус и наличие', {
+                    'fields': ('is_active', 'in_stock', 'is_new', 'is_featured')
+                }),
+                ('Дополнительная информация', {
+                    'fields': ('sku', 'brand', 'short_description', 'old_price', 'stock')
+                }),
+                ('Рейтинги', {
+                    'fields': ('rating', 'review_count')
+                }),
+            )
+        return fieldsets
+
+    def get_readonly_fields(self, request, obj=None):
+        """Определяем поля только для чтения"""
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+
+        if obj:  # При редактировании
+            readonly_fields.append('created_at')
+            readonly_fields.append('updated_at')
+
+        readonly_fields.append('image_preview')
+        return readonly_fields
 
     def image_preview(self, obj):
         if obj.image:
@@ -3149,13 +2836,6 @@ class ProductAdmin(admin.ModelAdmin):
         return "Нет изображения"
 
     image_preview.short_description = 'Превью'
-
-    def get_readonly_fields(self, request, obj=None):
-        readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj:  # Если объект уже существует
-            readonly_fields.append('created_at')
-            readonly_fields.append('updated_at')
-        return readonly_fields
 
 
 ================================================================================
@@ -3165,16 +2845,41 @@ class ProductAdmin(admin.ModelAdmin):
 from django.db import models
 from django.utils.text import slugify
 from django.urls import reverse
+from .validators import validate_image_extension, validate_image_size, validate_image_dimensions
 
 class Category(models.Model):
     name = models.CharField(max_length=200, verbose_name="Название категории")
     slug = models.SlugField(max_length=200, unique=True, blank=True, verbose_name="URL")
     description = models.TextField(blank=True, verbose_name="Описание")
-    image = models.ImageField(upload_to='categories/', blank=True, null=True, verbose_name="Изображение")
     is_active = models.BooleanField(default=True, verbose_name="Активна")
     order = models.IntegerField(default=0, verbose_name="Порядок отображения")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+    image = models.ImageField(
+        upload_to='categories/',
+        blank=True,
+        null=True,
+        verbose_name="Изображение",
+        validators=[
+            validate_image_extension,
+            validate_image_size,
+            validate_image_dimensions,
+        ]
+    )
+
+    class Meta:
+        verbose_name = "Категория"
+        verbose_name_plural = "Категории"
+        ordering = ['order', 'name']
+        indexes = [
+            # Индекс для активных категорий с сортировкой по имени (используется в контекстном процессоре)
+            models.Index(fields=['is_active', 'name'], name='category_active_name_idx'),
+            # Индекс для сортировки по порядку
+            models.Index(fields=['is_active', 'order'], name='category_active_order_idx'),
+            # Индекс для быстрого поиска по slug
+            models.Index(fields=['slug'], name='category_slug_idx'),
+        ]
+
     def get_absolute_url(self):
         return reverse('mybiz_core:product_list_by_category', args=[self.slug])
 
@@ -3199,7 +2904,6 @@ class Product(models.Model):
     short_description = models.CharField(max_length=300, blank=True, verbose_name="Краткое описание")
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Цена")
     old_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True, verbose_name="Старая цена")
-    image = models.ImageField(upload_to='products/', verbose_name="Основное изображение")
     is_active = models.BooleanField(default=True, verbose_name="Активен")
     is_featured = models.BooleanField(default=False, verbose_name="Рекомендуемый")
     stock = models.IntegerField(default=0, verbose_name="Остаток на складе")
@@ -3212,11 +2916,32 @@ class Product(models.Model):
     is_new = models.BooleanField('Новинка', default=False)
     in_stock = models.BooleanField('В наличии', default=True)
     discount_price = models.DecimalField('Цена со скидкой', max_digits=10, decimal_places=2, null=True, blank=True)
+    image = models.ImageField(
+        upload_to='products/',
+        verbose_name="Основное изображение",
+        validators=[
+            validate_image_extension,
+            validate_image_size,
+            validate_image_dimensions,
+        ]
+    )
 
     class Meta:
         verbose_name = "Товар"
         verbose_name_plural = "Товары"
         ordering = ['-created_at']
+        indexes = [
+            # Основные индексы для фильтрации
+            models.Index(fields=['category', 'is_active'], name='product_category_active_idx'),
+            models.Index(fields=['is_active', 'created_at'], name='product_active_created_idx'),
+            # Индексы для дополнительных фильтров
+            models.Index(fields=['is_featured', 'is_active'], name='product_featured_active_idx'),
+            models.Index(fields=['in_stock', 'is_active'], name='product_stock_active_idx'),
+            # Индекс для быстрого поиска по slug
+            models.Index(fields=['slug'], name='product_slug_idx'),
+            # Индекс для сортировки по цене
+            models.Index(fields=['is_active', 'price'], name='product_active_price_idx'),
+        ]
 
     def get_discount_percentage(self):
         if self.discount_price and self.price:
@@ -3779,666 +3504,149 @@ class Command(BaseCommand):
 
 
 ================================================================================
+ФАЙЛ: ./mybiz_core/validators.py
+================================================================================
+
+# mybiz_core/validators.py
+import os
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
+from PIL import Image
+import io
+
+def validate_image_extension(value):
+    """Проверяет расширение изображения"""
+    ext = os.path.splitext(value.name)[1].lower()
+    valid_extensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif']
+
+    if ext not in valid_extensions:
+        raise ValidationError(
+            _('Неподдерживаемый формат изображения. Используйте JPG, PNG, WebP или GIF.')
+        )
+
+def validate_image_size(value):
+    """Проверяет размер изображения (макс 5MB)"""
+    max_size = 5 * 1024 * 1024  # 5MB
+
+    if value.size > max_size:
+        raise ValidationError(
+            _('Размер изображения не должен превышать 5MB.')
+        )
+
+def validate_image_dimensions(value):
+    """Проверяет минимальные и максимальные размеры изображения"""
+    try:
+        # Открываем изображение для проверки размеров
+        if hasattr(value, 'temporary_file_path'):
+            # Файл сохранен на диске
+            img = Image.open(value.temporary_file_path())
+        else:
+            # Файл в памяти
+            if hasattr(value, 'read'):
+                img = Image.open(io.BytesIO(value.read()))
+                value.seek(0)  # Возвращаем указатель в начало
+            else:
+                return  # Пропускаем проверку, если не можем прочитать
+
+        min_width, min_height = 300, 300
+        max_width, max_height = 5000, 5000
+
+        if img.width < min_width or img.height < min_height:
+            raise ValidationError(
+                _(f'Минимальный размер изображения: {min_width}x{min_height} пикселей')
+            )
+
+        if img.width > max_width or img.height > max_height:
+            raise ValidationError(
+                _(f'Максимальный размер изображения: {max_width}x{max_height} пикселей')
+            )
+
+    except Exception as e:
+        # Если не удалось открыть изображение, пропускаем проверку размеров
+        # но все равно проверяем расширение и размер файла
+        pass
+
+def validate_web_safe_image(value):
+    """Проверяет, что изображение безопасно для web"""
+    try:
+        if hasattr(value, 'temporary_file_path'):
+            img = Image.open(value.temporary_file_path())
+        else:
+            if hasattr(value, 'read'):
+                img = Image.open(io.BytesIO(value.read()))
+                value.seek(0)
+            else:
+                return
+
+        # Проверяем режим изображения (RGB, RGBA безопасны)
+        if img.mode not in ['RGB', 'RGBA', 'L', 'P']:
+            raise ValidationError(
+                _('Изображение должно быть в режиме RGB, RGBA или Grayscale.')
+            )
+
+        # Проверяем, что это не анимация для статических форматов
+        if hasattr(img, 'is_animated') and img.is_animated:
+            ext = os.path.splitext(value.name)[1].lower()
+            if ext in ['.jpg', '.jpeg', '.png']:
+                raise ValidationError(
+                    _('Анимированные изображения поддерживаются только в формате GIF.')
+                )
+
+    except Exception as e:
+        pass
+
+
+================================================================================
 ФАЙЛ: ./mybiz_core/tests.py
 ================================================================================
 
-from django.test import TestCase, Client
+from django.test import TestCase
 from django.urls import reverse
-from django.core.files.uploadedfile import SimpleUploadedFile
 from .models import Category, Product
-from content.models import SiteSettings, Promotion
-from pages.models import Page
 from decimal import Decimal
-import json
-from datetime import datetime, timedelta
 
-from django.test import TestCase, Client
-from django.urls import reverse
-from django.core.files.uploadedfile import SimpleUploadedFile
-from .models import Category, Product
-from content.models import SiteSettings, Promotion
-from pages.models import Page
-from decimal import Decimal
-import json
-from datetime import datetime, timedelta
-
-
-class ProductViewsTest(TestCase):
-    """Тест представлений для товаров и категорий"""
+class BasicSiteTest(TestCase):
+    """Базовые тесты для проверки работы сайта"""
 
     def setUp(self):
-        """Создание тестовых данных"""
-        self.client = Client()
-
-        # Создаем категорию
         self.category = Category.objects.create(
             name="Тестовая категория",
             slug="test-category",
-            description="Описание тестовой категории",
             is_active=True
-        )
-
-        # Создаем товары (больше, чем помещается на одну страницу)
-        for i in range(15):
-            Product.objects.create(
-                name=f"Тестовый товар {i}",
-                slug=f"test-product-{i}",
-                description=f"Описание товара {i}",
-                price=Decimal('1000.00'),
-                category=self.category,
-                is_active=True,
-                in_stock=True,
-                rating=Decimal('4.5')
-            )
-
-    def test_home_page(self):
-        """Тест главной страницы"""
-        response = self.client.get(reverse('mybiz_core:home'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'home.html')
-        self.assertContains(response, 'Тестовый товар')
-
-    def test_product_list_page(self):
-        """Тест страницы списка товаров"""
-        response = self.client.get(reverse('mybiz_core:product_list'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'products/product_list.html')
-
-        # Проверяем пагинацию (12 товаров на странице)
-        self.assertEqual(len(response.context['products']), 12)
-
-    def test_product_detail_page(self):
-        """Тест детальной страницы товара"""
-        product = Product.objects.first()
-        response = self.client.get(reverse('mybiz_core:product_detail', args=[product.slug]))
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'products/product_detail.html')
-        self.assertContains(response, product.name)
-
-    def test_category_filter(self):
-        """Тест фильтрации по категории"""
-        response = self.client.get(
-            reverse('mybiz_core:product_list_by_category', args=[self.category.slug])
-        )
-
-        self.assertEqual(response.status_code, 200)
-        # Все товары должны принадлежать тестовой категории
-        for product in response.context['products']:
-            self.assertEqual(product.category, self.category)
-
-    def test_ajax_load_more(self):
-        """Тест AJAX-подгрузки товаров"""
-        # Проверяем, что URL существует
-        url = reverse('mybiz_core:load_more_products')
-
-        # Пробуем оба способа отправки AJAX заголовков
-        # Способ 1: Через headers
-        response = self.client.get(
-            url,
-            {'page': 2},
-            headers={'X-Requested-With': 'XMLHttpRequest'}
-        )
-
-        # Если способ 1 не сработал, пробуем способ 2
-        if response.status_code != 200:
-            # Способ 2: Через HTTP_X_REQUESTED_WITH
-            response = self.client.get(
-                url,
-                {'page': 2},
-                HTTP_X_REQUESTED_WITH='XMLHttpRequest'
-            )
-
-        # Если оба способа не сработали, проверяем URL в отладке
-        if response.status_code != 200:
-            # Попробуем с параметром debug
-            response = self.client.get(
-                url,
-                {'page': 2, 'debug': 'ajax'}
-            )
-
-        self.assertEqual(response.status_code, 200,
-                        f"Не удалось получить ответ 200 от {url}. Получен код: {response.status_code}")
-
-        # Проверяем, что ответ содержит JSON
-        try:
-            data = json.loads(response.content)
-            self.assertIn('html', data)
-            self.assertIn('has_next', data)
-        except json.JSONDecodeError:
-            self.fail("Ответ не является валидным JSON")
-
-
-class ProductViewsWithLargeDatasetTest(TestCase):
-    """Тесты представлений с большим набором данных"""
-
-    @classmethod
-    def setUpTestData(cls):
-        """Создание тестовых данных один раз для всех тестов"""
-        # Создаем категорию
-        cls.category = Category.objects.create(
-            name="Тестовая категория",
-            slug="test-category",
-            description="Описание тестовой категории",
-            is_active=True
-        )
-
-        # Создаем 30 товаров
-        cls.products = []
-        for i in range(30):
-            product = Product.objects.create(
-                name=f"Тестовый товар {i+1}",
-                slug=f"test-product-{i+1}",
-                description=f"Описание товара {i+1}",
-                price=Decimal('1000.00'),
-                category=cls.category,
-                is_active=True,
-                in_stock=True,
-                rating=Decimal('4.5')
-            )
-            cls.products.append(product)
-
-    def setUp(self):
-        self.client = Client()
-
-    def test_pagination_with_many_products(self):
-        """Тест пагинации с большим количеством товаров"""
-        response = self.client.get(reverse('mybiz_core:product_list'))
-
-        self.assertEqual(response.status_code, 200)
-
-        # Должно быть 12 товаров на странице (пагинация)
-        self.assertEqual(len(response.context['products']), 12)
-
-        # Проверяем общее количество товаров
-        self.assertEqual(response.context['products'].paginator.count, 30)
-
-        # Проверяем, что есть следующая страница
-        self.assertTrue(response.context['products'].has_next())
-
-    def test_ajax_load_more_multiple_pages(self):
-        """Тест AJAX-подгрузки нескольких страниц"""
-        # Получаем URL
-        url = reverse('mybiz_core:load_more_products')
-
-        # Первая страница (должна вернуть товары 13-24)
-        response = self.client.get(
-            url,
-            {'page': 2},
-            headers={'X-Requested-With': 'XMLHttpRequest'}
-        )
-
-        # Если не сработало, пробуем другой способ
-        if response.status_code != 200:
-            response = self.client.get(
-                url,
-                {'page': 2},
-                HTTP_X_REQUESTED_WITH='XMLHttpRequest'
-            )
-
-        # Если все еще не сработало, пробуем с debug
-        if response.status_code != 200:
-            response = self.client.get(
-                url,
-                {'page': 2, 'debug': 'ajax'}
-            )
-
-        self.assertEqual(response.status_code, 200,
-                        f"Не удалось получить AJAX ответ от {url}. Код: {response.status_code}")
-
-        data = json.loads(response.content)
-        self.assertTrue(data['has_next'])  # Должна быть третья страница
-
-        # Третья страница (товары 25-30)
-        response = self.client.get(
-            url,
-            {'page': 3},
-            headers={'X-Requested-With': 'XMLHttpRequest'}
-        )
-
-        if response.status_code != 200:
-            response = self.client.get(
-                url,
-                {'page': 3},
-                HTTP_X_REQUESTED_WITH='XMLHttpRequest'
-            )
-
-        if response.status_code != 200:
-            response = self.client.get(
-                url,
-                {'page': 3, 'debug': 'ajax'}
-            )
-
-        self.assertEqual(response.status_code, 200)
-        data = json.loads(response.content)
-        self.assertFalse(data['has_next'])  # Больше страниц нет
-
-class ComprehensiveDataTest(TestCase):
-    """Тесты для проверки создания данных"""
-
-    def test_create_large_dataset(self):
-        """Тест создания большого набора данных"""
-        # Создаем категории
-        categories_data = [
-            ('Электроника', 'electronics'),
-            ('Одежда', 'clothing'),
-            ('Книги', 'books'),
-            ('Спорт', 'sports'),
-            ('Красота', 'beauty'),
-        ]
-
-        categories = []
-        for name, slug in categories_data:
-            category = Category.objects.create(
-                name=name,
-                slug=slug,
-                description=f'Описание категории {name}',
-                is_active=True
-            )
-            categories.append(category)
-
-        self.assertEqual(Category.objects.count(), 5)
-
-        # Создаем товары в каждой категории
-        total_products = 50
-        for i in range(total_products):
-            category = categories[i % len(categories)]
-            Product.objects.create(
-                name=f'Тестовый товар {i+1}',
-                slug=f'test-product-{i+1}',
-                description=f'Описание товара {i+1}',
-                price=Decimal('1000.00'),
-                category=category,
-                is_active=True,
-                in_stock=True,
-                rating=Decimal('4.5')
-            )
-
-        self.assertEqual(Product.objects.count(), total_products)
-
-        # Проверяем распределение по категориям
-        for category in categories:
-            product_count = Product.objects.filter(category=category).count()
-            self.assertGreater(product_count, 0)
-            print(f'Категория "{category.name}": {product_count} товаров')
-
-
-class ProductViewsWithLargeDatasetTest(TestCase):
-    """Тесты представлений с большим набором данных"""
-
-    @classmethod
-    def setUpTestData(cls):
-        """Создание тестовых данных один раз для всех тестов"""
-        # Создаем категорию
-        cls.category = Category.objects.create(
-            name="Тестовая категория",
-            slug="test-category",
-            description="Описание тестовой категории",
-            is_active=True
-        )
-
-        # Создаем 30 товаров
-        cls.products = []
-        for i in range(30):
-            product = Product.objects.create(
-                name=f"Тестовый товар {i+1}",
-                slug=f"test-product-{i+1}",
-                description=f"Описание товара {i+1}",
-                price=Decimal('1000.00'),
-                category=cls.category,
-                is_active=True,
-                in_stock=True,
-                rating=Decimal('4.5')
-            )
-            cls.products.append(product)
-
-    def setUp(self):
-        self.client = Client()
-
-    def test_pagination_with_many_products(self):
-        """Тест пагинации с большим количеством товаров"""
-        response = self.client.get(reverse('mybiz_core:product_list'))
-
-        self.assertEqual(response.status_code, 200)
-
-        # Должно быть 12 товаров на странице (пагинация)
-        self.assertEqual(len(response.context['products']), 12)
-
-        # Проверяем общее количество товаров
-        self.assertEqual(response.context['products'].paginator.count, 30)
-
-        # Проверяем, что есть следующая страница
-        self.assertTrue(response.context['products'].has_next())
-
-    def test_ajax_load_more_multiple_pages(self):
-        """Тест AJAX-подгрузки нескольких страниц"""
-        # Первая страница (должна вернуть товары 13-24)
-        response = self.client.get(
-            reverse('mybiz_core:load_more_products'),
-            {'page': 2},
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
-        )
-
-        self.assertEqual(response.status_code, 200)
-        data = json.loads(response.content)
-        self.assertTrue(data['has_next'])  # Должна быть третья страница
-
-        # Третья страница (товары 25-30)
-        response = self.client.get(
-            reverse('mybiz_core:load_more_products'),
-            {'page': 3},
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
-        )
-
-        self.assertEqual(response.status_code, 200)
-        data = json.loads(response.content)
-        self.assertFalse(data['has_next'])  # Больше страниц нет
-
-
-class SitePerformanceTest(TestCase):
-    """Тесты производительности с большим набором данных"""
-
-    def test_home_page_performance_with_many_products(self):
-        """Тест производительности главной страницы с большим количеством товаров"""
-        # Создаем категорию
-        category = Category.objects.create(
-            name="Категория для теста",
-            slug="test-category",
-            is_active=True
-        )
-
-        # Создаем 50 товаров
-        for i in range(50):
-            Product.objects.create(
-                name=f"Товар {i+1}",
-                slug=f"product-{i+1}",
-                description=f"Описание {i+1}",
-                price=Decimal('1000.00'),
-                category=category,
-                is_active=True,
-                is_featured=(i % 5 == 0)  # Каждый 5-й товар - рекомендованный
-            )
-
-        # Замеряем время выполнения запроса главной страницы
-        import time
-        start_time = time.time()
-
-        response = self.client.get(reverse('mybiz_core:home'))
-
-        end_time = time.time()
-        execution_time = end_time - start_time
-
-        self.assertEqual(response.status_code, 200)
-
-        # Проверяем, что на главной отображаются только рекомендованные товары (8 штук)
-        featured_products = response.context['featured_products']
-        self.assertEqual(len(featured_products), 8)
-
-        # Проверяем, что время выполнения приемлемое
-        # (это субъективный тест, но полезный для мониторинга)
-        print(f"Время выполнения главной страницы с 50 товарами: {execution_time:.3f} секунд")
-        self.assertLess(execution_time, 2.0)  # Должно быть меньше 2 секунд
-
-
-class CategoryDistributionTest(TestCase):
-    """Тесты распределения товаров по категориям"""
-
-    def test_category_product_counts(self):
-        """Тест подсчета товаров в категориях"""
-        # Создаем несколько категорий
-        categories = []
-        for i in range(3):
-            category = Category.objects.create(
-                name=f"Категория {i+1}",
-                slug=f"category-{i+1}",
-                is_active=True
-            )
-            categories.append(category)
-
-        # Создаем товары с разным распределением
-        # Категория 1: 5 товаров
-        # Категория 2: 3 товара
-        # Категория 3: 2 товара
-        product_counts = [5, 3, 2]
-
-        product_counter = 1
-        for category, count in zip(categories, product_counts):
-            for i in range(count):
-                Product.objects.create(
-                    name=f"Товар {product_counter}",
-                    slug=f"product-{product_counter}",
-                    description="Описание",
-                    price=Decimal('1000.00'),
-                    category=category,
-                    is_active=True
-                )
-                product_counter += 1
-
-        # Проверяем количество товаров в каждой категории
-        for category, expected_count in zip(categories, product_counts):
-            actual_count = Product.objects.filter(category=category).count()
-            self.assertEqual(actual_count, expected_count)
-
-
-# Добавляем существующие тесты из предыдущей версии
-class ProductViewsTest(TestCase):
-    """Тест представлений для товаров и категорий"""
-
-    def setUp(self):
-        """Создание тестовых данных"""
-        self.client = Client()
-
-        # Создаем категорию
-        self.category = Category.objects.create(
-            name="Тестовая категория",
-            slug="test-category",
-            description="Описание тестовой категории",
-            is_active=True
-        )
-
-        # Создаем товары (больше, чем помещается на одну страницу)
-        for i in range(15):
-            Product.objects.create(
-                name=f"Тестовый товар {i}",
-                slug=f"test-product-{i}",
-                description=f"Описание товара {i}",
-                price=Decimal('1000.00'),
-                category=self.category,
-                is_active=True,
-                in_stock=True,
-                rating=Decimal('4.5')
-            )
-
-    def test_home_page(self):
-        """Тест главной страницы"""
-        response = self.client.get(reverse('mybiz_core:home'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'home.html')
-        self.assertContains(response, 'Тестовый товар')
-
-    def test_product_list_page(self):
-        """Тест страницы списка товаров"""
-        response = self.client.get(reverse('mybiz_core:product_list'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'products/product_list.html')
-
-        # Проверяем пагинацию (12 товаров на странице)
-        self.assertEqual(len(response.context['products']), 12)
-
-    def test_product_detail_page(self):
-        """Тест детальной страницы товара"""
-        product = Product.objects.first()
-        response = self.client.get(reverse('mybiz_core:product_detail', args=[product.slug]))
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'products/product_detail.html')
-        self.assertContains(response, product.name)
-
-    def test_category_filter(self):
-        """Тест фильтрации по категории"""
-        response = self.client.get(
-            reverse('mybiz_core:product_list_by_category', args=[self.category.slug])
-        )
-
-        self.assertEqual(response.status_code, 200)
-        # Все товары должны принадлежать тестовой категории
-        for product in response.context['products']:
-            self.assertEqual(product.category, self.category)
-
-    def test_ajax_load_more(self):
-        """Тест AJAX-подгрузки товаров"""
-        # Первый запрос (первая страница)
-        response = self.client.get(
-            reverse('mybiz_core:load_more_products'),
-            {'page': 1},
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
-        )
-
-        self.assertEqual(response.status_code, 200)
-        data = json.loads(response.content)
-        self.assertTrue(data['has_next'])
-
-        # Второй запрос (вторая страница)
-        response = self.client.get(
-            reverse('mybiz_core:load_more_products'),
-            {'page': 2},
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
-        )
-
-        self.assertEqual(response.status_code, 200)
-        data = json.loads(response.content)
-        # На второй странице должно быть 3 товара (15 всего - 12 на первой)
-        self.assertIn('html', data)
-        self.assertFalse(data['has_next'])  # Больше страниц нет
-
-
-class ProductModelTest(TestCase):
-    def setUp(self):
-        self.category = Category.objects.create(
-            name="Категория",
-            slug="category"
         )
 
         self.product = Product.objects.create(
-            name="Товар",
-            slug="product",
+            name="Тестовый товар",
+            slug="test-product",
+            description="Описание товара",
             price=Decimal('1000.00'),
-            discount_price=Decimal('800.00'),
-            category=self.category
+            category=self.category,
+            is_active=True,
+            in_stock=True
         )
 
-    def test_discount_percentage(self):
-        """Тест расчета процента скидки"""
-        # (1000 - 800) / 1000 * 100 = 20%
-        self.assertEqual(self.product.get_discount_percentage(), 20)
+    def test_home_page(self):
+        """Тест главной страницы"""
+        response = self.client.get(reverse('mybiz_core:home'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'home.html')
 
-    def test_absolute_urls(self):
-        """Тест генерации URL"""
-        category_url = self.category.get_absolute_url()
-        product_url = self.product.get_absolute_url()
+    def test_product_list(self):
+        """Тест страницы товаров"""
+        response = self.client.get(reverse('mybiz_core:product_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'products/product_list.html')
 
-        self.assertIn(self.category.slug, category_url)
-        self.assertIn(self.product.slug, product_url)
+    def test_product_detail(self):
+        """Тест детальной страницы товара"""
+        response = self.client.get(reverse('mybiz_core:product_detail', args=[self.product.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'products/product_detail.html')
 
-
-class TemplateTagsTest(TestCase):
-    def test_category_context_processor(self):
-        """Тест контекстного процессора категорий"""
-        Category.objects.create(name="Категория 1", is_active=True)
-        Category.objects.create(name="Категория 2", is_active=True)
-        Category.objects.create(name="Категория 3", is_active=False)  # Неактивная
-
-        # Создаем запрос для получения контекста
-        from mybiz_core.context_processors import categories
-        context = categories(None)
-
-        # В контексте должны быть только активные категории
-        self.assertIn('categories', context)
-        self.assertEqual(len(context['categories']), 2)
-        self.assertEqual(context['categories'][0].name, "Категория 1")
-        self.assertEqual(context['categories'][1].name, "Категория 2")
-
-
-class SiteSettingsTest(TestCase):
-    def test_site_settings_load(self):
-        """Тест загрузки настроек сайта"""
-        from content.models import SiteSettings
-
-        # Первый вызов должен создать объект
-        settings = SiteSettings.load()
-        self.assertIsNotNone(settings)
-        self.assertEqual(settings.site_name, "MyBiz")
-
-        # Второй вызов должен вернуть тот же объект
-        settings2 = SiteSettings.load()
-        self.assertEqual(settings.pk, settings2.pk)
-
-class URLTests(TestCase):
-
-    def test_urls_available(self):
-        """Тест доступности всех URL"""
-        urls_to_test = [
-            ('mybiz_core:home', None, 200),
-            ('mybiz_core:product_list', None, 200),
-            ('mybiz_core:load_more_products', None, 400),  # Без AJAX заголовка вернет 400
-        ]
-
-        for url_name, args, expected_status in urls_to_test:
-            with self.subTest(url_name=url_name):
-                try:
-                    url = reverse(url_name, args=args)
-                    response = self.client.get(url)
-                    self.assertEqual(
-                        response.status_code,
-                        expected_status,
-                        f"URL {url_name} вернул {response.status_code}, ожидалось {expected_status}"
-                    )
-                except Exception as e:
-                    self.fail(f"Ошибка при тестировании URL {url_name}: {str(e)}")
-
-    def test_ajax_url_works(self):
-        """Тест, что AJAX URL существует и работает"""
-        # Создаем тестовые данные
-        category = Category.objects.create(
-            name="Тестовая категория",
-            slug="test-category",
-            is_active=True
-        )
-
-        for i in range(15):
-            Product.objects.create(
-                name=f"Тестовый товар {i}",
-                slug=f"test-product-{i}",
-                description="Описание",
-                price=1000,
-                category=category,
-                is_active=True
-            )
-
-        # Проверяем URL с AJAX заголовком
-        url = reverse('mybiz_core:load_more_products')
-
-        # Вариант 1: Через headers (более современный)
-        response = self.client.get(
-            url,
-            {'page': 2},
-            headers={'X-Requested-With': 'XMLHttpRequest'}
-        )
-
-        # Если вариант 1 не сработал, пробуем вариант 2
-        if response.status_code == 404:
-            # Вариант 2: Через HTTP_X_REQUESTED_WITH
-            response = self.client.get(
-                url,
-                {'page': 2},
-                HTTP_X_REQUESTED_WITH='XMLHttpRequest'
-            )
-
-        self.assertEqual(
-            response.status_code,
-            200,
-            f"AJAX URL вернул {response.status_code}. Проверьте настройки URL."
-        )
+    def test_category_page(self):
+        """Тест страницы категории"""
+        response = self.client.get(reverse('mybiz_core:product_list_by_category', args=[self.category.slug]))
+        self.assertEqual(response.status_code, 200)
 
 
 ================================================================================
@@ -4460,6 +3668,186 @@ urlpatterns = [
 
 
 ================================================================================
+ФАЙЛ: ./mybiz_core/tests_validation.py
+================================================================================
+
+# mybiz_core/tests_validation.py
+from django.test import TestCase
+from django.core.files.uploadedfile import SimpleUploadedFile
+from .models import Product, Category
+from .validators import validate_image_extension, validate_image_size
+
+class ImageValidationTests(TestCase):
+    def setUp(self):
+        self.category = Category.objects.create(
+            name="Test Category",
+            slug="test-category"
+        )
+
+    def test_valid_image_extension(self):
+        """Тест валидного расширения изображения"""
+        valid_image = SimpleUploadedFile(
+            "test.jpg",
+            b"file_content",
+            content_type="image/jpeg"
+        )
+        # Не должно вызывать исключение
+        validate_image_extension(valid_image)
+
+    def test_invalid_image_extension(self):
+        """Тест невалидного расширения изображения"""
+        invalid_image = SimpleUploadedFile(
+            "test.txt",
+            b"file_content",
+            content_type="text/plain"
+        )
+        with self.assertRaises(Exception):
+            validate_image_extension(invalid_image)
+
+    def test_image_size_too_large(self):
+        """Тест слишком большого изображения"""
+        # Создаем файл больше 5MB
+        large_content = b"x" * (6 * 1024 * 1024)  # 6MB
+        large_image = SimpleUploadedFile(
+            "large.jpg",
+            large_content,
+            content_type="image/jpeg"
+        )
+        with self.assertRaises(Exception):
+            validate_image_size(large_image)
+
+    def test_product_image_validation(self):
+        """Тест загрузки изображения для товара"""
+        # Валидное изображение
+        valid_image = SimpleUploadedFile(
+            "product.jpg",
+            b"valid_image_content",
+            content_type="image/jpeg"
+        )
+
+        product = Product(
+            name="Test Product",
+            slug="test-product",
+            description="Test description",
+            price=1000,
+            category=self.category,
+            image=valid_image
+        )
+
+        # Не должно вызывать исключение при валидации
+        product.full_clean()
+
+
+================================================================================
+ФАЙЛ: ./mybiz_core/templatetags/custom_filters.py
+================================================================================
+
+# mybiz_core/templatetags/custom_filters.py
+from django import template
+
+register = template.Library()
+
+@register.filter
+def split(value, delimiter):
+    """Разделяет строку по разделителю"""
+    return value.split(delimiter)
+
+
+================================================================================
+ФАЙЛ: ./mybiz_core/templatetags/social_tags.py
+================================================================================
+
+# mybiz_core/templatetags/social_tags.py
+from django import template
+from django.utils.safestring import mark_safe
+from django.contrib.staticfiles import finders
+import re
+
+register = template.Library()
+
+
+@register.simple_tag
+def social_icon(icon_name):
+    """Загружает SVG иконку социальной сети"""
+    icon_path = f"social/{icon_name}.svg"
+
+    try:
+        # Пытаемся найти файл в статических файлах
+        result = finders.find(icon_path)
+
+        if result:
+            with open(result, 'r', encoding='utf-8') as f:
+                svg_content = f.read()
+
+                # Удаляем XML декларацию если есть
+                svg_content = svg_content.replace('<?xml version="1.0" encoding="UTF-8"?>', '')
+
+                # Используем более точное регулярное выражение для тега svg
+                # Находим тег <svg и все его атрибуты
+                svg_pattern = r'(<svg[^>]*)'
+
+                def process_svg_tag(match):
+                    svg_tag = match.group(1)
+
+                    # Удаляем атрибуты width и height
+                    svg_tag = re.sub(r'\s(width|height)="[^"]*"', '', svg_tag)
+
+                    # Добавляем или обновляем классы
+                    if 'class="' in svg_tag:
+                        # Проверяем, нет ли уже классов w-6 h-6
+                        if 'w-6' not in svg_tag or 'h-6' not in svg_tag:
+                            svg_tag = re.sub(r'class="([^"]*)"', r'class="\1 w-6 h-6"', svg_tag)
+                    else:
+                        svg_tag = svg_tag.replace('<svg', '<svg class="w-6 h-6"', 1)
+
+                    # Убедимся что fill="currentColor"
+                    if 'fill="' not in svg_tag and "fill='" not in svg_tag:
+                        svg_tag = svg_tag.replace('<svg', '<svg fill="currentColor"', 1)
+                    else:
+                        # Заменяем существующий fill на currentColor
+                        svg_tag = re.sub(r'fill="[^"]*"', 'fill="currentColor"', svg_tag)
+                        svg_tag = re.sub(r"fill='[^']*'", "fill='currentColor'", svg_tag)
+
+                    return svg_tag
+
+                # Применяем обработку только к открывающему тегу <svg
+                svg_content = re.sub(svg_pattern, process_svg_tag, svg_content, count=1)
+
+                svg_content = svg_content.strip()
+                return mark_safe(svg_content)
+
+    except Exception as e:
+        # В случае ошибки возвращаем простую иконку
+        print(f"Ошибка загрузки иконки {icon_name}: {e}")
+
+    # Запасной вариант: базовые иконки с правильными классами
+    fallback_icons = {
+        'telegram': '''
+        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.25 1.58-1.32 5.4-1.87 7.17-.2.7-.59.94-.97.94-.41 0-.57-.29-1.23-.58-1.92-.77-3.18-1.25-4.04-2.5-.43-.58-.77-1.66.08-2.39.47-.41 3.88-3.74 3.95-4.06.01-.04.01-.19-.07-.27-.08-.09-.2-.06-.29-.04-.12.03-2.01 1.27-5.67 3.73-.53.37-1.01.55-1.44.54-.48-.01-1.41-.27-2.1-.5-.85-.28-1.53-.43-1.47-.9.03-.24.28-.48.77-.73 2.95-1.28 4.93-2.14 7.36-3.18 1.1-.47 2.2-.98 3.11-1.01.23 0 .74.04 1.08.33.28.24.36.57.39.82.04.46.07 1.19.07 2.22 0 .31-.02.67-.03 1.08z"/>
+        </svg>
+        ''',
+        'vk': '''
+        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M15.07 2H8.93C3.33 2 2 3.33 2 8.93v6.14C2 20.67 3.33 22 8.93 22h6.14c5.6 0 6.93-1.33 6.93-6.93V8.93C22 3.33 20.67 2 15.07 2zm3.77 14.14c-.12.33-.47.52-1.08.52h-.17c-.78 0-2.05-.48-2.91-1.18-.15 2.25-.67 3.15-1.94 3.15-1.1 0-1.65-.84-1.65-2.34 0-1.24.08-2.22.16-3.09l.01-.15c.08-.86.17-1.73.25-2.59.04-.33.19-.5.46-.5h1.4c.34 0 .5.17.5.5v2.59c0 .33.17.5.5.5h.08c.33 0 .5-.17.5-.5V8.36c0-.33.17-.5.5-.5h1.89c.33 0 .5.17.5.5v2.09c0 .33.17.5.5.5h.08c.33 0 .5-.17.5-.5V8.36c0-.33.17-.5.5-.5h1.89c.33 0 .5.17.5.5v3.68c0 .33-.17.5-.5.5h-.08c-.33 0-.5-.17-.5-.5v-.59c0-.33-.17-.5-.5-.5h-.08c-.33 0-.5.17-.5.5v1.59c0 .33-.17.5-.5.5h-.08c-.33 0-.5-.17-.5-.5v-1.59c0-.33-.17-.5-.5-.5h-.08c-.33 0-.5.17-.5.5v2.59c0 .33-.17.5-.5.5h-.08c-.33 0-.5-.17-.5-.5v-2.09c0-.33-.17-.5-.5-.5h-.08c-.33 0-.5.17-.5.5v3.18c0 .33.17.5.5.5h.34c.61 0 1.1-.19 1.1-.69 0-.2-.03-.4-.08-.57z"/>
+        </svg>
+        ''',
+        'max': '''
+        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+        </svg>
+        ''',
+        'instagram': '''
+        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 01-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 017.8 2m-.2 2A3.6 3.6 0 004 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 003.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 011.25 1.25A1.25 1.25 0 0117.25 8 1.25 1.25 0 0116 6.75a1.25 1.25 0 011.25-1.25M12 7a5 5 0 015 5 5 5 0 01-5 5 5 5 0 01-5-5 5 5 0 015-5m0 2a3 3 0 00-3 3 3 3 0 003 3 3 3 0 003-3 3 3 0 00-3-3z"/>
+        </svg>
+        '''
+    }
+
+    return mark_safe(fallback_icons.get(icon_name, '<svg class="w-6 h-6" fill="currentColor"></svg>'))
+
+
+================================================================================
 ФАЙЛ: ./mybiz_core/views.py
 ================================================================================
 
@@ -4468,13 +3856,17 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET
+from django.views.decorators.cache import cache_page
+from django.db.models import Q
 from .models import Product, Category
-import json
 
+@cache_page(60 * 5)
 def home(request):
     """Главная страница сайта"""
-    # Получаем последние активные товары для главной страницы
-    featured_products = Product.objects.filter(is_active=True).order_by('-created_at')[:8]
+    featured_products = Product.objects.filter(
+        is_active=True,
+        is_featured=True
+    ).select_related('category').order_by('-created_at')[:8]
 
     context = {
         'featured_products': featured_products,
@@ -4483,17 +3875,36 @@ def home(request):
     return render(request, 'home.html', context)
 
 def product_list(request, category_slug=None):
-    """Список товаров с возможностью фильтрации по категории"""
+    """Список товаров с фильтрацией по категории и поиском"""
     category = None
+    search_query = request.GET.get('q', '')
+    sort_by = request.GET.get('sort', '')
 
-    # ИСПРАВЛЕНИЕ: Всегда инициализируем products
-    products = Product.objects.filter(is_active=True)
+    products = Product.objects.filter(is_active=True).select_related('category')
 
     if category_slug:
         category = get_object_or_404(Category, slug=category_slug, is_active=True)
         products = products.filter(category=category)
 
-    # Пагинация - 12 товаров на страницу
+    if search_query:
+        products = products.filter(
+            Q(name__icontains=search_query) |
+            Q(description__icontains=search_query) |
+            Q(short_description__icontains=search_query) |
+            Q(category__name__icontains=search_query)
+        )
+
+    # Сортировка
+    sort_options = {
+        'price_asc': 'price',
+        'price_desc': '-price',
+        'name_asc': 'name',
+        'name_desc': '-name',
+        'newest': '-created_at',
+    }
+    products = products.order_by(sort_options.get(sort_by, '-created_at'))
+
+    # Пагинация
     page = request.GET.get('page', 1)
     paginator = Paginator(products, 12)
 
@@ -4508,18 +3919,24 @@ def product_list(request, category_slug=None):
         'category': category,
         'products': products_page,
         'title': category.name if category else 'Все товары',
+        'search_query': search_query,
+        'sort_by': sort_by,
     }
     return render(request, 'products/product_list.html', context)
 
+@cache_page(60 * 5)
 def product_detail(request, product_slug):
     """Детальная страница товара"""
-    product = get_object_or_404(Product, slug=product_slug, is_active=True)
+    product = get_object_or_404(
+        Product.objects.select_related('category'),
+        slug=product_slug,
+        is_active=True
+    )
 
-    # Получаем похожие товары из той же категории
     related_products = Product.objects.filter(
         category=product.category,
         is_active=True
-    ).exclude(id=product.id)[:4]
+    ).exclude(id=product.id).select_related('category')[:4]
 
     context = {
         'product': product,
@@ -4530,59 +3947,153 @@ def product_detail(request, product_slug):
 
 @require_GET
 def load_more_products(request):
-    """AJAX-представление для подгрузки товаров (кнопка 'Показать ещё')"""
-    # Проверяем, является ли запрос AJAX
-    # Способ 1: Через headers (для современных клиентов)
-    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+    """AJAX-подгрузка товаров"""
+    if not request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'error': 'AJAX request required'}, status=400)
 
-    # Способ 2: Через META (для старых клиентов и тестов Django)
-    if not is_ajax:
-        is_ajax = request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+    page = request.GET.get('page', 2)
+    category_slug = request.GET.get('category', '')
+    search_query = request.GET.get('q', '')
+    sort_by = request.GET.get('sort', '')
 
-    # Способ 3: Для отладки и тестов - параметр ?debug=ajax
-    debug_mode = request.GET.get('debug') == 'ajax'
+    products = Product.objects.filter(is_active=True).select_related('category')
 
-    if is_ajax or debug_mode:
-        page = request.GET.get('page', 2)  # По умолчанию загружаем вторую страницу
-        category_slug = request.GET.get('category', None)
-
-        products = Product.objects.filter(is_active=True)
-
-        if category_slug and category_slug != 'all':
-            try:
-                category = Category.objects.get(slug=category_slug, is_active=True)
-                products = products.filter(category=category)
-            except Category.DoesNotExist:
-                category = None
-
-        paginator = Paginator(products, 12)
-
+    if category_slug and category_slug != 'all':
         try:
-            products_page = paginator.page(page)
-        except (EmptyPage, PageNotAnInteger):
-            return JsonResponse({'html': '', 'has_next': False, 'next_page': None})
+            category = Category.objects.get(slug=category_slug, is_active=True)
+            products = products.filter(category=category)
+        except Category.DoesNotExist:
+            pass
 
-        # Рендерим только HTML с товарами
-        html = render_to_string('products/product_items.html', {'products': products_page})
+    if search_query:
+        products = products.filter(
+            Q(name__icontains=search_query) |
+            Q(description__icontains=search_query) |
+            Q(short_description__icontains=search_query)
+        )
 
-        return JsonResponse({
-            'html': html,
-            'has_next': products_page.has_next(),
-            'next_page': products_page.next_page_number() if products_page.has_next() else None
-        })
+    sort_options = {
+        'price_asc': 'price',
+        'price_desc': '-price',
+        'name_asc': 'name',
+        'name_desc': '-name',
+        'newest': '-created_at',
+    }
+    products = products.order_by(sort_options.get(sort_by, '-created_at'))
 
-    # Если запрос не AJAX, возвращаем ошибку 400
+    paginator = Paginator(products, 12)
+
+    try:
+        products_page = paginator.page(page)
+    except (EmptyPage, PageNotAnInteger):
+        return JsonResponse({'html': '', 'has_next': False})
+
+    html = render_to_string('products/product_items.html', {'products': products_page})
+
     return JsonResponse({
-        'error': 'This endpoint requires an AJAX request',
-        'detail': 'Set X-Requested-With header to XMLHttpRequest'
-    }, status=400)
+        'html': html,
+        'has_next': products_page.has_next(),
+        'next_page': products_page.next_page_number() if products_page.has_next() else None
+    })
+
+
+================================================================================
+ФАЙЛ: ./mybiz_core/migrations/0004_product_product_slug_idx_and_more.py
+================================================================================
+
+# Generated by Django 5.2 on 2025-12-17 12:15
+
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('mybiz_core', '0003_product_product_category_active_idx_and_more'),
+    ]
+
+    operations = [
+        migrations.AddIndex(
+            model_name='product',
+            index=models.Index(fields=['slug'], name='product_slug_idx'),
+        ),
+        migrations.AddIndex(
+            model_name='product',
+            index=models.Index(fields=['is_active', 'price'], name='product_active_price_idx'),
+        ),
+    ]
+
+
+================================================================================
+ФАЙЛ: ./mybiz_core/migrations/0003_product_product_category_active_idx_and_more.py
+================================================================================
+
+# Generated by Django 5.2 on 2025-12-17 11:46
+
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('mybiz_core', '0002_alter_category_image_alter_product_image'),
+    ]
+
+    operations = [
+        migrations.AddIndex(
+            model_name='product',
+            index=models.Index(fields=['category', 'is_active'], name='product_category_active_idx'),
+        ),
+        migrations.AddIndex(
+            model_name='product',
+            index=models.Index(fields=['is_active', 'created_at'], name='product_active_created_idx'),
+        ),
+        migrations.AddIndex(
+            model_name='product',
+            index=models.Index(fields=['is_featured', 'is_active'], name='product_featured_active_idx'),
+        ),
+        migrations.AddIndex(
+            model_name='product',
+            index=models.Index(fields=['in_stock', 'is_active'], name='product_stock_active_idx'),
+        ),
+    ]
+
+
+================================================================================
+ФАЙЛ: ./mybiz_core/migrations/0002_alter_category_image_alter_product_image.py
+================================================================================
+
+# Generated by Django 5.2 on 2025-12-17 08:22
+
+import mybiz_core.validators
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('mybiz_core', '0001_initial'),
+    ]
+
+    operations = [
+        migrations.AlterField(
+            model_name='category',
+            name='image',
+            field=models.ImageField(blank=True, null=True, upload_to='categories/', validators=[mybiz_core.validators.validate_image_extension, mybiz_core.validators.validate_image_size, mybiz_core.validators.validate_image_dimensions], verbose_name='Изображение'),
+        ),
+        migrations.AlterField(
+            model_name='product',
+            name='image',
+            field=models.ImageField(upload_to='products/', validators=[mybiz_core.validators.validate_image_extension, mybiz_core.validators.validate_image_size, mybiz_core.validators.validate_image_dimensions], verbose_name='Основное изображение'),
+        ),
+    ]
 
 
 ================================================================================
 ФАЙЛ: ./mybiz_core/migrations/0001_initial.py
 ================================================================================
 
-# Generated by Django 5.2 on 2025-12-15 11:01
+# Generated by Django 5.2 on 2025-12-16 16:16
 
 import django.db.models.deletion
 from django.db import migrations, models
@@ -4676,19 +4187,6 @@ class MybizCoreConfig(AppConfig):
 
 
 ================================================================================
-ФАЙЛ: ./requirements.txt
-================================================================================
-
-asgiref==3.11.0
-Django==5.2
-django-ckeditor==6.7.3
-django-js-asset==3.1.2
-pillow==12.0.0
-sqlparse==0.5.4
-typing_extensions==4.15.0
-
-
-================================================================================
 ФАЙЛ: ./manage.py
 ================================================================================
 
@@ -4697,6 +4195,11 @@ typing_extensions==4.15.0
 import os
 import sys
 
+try:
+    from copyright_notice import CopyrightProtection
+    CopyrightProtection.display_copyright()
+except ImportError:
+    pass
 
 def main():
     """Run administrative tasks."""
@@ -4720,32 +4223,39 @@ if __name__ == '__main__':
 ФАЙЛ: ./.env
 ================================================================================
 
-[БИНАРНЫЙ ФАЙЛ - содержимое не показано]
+SECRET_KEY=p0x86)s74ax)nfzfg6o*q(ox++6*yzns0r#l8ey46g-(vln7i6
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
+DB_NAME=db.sqlite3
+DB_ENGINE=django.db.backends.sqlite3
 
 
 === СТРУКТУРА ПРОЕКТА (дерево директорий) ===
 
 .
 - config
+- - settings
 - content
 - - migrations
 - mybiz_core
 - - management
 - - - commands
 - - migrations
+- - templatetags
 - pages
 - - migrations
+- release
 - static
 - - admin
 - - - css
 - - - js
-- - css
-- - images
-- - js
+- - social
 - templates
 - - includes
 - - pages
 - - products
+- - widgets
+- utils
 
 === ИНФОРМАЦИЯ О СРЕДЕ ===
 
@@ -4754,10 +4264,13 @@ Python версия:
 Установленные пакеты Django:
 
 Зависимости проекта:
-asgiref==3.11.0
-Django==5.2
+# Базовые зависимости для MyBiz
+Django==5.2.9
+Pillow==12.0.0
+python-decouple==3.8
 django-ckeditor==6.7.3
-django-js-asset==3.1.2
-pillow==12.0.0
-sqlparse==0.5.4
-typing_extensions==4.15.0
+
+# Для продакшена (раскомментировать при необходимости)
+# psycopg2-binary==2.9.9
+# whitenoise==6.6.0
+# gunicorn==21.2.0
