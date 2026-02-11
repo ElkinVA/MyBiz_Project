@@ -1,65 +1,128 @@
-# mybiz_core/templatetags/social_tags.py
+# mybiz_core/templatetags/social_tags.py - исправленный с кэшированием
 from django import template
 from django.utils.safestring import mark_safe
 from django.contrib.staticfiles import finders
 import re
+from django.core.cache import cache
+import logging
+
+logger = logging.getLogger(__name__)
 
 register = template.Library()
 
 
-@register.simple_tag
-def social_icon(icon_name):
-    """Загружает SVG иконку социальной сети"""
+def _load_svg_content(icon_name):
+    """Загружает содержимое SVG файла с кэшированием"""
+    cache_key = f'social_icon_{icon_name}'
+    svg_content = cache.get(cache_key)
+    if svg_content:
+        return svg_content
+
     icon_path = f"social/{icon_name}.svg"
-
     try:
-        # Пытаемся найти файл в статических файлах
         result = finders.find(icon_path)
-
         if result:
             with open(result, 'r', encoding='utf-8') as f:
-                svg_content = f.read()
-
-                # Удаляем XML декларацию если есть
-                svg_content = svg_content.replace('<?xml version="1.0" encoding="UTF-8"?>', '')
-
-                # Используем более точное регулярное выражение для тега svg
-                # Находим тег <svg и все его атрибуты
-                svg_pattern = r'(<svg[^>]*)'
-
-                def process_svg_tag(match):
-                    svg_tag = match.group(1)
-
-                    # Удаляем атрибуты width и height
-                    svg_tag = re.sub(r'\s(width|height)="[^"]*"', '', svg_tag)
-
-                    # Добавляем или обновляем классы
-                    if 'class="' in svg_tag:
-                        # Проверяем, нет ли уже классов w-6 h-6
-                        if 'w-6' not in svg_tag or 'h-6' not in svg_tag:
-                            svg_tag = re.sub(r'class="([^"]*)"', r'class="\1 w-6 h-6"', svg_tag)
-                    else:
-                        svg_tag = svg_tag.replace('<svg', '<svg class="w-6 h-6"', 1)
-
-                    # Убедимся что fill="currentColor"
-                    if 'fill="' not in svg_tag and "fill='" not in svg_tag:
-                        svg_tag = svg_tag.replace('<svg', '<svg fill="currentColor"', 1)
-                    else:
-                        # Заменяем существующий fill на currentColor
-                        svg_tag = re.sub(r'fill="[^"]*"', 'fill="currentColor"', svg_tag)
-                        svg_tag = re.sub(r"fill='[^']*'", "fill='currentColor'", svg_tag)
-
-                    return svg_tag
-
-                # Применяем обработку только к открывающему тегу <svg
-                svg_content = re.sub(svg_pattern, process_svg_tag, svg_content, count=1)
-
-                svg_content = svg_content.strip()
-                return mark_safe(svg_content)
-
+                content = f.read()
+            # Кэшируем на 1 час (3600 секунд)
+            cache.set(cache_key, content, 3600)
+            return content
+        else:
+            logger.warning(f"SVG icon '{icon_name}' not found at path '{icon_path}'.")
+            return f'<span>{icon_name}</span>' # Запасной вариант
     except Exception as e:
-        # В случае ошибки возвращаем простую иконку
-        print(f"Ошибка загрузки иконки {icon_name}: {e}")
+        logger.error(f"Error loading SVG icon '{icon_name}': {e}")
+        return f'<span>{icon_name}</span>' # Запасной вариант
+
+@register.simple_tag
+def render_social_link(link_url, icon_name, link_text='', custom_classes=''):
+    """
+    Рендерит HTML-ссылку с SVG-иконкой.
+    """
+    if not link_url:
+        return '' # Не рендерим, если нет URL
+
+    svg_content = _load_svg_content(icon_name)
+    classes = f"social-link flex items-center space-x-2 p-2 rounded-full transition-colors duration-300 {custom_classes}"
+
+    html = f'''
+    <a href="{link_url}" target="_blank" rel="noopener noreferrer" class="{classes}">
+        {mark_safe(svg_content)}
+        '''
+    if link_text:
+        html += f'<span class="sr-only">{link_text}</span>' # Для доступности
+    html += '''
+    </a>
+    '''
+    return mark_safe(html)
+
+@register.filter
+def add_class(value, css_class):
+    """Добавляет CSS класс к строке"""
+    if value and css_class:
+        return f"{value} {css_class}"
+    return value
+
+@register.filter
+def multiply(value, arg):
+    """Умножает значение на аргумент"""
+    try:
+        return float(value) * float(arg)
+    except (ValueError, TypeError):
+        return 0
+
+def _process_svg_content(svg_content, icon_name):
+    """Обрабатывает SVG для правильного отображения"""
+    if not svg_content:
+        return None
+
+    # Удаляем XML декларацию если есть
+    svg_content = svg_content.replace('<?xml version="1.0" encoding="UTF-8"?>', '')
+
+    # Находим тег <svg
+    svg_pattern = r'(<svg[^>]*)'
+
+    def process_svg_tag(match):
+        svg_tag = match.group(1)
+
+        # Удаляем атрибуты width и height
+        svg_tag = re.sub(r'\s(width|height)="[^"]*"', '', svg_tag)
+
+        # Добавляем или обновляем классы
+        if 'class="' in svg_tag:
+            # Проверяем, нет ли уже классов w-6 h-6
+            if 'w-6' not in svg_tag or 'h-6' not in svg_tag:
+                svg_tag = re.sub(r'class="([^"]*)"', r'class="\1 w-6 h-6"', svg_tag)
+        else:
+            svg_tag = svg_tag.replace('<svg', '<svg class="w-6 h-6"', 1)
+
+        # Убедимся что fill="currentColor"
+        if 'fill="' not in svg_tag and "fill='" not in svg_tag:
+            svg_tag = svg_tag.replace('<svg', '<svg fill="currentColor"', 1)
+        else:
+            # Заменяем существующий fill на currentColor
+            svg_tag = re.sub(r'fill="[^"]*"', 'fill="currentColor"', svg_tag)
+            svg_tag = re.sub(r"fill='[^']*'", "fill='currentColor'", svg_tag)
+
+        return svg_tag
+
+    # Применяем обработку только к открывающему тегу <svg
+    svg_content = re.sub(svg_pattern, process_svg_tag, svg_content, count=1)
+
+    return svg_content.strip()
+
+
+@register.simple_tag
+def social_icon(icon_name):
+    """Загружает SVG иконку социальной сети с кэшированием"""
+    # Загружаем содержимое SVG с кэшированием
+    svg_content = _load_svg_content(icon_name)
+
+    # Обрабатываем SVG
+    processed_content = _process_svg_content(svg_content, icon_name)
+
+    if processed_content:
+        return mark_safe(processed_content)
 
     # Запасной вариант: базовые иконки с правильными классами
     fallback_icons = {
@@ -86,3 +149,17 @@ def social_icon(icon_name):
     }
 
     return mark_safe(fallback_icons.get(icon_name, '<svg class="w-6 h-6" fill="currentColor"></svg>'))
+
+
+@register.simple_tag
+def social_icon_fallback(icon_name, fallback_text):
+    """Загружает SVG иконку с текстовым fallback"""
+    try:
+        icon_content = social_icon(icon_name)
+        if icon_content and '<svg' in icon_content:
+            return mark_safe(icon_content)
+    except:
+        pass
+
+    # Fallback на текст
+    return mark_safe(f'<span class="text-lg font-medium">{fallback_text[:2]}</span>')

@@ -1,64 +1,27 @@
+# pages/admin.py
 from django.contrib import admin
-from ckeditor.widgets import CKEditorWidget
 from django import forms
+from django_ckeditor_5.widgets import CKEditor5Widget
 from .models import Page
 
 
-class PageForm(forms.ModelForm):
-    content = forms.CharField(widget=CKEditorWidget())
-
+class PageAdminForm(forms.ModelForm):
     class Meta:
         model = Page
         fields = '__all__'
+        widgets = {
+            'content': CKEditor5Widget(
+                config_name='default',
+                attrs={'class': 'django_ckeditor_5'}
+            ),
+        }
 
 
 @admin.register(Page)
 class PageAdmin(admin.ModelAdmin):
-    form = PageForm
-    list_display = ('title', 'slug', 'is_active', 'show_in_header', 'created_at')
-    list_filter = ('is_active', 'show_in_header', 'created_at')
-    search_fields = ('title', 'content', 'meta_description')
+    form = PageAdminForm
+    list_display = ('title', 'slug', 'show_in_header', 'show_in_footer', 'is_active', 'created_at')
+    list_filter = ('is_active', 'show_in_header', 'show_in_footer')
+    search_fields = ('title', 'content')
     prepopulated_fields = {'slug': ('title',)}
-    readonly_fields = ('created_at', 'updated_at')  # Поля только для чтения
-
-    def get_fieldsets(self, request, obj=None):
-        """Разные fieldsets для создания и редактирования"""
-        if obj:  # Редактирование существующей страницы
-            fieldsets = (
-                ('Основная информация', {
-                    'fields': ('title', 'slug', 'content', 'excerpt')
-                }),
-                ('SEO', {
-                    'fields': ('meta_title', 'meta_description', 'meta_keywords')
-                }),
-                ('Отображение', {
-                    'fields': ('is_active', 'show_in_header')
-                }),
-                ('Системные поля (только чтение)', {
-                    'fields': ('created_at', 'updated_at'),
-                    'classes': ('collapse',)  # Свернутый блок
-                }),
-            )
-        else:  # Создание новой страницы
-            fieldsets = (
-                ('Основная информация', {
-                    'fields': ('title', 'slug', 'content', 'excerpt')
-                }),
-                ('SEO', {
-                    'fields': ('meta_title', 'meta_description', 'meta_keywords')
-                }),
-                ('Отображение', {
-                    'fields': ('is_active', 'show_in_header')
-                }),
-            )
-        return fieldsets
-
-    def get_readonly_fields(self, request, obj=None):
-        """Определяем поля только для чтения"""
-        readonly_fields = list(super().get_readonly_fields(request, obj))
-
-        if obj:  # При редактировании
-            readonly_fields.append('created_at')
-            readonly_fields.append('updated_at')
-
-        return readonly_fields
+    ordering = ('title',)  # Убрал 'order'

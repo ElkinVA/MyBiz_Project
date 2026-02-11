@@ -1,0 +1,30 @@
+{
+  "name": "mybiz",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "npx tailwindcss -i ./static/css/input.css -o ./static/css/tailwind.css --watch",
+    "build": "npx tailwindcss -i ./static/css/input.css -o ./static/css/tailwind.css --minify"
+  },
+  "devDependencies": {
+    "@tailwindcss/aspect-ratio": "^0.4.2",
+    "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/typography": "^0.5.10",
+    "autoprefixer": "^10.4.23",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.18"
+  },
+  "description": "Простой конструктор сайтов-витрин на Django для не-программистов.",
+  "main": "postcss.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ElkinVA/MyBiz_Project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ElkinVA/MyBiz_Project/issues"
+  },
+  "homepage": "https://github.com/ElkinVA/MyBiz_Project#readme"
+}

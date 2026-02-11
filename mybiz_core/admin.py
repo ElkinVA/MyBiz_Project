@@ -1,84 +1,57 @@
 # mybiz_core/admin.py
+
 from django.contrib import admin
-from django.utils.html import format_html
+from django.db.models import Count, Q
 from .models import Category, Product
+from django.utils.html import format_html
 
-
-@admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'slug', 'is_active', 'created_at')
-    list_filter = ('is_active', 'created_at')
-    search_fields = ('name', 'description')
+    list_display = ['name', 'get_products_count', 'is_active', 'created_at']
+    list_filter = ['is_active', 'created_at', 'parent']
+    search_fields = ['name']
     prepopulated_fields = {'slug': ('name',)}
-    ordering = ('-created_at',)
 
+    def get_queryset(self, request):
+        # Используем annotate для подсчета товаров в одной выборке
+        queryset = super().get_queryset(request)
+        return queryset.annotate(
+            active_products_count=Count('products', filter=Q(products__is_active=True))
+        )
 
-@admin.register(Product)
+    def get_products_count(self, obj):
+        # Используем аннотированное поле вместо отдельного запроса
+        return obj.active_products_count
+
+    get_products_count.short_description = 'Количество активных товаров'
+    get_products_count.admin_order_field = 'active_products_count' # Позволяет сортировать по этому полю
+
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'price', 'is_active', 'created_at', 'image_preview')
-    list_filter = ('is_active', 'category', 'created_at')
-    search_fields = ('name', 'description', 'category__name')
+    list_display = ['name', 'category', 'price', 'is_active', 'is_featured', 'created_at']
+    list_filter = ['category', 'is_active', 'is_featured', 'created_at']
+    search_fields = ['name', 'description', 'brand']
     prepopulated_fields = {'slug': ('name',)}
-    readonly_fields = ('image_preview', 'created_at', 'updated_at')
+    readonly_fields = ('get_discount_percentage_display',) # Добавляем поле как readonly
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'slug', 'category', 'description', 'short_description', 'image')
+        }),
+        ('Цены', {
+            'fields': ('price', 'discount_price', 'get_discount_percentage_display')
+        }),
+        ('Дополнительно', {
+            'fields': ('brand', 'stock', 'is_active', 'is_featured'),
+            'classes': ('collapse',) # Сворачиваемая секция
+        }),
+    )
 
-    def get_fieldsets(self, request, obj=None):
-        """Определяем разные fieldsets для создания и редактирования"""
-        if obj:  # Редактирование существующего товара
-            fieldsets = (
-                ('Основная информация', {
-                    'fields': ('name', 'slug', 'category', 'description', 'price', 'discount_price')
-                }),
-                ('Изображения', {
-                    'fields': ('image', 'image_preview')
-                }),
-                ('Статус и наличие', {
-                    'fields': ('is_active', 'in_stock', 'is_new', 'is_featured')
-                }),
-                ('Дополнительная информация', {
-                    'fields': ('sku', 'brand', 'short_description', 'old_price', 'stock')
-                }),
-                ('Рейтинги', {
-                    'fields': ('rating', 'review_count')
-                }),
-                ('Системные поля (только чтение)', {
-                    'fields': ('created_at', 'updated_at'),
-                    'classes': ('collapse',)  # Сворачиваемый блок
-                }),
-            )
-        else:  # Создание нового товара
-            fieldsets = (
-                ('Основная информация', {
-                    'fields': ('name', 'slug', 'category', 'description', 'price', 'discount_price')
-                }),
-                ('Изображения', {
-                    'fields': ('image',)
-                }),
-                ('Статус и наличие', {
-                    'fields': ('is_active', 'in_stock', 'is_new', 'is_featured')
-                }),
-                ('Дополнительная информация', {
-                    'fields': ('sku', 'brand', 'short_description', 'old_price', 'stock')
-                }),
-                ('Рейтинги', {
-                    'fields': ('rating', 'review_count')
-                }),
-            )
-        return fieldsets
+    def get_discount_percentage_display(self, obj):
+        # Метод для отображения процента скидки в админке
+        percentage = obj.get_discount_percentage()
+        if percentage > 0:
+            return format_html('<span style="color:red;">{}%</span>', percentage)
+        return '-'
 
-    def get_readonly_fields(self, request, obj=None):
-        """Определяем поля только для чтения"""
-        readonly_fields = list(super().get_readonly_fields(request, obj))
+    get_discount_percentage_display.short_description = 'Скидка (%)'
 
-        if obj:  # При редактировании
-            readonly_fields.append('created_at')
-            readonly_fields.append('updated_at')
-
-        readonly_fields.append('image_preview')
-        return readonly_fields
-
-    def image_preview(self, obj):
-        if obj.image:
-            return format_html('<img src="{}" width="100" height="100" style="object-fit: cover;" />', obj.image.url)
-        return "Нет изображения"
-
-    image_preview.short_description = 'Превью'
+admin.site.register(Category, CategoryAdmin)
+admin.site.register(Product, ProductAdmin)

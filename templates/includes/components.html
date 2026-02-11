@@ -1,0 +1,39 @@
+<!--
+КOМПОНЕНТЫ MYBIZ
+
+Для использования компонентов загрузите теги:
+{% load components_tags %}
+
+Примеры использования:
+
+1. Кнопка:
+{% button_component href="/products/" type="primary" size="md" text="Кнопка" icon="arrow-right" %}
+
+2. Карточка товара:
+{% product_card_component product %}
+
+3. Статистика:
+{% stat_component number=100 label="Товаров" icon="box" color="primary" %}
+
+4. Фича:
+{% feature_component icon="check" title="Заголовок" description="Описание" %}
+
+5. Отзыв:
+{% testimonial_component text="Отличный товар!" author="Иван" role="Клиент" %}
+
+6. Ценовой план:
+{% pricing_component title="Стандарт" price=2990 period="месяц" features=features_list button_text="Купить" button_url="#" %}
+
+7. Заголовок секции:
+{% section_header_component title="Наши преимущества" subtitle="Почему мы" align="center" %}
+
+8. Спиннер:
+{% spinner_component size="md" color="primary" %}
+
+9. Алерт:
+{% alert_component type="info" title="Внимание" message="Сообщение" dismissible=True %}
+
+Дополнительные фильтры:
+{{ value|add_class:"my-class" }}
+{{ value|multiply:2 }}
+-->

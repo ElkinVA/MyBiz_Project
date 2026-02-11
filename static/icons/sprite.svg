@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: none;">
+    <!-- Icon definitions -->
+
+    <!-- Shopping icons -->
+    <symbol id="icon-cart" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0020 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+    </symbol>
+
+    <symbol id="icon-heart" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+    </symbol>
+
+    <symbol id="icon-search" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+    </symbol>
+
+    <symbol id="icon-user" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+    </symbol>
+
+    <!-- Navigation icons -->
+    <symbol id="icon-arrow-right" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M10 17l5-5-5-5v10z"/>
+    </symbol>
+
+    <symbol id="icon-arrow-left" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M14 7l-5 5 5 5V7z"/>
+    </symbol>
+
+    <symbol id="icon-arrow-up" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M7 14l5-5 5 5H7z"/>
+    </symbol>
+
+    <symbol id="icon-arrow-down" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M7 10l5 5 5-5H7z"/>
+    </symbol>
+
+    <symbol id="icon-chevron-right" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+    </symbol>
+
+    <symbol id="icon-chevron-left" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+    </symbol>
+
+    <!-- Action icons -->
+    <symbol id="icon-check" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+    </symbol>
+
+    <symbol id="icon-close" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+    </symbol>
+
+    <symbol id="icon-plus" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+    </symbol>
+
+    <symbol id="icon-minus" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M19 13H5v-2h14v2z"/>
+    </symbol>
+
+    <!-- Feature icons -->
+    <symbol id="icon-truck" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+    </symbol>
+
+    <symbol id="icon-shield" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+    </symbol>
+
+    <symbol id="icon-star" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+    </symbol>
+
+    <symbol id="icon-award" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M17 4l-2.25 2.25L12 4l-2.75 2.25L7 4 4 7l2.25 2.25L4 11.5 7 14.5l2.25-2.25L12 14.5l2.75-2.25L17 14.5l3-3.5-2.25-2.25L20 7zM9.5 12.5L7 15l2.5 2.5L12 15l2.5 2.5L17 15l-2.5-2.5L12 10z"/>
+    </symbol>
+
+    <!-- Social icons -->
+    <symbol id="icon-telegram" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/>
+    </symbol>
+
+    <symbol id="icon-vk" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M15.07 2H8.93C3.33 2 2 3.33 2 8.93v6.14C2 20.67 3.33 22 8.93 22h6.14c5.6 0 6.93-1.33 6.93-6.93V8.93C22 3.33 20.67 2 15.07 2zm3.77 14.14c-.12.33-.47.52-1.08.52h-.17c-.78 0-2.05-.48-2.91-1.18-.15 2.25-.67 3.15-1.94 3.15-1.1 0-1.65-.84-1.65-2.34 0-1.24.08-2.22.16-3.09l.01-.15c.08-.86.17-1.73.25-2.59.04-.33.19-.5.46-.5h1.4c.34 0 .5.17.5.5v2.59c0 .33.17.5.5.5h.08c.33 0 .5-.17.5-.5V8.36c0-.33.17-.5.5-.5h1.89c.33 0 .5.17.5.5v2.09c0 .33.17.5.5.5h.08c.33 0 .5-.17.5-.5V8.36c0-.33.17-.5.5-.5h1.89c.33 0 .5.17.5.5v3.68c0 .33-.17.5-.5.5h-.08c-.33 0-.5-.17-.5-.5v-.59c0-.33-.17-.5-.5-.5h-.08c-.33 0-.5.17-.5.5v1.59c0 .33-.17.5-.5.5h-.08c-.33 0-.5-.17-.5-.5v-1.59c0-.33-.17-.5-.5-.5h-.08c-.33 0-.5.17-.5.5v2.59c0 .33-.17.5-.5.5h-.08c-.33 0-.5-.17-.5-.5v-2.09c0-.33-.17-.5-.5-.5h-.08c-.33 0-.5.17-.5.5v3.18c0 .33.17.5.5.5h.34c.61 0 1.1-.19 1.1-.69 0-.2-.03-.4-.08-.57z"/>
+    </symbol>
+
+    <symbol id="icon-instagram" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 01-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 017.8 2m-.2 2A3.6 3.6 0 004 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 003.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 011.25 1.25A1.25 1.25 0 0117.25 8 1.25 1.25 0 0116 6.75a1.25 1.25 0 011.25-1.25M12 7a5 5 0 015 5 5 5 0 01-5 5 5 5 0 01-5-5 5 5 0 015-5m0 2a3 3 0 00-3 3 3 3 0 003 3 3 3 0 003-3 3 3 0 00-3-3z"/>
+    </symbol>
+
+    <symbol id="icon-facebook" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/>
+    </symbol>
+
+    <!-- Utility icons -->
+    <symbol id="icon-mail" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"/>
+    </symbol>
+
+    <symbol id="icon-phone" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+    </symbol>
+
+    <symbol id="icon-map" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+    </symbol>
+
+    <symbol id="icon-clock" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+    </symbol>
+
+    <!-- Payment icons -->
+    <symbol id="icon-visa" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M18.71 8.93c-1.5 0-2.67.52-3.58 1.4l-.6-2.9c-.2-.9-.9-1.4-1.8-1.4H7.3l-.1.4c1.3.3 2.7.8 3.7 1.4.5.3.6.5.8.8l2.9 7.1h3.9l-2.2-10.8h-1.5zm-10.5-.3l-2.2 6.1-.3-1.3c-.4-1.4-1.7-2.9-3.1-3.7l2-2.5c.5.3 1 .7 1.3 1.1.4.4.7.9.9 1.4l.4 1.9zm12.2-3.7l-2 2.5c-.5-.3-1-.7-1.3-1.1-.4-.4-.7-.9-.9-1.4l-.4-1.9 2.2-6.1.3 1.3c.4 1.4 1.7 2.9 3.1 3.7z"/>
+    </symbol>
+
+    <symbol id="icon-mastercard" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M12 6.5c-2.49 0-4.5 2.01-4.5 4.5s2.01 4.5 4.5 4.5 4.5-2.01 4.5-4.5-2.01-4.5-4.5-4.5zM12 15c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/>
+        <circle fill="currentColor" cx="9.5" cy="11" r="1.5"/>
+        <circle fill="currentColor" cx="14.5" cy="11" r="1.5"/>
+    </symbol>
+
+    <symbol id="icon-mir" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+    </symbol>
+</svg>

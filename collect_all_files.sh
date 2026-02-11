@@ -4,39 +4,14 @@
 # Рекурсивно обходит все папки и подпапки
 
 OUTPUT_FILE="full_project_analysis.txt"
+LOG_FILE="collection.log"
 
 echo "-== Начало полного сбора файлов проекта MyBiz ==-"
-# Функция для добавления файла в отчет
-add_file() {
-    local file_path=$1
-
-  #  echo "Обработка: $file_path"
-
-    echo "================================================================================" >> "$OUTPUT_FILE"
-    echo "ФАЙЛ: $file_path" >> "$OUTPUT_FILE"
-    echo "================================================================================" >> "$OUTPUT_FILE"
-    echo "" >> "$OUTPUT_FILE"
-
-    if [ -f "$file_path" ]; then
-        # Проверяем, является ли файл текстовым (не бинарным)
-        if file "$file_path" | grep -q "text"; then
-            cat "$file_path" >> "$OUTPUT_FILE"
-
-        else
-            echo "[БИНАРНЫЙ ФАЙЛ - содержимое не показано]" >> "$OUTPUT_FILE"
-
-        fi
-    else
-        echo "✗ Файл не найден" >> "$OUTPUT_FILE"
-
-    fi
-
-    echo "" >> "$OUTPUT_FILE"
-    echo "" >> "$OUTPUT_FILE"
-}
+echo "Логирование в: $LOG_FILE"
 
 # Создаем или очищаем выходной файл
 > "$OUTPUT_FILE"
+> "$LOG_FILE"
 
 echo "=== ПОЛНЫЙ СНИМОК ПРОЕКТА MYBIZ ===" >> "$OUTPUT_FILE"
 echo "Дата создания: $(date)" >> "$OUTPUT_FILE"
@@ -68,66 +43,94 @@ EXCLUDE_FILES=(
     "*.txt"
 )
 
-# Функция для проверки исключения директории
-is_excluded_dir() {
-    local dir=$1
-    for excluded in "${EXCLUDE_DIRS[@]}"; do
-        if [[ "$dir" == *"/$excluded"* ]] || [[ "$dir" == "$excluded"* ]]; then
-            return 0
+# Создаем строку исключений для find
+EXCLUDE_FIND_ARGS=""
+for dir in "${EXCLUDE_DIRS[@]}"; do
+    EXCLUDE_FIND_ARGS="$EXCLUDE_FIND_ARGS -name $dir -prune -o"
+done
+
+# Функция для добавления файла в отчет
+add_file() {
+    local file_path=$1
+    local total_files=$2
+    local added_files=$3
+
+    echo "[$added_files/$total_files] Обработка: $file_path" >> "$LOG_FILE"
+
+    echo "================================================================================" >> "$OUTPUT_FILE"
+    echo "ФАЙЛ: $file_path" >> "$OUTPUT_FILE"
+    echo "================================================================================" >> "$OUTPUT_FILE"
+    echo "" >> "$OUTPUT_FILE"
+
+    if [ -f "$file_path" ]; then
+        # Проверяем, является ли файл текстовым (не бинарным)
+        if file "$file_path" | grep -q "text"; then
+            cat "$file_path" >> "$OUTPUT_FILE"
+        else
+            echo "[БИНАРНЫЙ ФАЙЛ - содержимое не показано]" >> "$OUTPUT_FILE"
         fi
-    done
-    return 1
-}
-
-# Функция для проверки исключения файла
-is_excluded_file() {
-    local file=$1
-    for pattern in "${EXCLUDE_FILES[@]}"; do
-        if [[ "$file" == $pattern ]] || [[ "$(basename "$file")" == $pattern ]]; then
-            return 0
-        fi
-    done
-    return 1
-}
-
-# Счетчики
-total_files=0
-added_files=0
-skipped_files=0
-
-
-
-# Рекурсивный обход всех файлов
-find . -type f | while read -r file; do
-    # Пропускаем исключенные директории
-    dir=$(dirname "$file")
-    if is_excluded_dir "$dir"; then
-
-        skipped_files=$((skipped_files + 1))
-        continue
+    else
+        echo "✗ Файл не найден" >> "$OUTPUT_FILE"
     fi
 
+    echo "" >> "$OUTPUT_FILE"
+    echo "" >> "$OUTPUT_FILE"
+}
+
+# Инициализируем счетчики
+TOTAL_FILES=0
+ADDED_FILES=0
+
+# Сначала подсчитываем общее количество файлов
+echo "Подсчет общего количества файлов..." >> "$LOG_FILE"
+while IFS= read -r file; do
     # Пропускаем исключенные файлы
-    if is_excluded_file "$file"; then
-
-        skipped_files=$((skipped_files + 1))
-        continue
-    fi
+    skip=false
+    for pattern in "${EXCLUDE_FILES[@]}"; do
+        if [[ "$(basename "$file")" == $pattern ]]; then
+            skip=true
+            break
+        fi
+    done
 
     # Пропускаем сам выходной файл и лог
     if [[ "$file" == "./$OUTPUT_FILE" ]] || [[ "$file" == "./$LOG_FILE" ]]; then
-        continue
+        skip=true
     fi
 
-    total_files=$((total_files + 1))
+    if [ "$skip" = false ]; then
+        TOTAL_FILES=$((TOTAL_FILES + 1))
+    fi
+done < <(find . $EXCLUDE_FIND_ARGS -type f -print)
 
-    # Добавляем файл в отчет
-    add_file "$file"
-    added_files=$((added_files + 1))
-done
+echo "Найдено файлов: $TOTAL_FILES" >> "$LOG_FILE"
+echo "Начинаем обработку..." >> "$LOG_FILE"
+
+# Теперь обрабатываем файлы
+while IFS= read -r file; do
+    # Пропускаем исключенные файлы
+    skip=false
+    for pattern in "${EXCLUDE_FILES[@]}"; do
+        if [[ "$(basename "$file")" == $pattern ]]; then
+            skip=true
+            break
+        fi
+    done
+
+    # Пропускаем сам выходной файл и лог
+    if [[ "$file" == "./$OUTPUT_FILE" ]] || [[ "$file" == "./$LOG_FILE" ]]; then
+        skip=true
+    fi
+
+    if [ "$skip" = false ]; then
+        ADDED_FILES=$((ADDED_FILES + 1))
+        add_file "$file" "$TOTAL_FILES" "$ADDED_FILES"
+    fi
+done < <(find . $EXCLUDE_FIND_ARGS -type f -print)
+
 echo "=== СТРУКТУРА ПРОЕКТА (дерево директорий) ===" >> "$OUTPUT_FILE"
 echo "" >> "$OUTPUT_FILE"
-find . -type d | grep -vE "$(IFS='|'; echo "${EXCLUDE_DIRS[*]}")" | sort | sed 's|[^/]*/|- |g' >> "$OUTPUT_FILE"
+find . $EXCLUDE_FIND_ARGS -type d -print | sort | sed 's|[^/]*/|- |g' >> "$OUTPUT_FILE"
 
 # Добавляем информацию о Python-пакетах
 echo "" >> "$OUTPUT_FILE"
@@ -148,12 +151,14 @@ else
     echo "requirements.txt не найден" >> "$OUTPUT_FILE"
 fi
 
-# Завершаем лог
+echo "" >> "$OUTPUT_FILE"
+echo "=== СБОР ЗАВЕРШЕН ===" >> "$OUTPUT_FILE"
+echo "Обработано файлов: $ADDED_FILES из $TOTAL_FILES" >> "$OUTPUT_FILE"
+echo "Итоговый файл: $OUTPUT_FILE ($(wc -l < "$OUTPUT_FILE") строк, $(wc -c < "$OUTPUT_FILE") символов)" >> "$OUTPUT_FILE"
+echo "Размер выходного файла: $(du -h "$OUTPUT_FILE" | cut -f1)" >> "$OUTPUT_FILE"
 
-echo "Итоговый файл: $OUTPUT_FILE ($(wc -l < "$OUTPUT_FILE") строк, $(wc -c < "$OUTPUT_FILE") символов)"
-echo "Размер выходного файла: $(du -h "$OUTPUT_FILE" | cut -f1)"
-
-
+echo "Сбор завершен!"
 echo "📁 Основной файл: $OUTPUT_FILE"
-
+echo "📋 Лог обработки: $LOG_FILE"
+echo ""
 echo "Отправьте содержимое файла '$OUTPUT_FILE' AI-ассистенту для полного анализа"

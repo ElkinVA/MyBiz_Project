@@ -1,63 +1,94 @@
-{% for product in products %}
-<div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300 group">
-    <a href="{{ product.get_absolute_url }}" class="block">
-        <div class="relative overflow-hidden">
-            {% if product.image %}
-            <img src="{{ product.image.url }}"
-                 alt="{{ product.name }}"
-                 class="w-full h-48 object-cover group-hover:scale-105 transition duration-300">
-            {% else %}
-            <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
-                <span class="text-gray-400">Нет изображения</span>
-            </div>
-            {% endif %}
+<!-- templates/products/product_items.html -->
+{% load static %}
+{% load thumbnail %}  {# sorl-thumbnail использует тот же тег #}
 
-            {% if product.is_new %}
-            <span class="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
-                NEW
-            </span>
-            {% endif %}
+<div class="product-card bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-200 overflow-hidden h-full flex flex-col">
+    <!-- Вся карточка теперь ссылка -->
+    <div class="flex flex-col h-full">
+        <!-- Изображение товара (ссылка) -->
+        <a href="{{ product.get_absolute_url }}" class="block flex-grow">
+            <div class="relative aspect-square overflow-hidden bg-gray-100">
+                {% if product.image %}
+                <!-- Используем sorl-thumbnail для генерации миниатюры -->
+                {% thumbnail product.image "400x400" crop="center" as im %}
+                <img src="{{ im.url }}"
+                     alt="{{ product.name }}"
+                     class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                     loading="lazy"
+                     width="{{ im.width }}"
+                     height="{{ im.height }}">
+                {% endthumbnail %}
+                {% else %}
+                <!-- Плейсхолдер: SVG иконка -->
+                <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                {% endif %}
 
-            {% if product.discount_price %}
-            <span class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-                -{{ product.get_discount_percentage }}%
-            </span>
-            {% endif %}
-        </div>
-
-        <div class="p-4">
-            <h3 class="font-semibold text-lg mb-2 group-hover:text-accent transition">
-                {{ product.name }}
-            </h3>
-
-            <div class="flex items-center mb-2">
-                <span class="text-gray-600 text-sm">
-                    {{ product.category.name }}
-                </span>
-            </div>
-
-            <p class="text-gray-500 text-sm mb-3 line-clamp-2">
-                {{ product.short_description|default:'' }}
-            </p>
-
-            <div class="flex items-center justify-between">
-                <div>
+                <!-- Бейджи -->
+                <div class="absolute top-3 left-3 right-3 z-10 flex flex-wrap gap-2">
+                    {% if product.is_new %}
+                    <span class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full flex-shrink-0">
+                        NEW
+                    </span>
+                    {% endif %}
                     {% if product.discount_price %}
-                    <span class="text-xl font-bold text-accent">
-                        {{ product.discount_price }} ₽
+                    <span class="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full flex-shrink-0">
+                        -{{ product.get_discount_percentage }}%
                     </span>
-                    <span class="text-gray-400 line-through ml-2">
-                        {{ product.price }} ₽
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Информация о товаре -->
+            <div class="p-4 flex-grow">
+                <!-- Категория -->
+                <div class="mb-2">
+                    <span class="inline-block text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded truncate max-w-full">
+                        {{ product.category.name }}
                     </span>
+                </div>
+
+                <!-- Название товара -->
+                <h3 class="font-semibold text-gray-900 text-base mb-2 line-clamp-2 min-h-[2.5rem]">
+                    {{ product.name }}
+                </h3>
+
+                <!-- Цена -->
+                <div class="mt-auto">
+                    {% if product.discount_price %}
+                    <div class="flex items-center gap-2 mb-2 flex-wrap">
+                        <span class="text-xl font-bold text-red-600">
+                            {{ product.discount_price }} ₽
+                        </span>
+                        <span class="text-gray-400 line-through text-sm">
+                            {{ product.price }} ₽
+                        </span>
+                    </div>
                     {% else %}
-                    <span class="text-xl font-bold text-gray-900">
+                    <span class="text-xl font-bold text-gray-900 mb-2 block">
                         {{ product.price }} ₽
                     </span>
                     {% endif %}
                 </div>
-                <!-- Кнопка добавления в корзину УДАЛЕНА -->
+
+                <!-- Индикатор наличия -->
+                <div class="mt-2">
+                    {% if product.in_stock %}
+                    <span class="inline-block px-2 py-1 text-xs font-semibold rounded bg-green-100 text-green-800">В наличии</span>
+                    {% else %}
+                    <span class="inline-block px-2 py-1 text-xs font-semibold rounded bg-red-100 text-red-800">Нет в наличии</span>
+                    {% endif %}
+                </div>
             </div>
-        </div>
-    </a>
+        </a>
+
+        <!-- Кнопка "Подробнее" -->
+        <a href="{{ product.get_absolute_url }}"
+           class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 mt-2">
+            Подробнее
+        </a>
+    </div>
 </div>
-{% endfor %}

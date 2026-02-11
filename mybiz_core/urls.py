@@ -1,4 +1,5 @@
-from django.urls import path, re_path
+# mybiz_core/urls.py
+from django.urls import path
 from . import views
 
 app_name = 'mybiz_core'
@@ -6,7 +7,7 @@ app_name = 'mybiz_core'
 urlpatterns = [
     path('', views.home, name='home'),
     path('products/', views.product_list, name='product_list'),
-    path('products/load-more/', views.load_more_products, name='load_more_products'),
-    re_path(r'^products/category/(?P<category_slug>[-\w]+)/$', views.product_list, name='product_list_by_category'),
-    re_path(r'^products/(?P<product_slug>[-\w]+)/$', views.product_detail, name='product_detail'),
+    # Используем <str:...> вместо <slug:...> для поддержки кириллицы в URL
+    path('products/category/<str:category_slug>/', views.product_list, name='product_list_by_category'),
+    path('products/<int:pk>/<str:slug>/', views.product_detail, name='product_detail'),
 ]

@@ -1,532 +1,426 @@
+# mybiz_core/management/commands/seed_data.py
+import os
 from django.core.management.base import BaseCommand
-from django.contrib.auth.models import User
+from django.conf import settings
+from django.core.files.base import ContentFile
+from django.core.cache import cache
 from mybiz_core.models import Category, Product
-from content.models import SiteSettings, Promotion
-from pages.models import Page
-import random
+from content.models import SiteSettings
 from decimal import Decimal
-import re
-from datetime import datetime, timedelta
-
-def transliterate_ru_to_en(text):
-    """Транслитерация русских букв в латинские"""
-    conversion = {
-        'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo',
-        'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm',
-        'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u',
-        'ф': 'f', 'х': 'h', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch',
-        'ъ': '', 'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya',
-        'А': 'A', 'Б': 'B', 'В': 'V', 'Г': 'G', 'Д': 'D', 'Е': 'E', 'Ё': 'YO',
-        'Ж': 'Zh', 'З': 'Z', 'И': 'I', 'Й': 'Y', 'К': 'K', 'Л': 'L', 'М': 'M',
-        'Н': 'N', 'О': 'O', 'П': 'P', 'Р': 'R', 'С': 'S', 'Т': 'T', 'У': 'U',
-        'Ф': 'F', 'Х': 'H', 'Ц': 'Ts', 'Ч': 'Ch', 'Ш': 'Sh', 'Щ': 'Sch',
-        'Ъ': '', 'Ы': 'Y', 'Ь': '', 'Э': 'E', 'Ю': 'Yu', 'Я': 'Ya'
-    }
-
-    result = []
-    for char in text:
-        if char in conversion:
-            result.append(conversion[char])
-        elif char.isalnum() or char in ['-', '_']:
-            result.append(char)
-        else:
-            result.append('-')
-
-    slug = ''.join(result)
-    # Удаляем множественные дефисы
-    slug = re.sub(r'-+', '-', slug)
-    # Удаляем дефисы в начале и конце
-    slug = slug.strip('-')
-
-    return slug.lower()
+import random
+from PIL import Image, ImageDraw, ImageFont
+import io
 
 class Command(BaseCommand):
-    help = 'Создает тестовые данные для сайта'
+    help = 'Создает 10 категорий и 200 тестовых товаров с изображениями'
 
-    def handle(self, *args, **kwargs):
-        self.stdout.write("Начинаем создание тестовых данных...")
+    def handle(self, *args, **options):
+        self.stdout.write('🔄 Начинаем создание тестовых данных...')
 
-        # Создаем суперпользователя (если еще нет)
-        if not User.objects.filter(username='admin').exists():
-            User.objects.create_superuser('admin', 'admin@example.com', 'admin123')
-            self.stdout.write(self.style.SUCCESS('✓ Создан суперпользователь admin/admin123'))
-        else:
-            self.stdout.write(self.style.WARNING('Суперпользователь уже существует'))
+        # Очистка кэша
+        self.clear_cache()
 
-        # Создаем настройки сайта
-        settings, created = SiteSettings.objects.get_or_create(
-            pk=1,
-            defaults={
-                'site_name': 'MyBiz Витрина',
-                'site_tagline': 'Лучшие товары по доступным ценам',
-                'contact_email': 'info@mybiz.ru',
-                'contact_phone': '+7 (999) 123-45-67',
-                'contact_address': 'Москва, ул. Примерная, д. 1',
-                'working_hours': 'Пн-Пт: 9:00-18:00, Сб: 10:00-16:00',
-                'facebook_url': 'https://facebook.com/mybiz',
-                'instagram_url': 'https://instagram.com/mybiz',
-                'twitter_url': 'https://twitter.com/mybiz',
-                'meta_description': 'Интернет-магазин качественных товаров',
-                'meta_keywords': 'магазин, товары, купить, онлайн, доставка'
-            }
+        # Удаляем ВСЕ старые товары перед созданием новых
+        Product.objects.all().delete()
+        self.stdout.write(self.style.WARNING('🗑️  Все старые товары удалены'))
+
+        # Создание категорий
+        categories = self.create_categories()
+
+        # Создание товаров
+        self.create_products(categories)
+
+        self.stdout.write(
+            self.style.SUCCESS('✅ Тестовые данные успешно созданы!')
         )
-        if created:
-            self.stdout.write(self.style.SUCCESS('✓ Созданы настройки сайта'))
-        else:
-            self.stdout.write(self.style.WARNING('Настройки сайта уже существуют'))
+        self.stdout.write(f'   📦 Категорий: {len(categories)}')
+        self.stdout.write(f'   🛍️  Товаров: 200')
 
-        # Создаем больше категорий
+    def clear_cache(self):
+        """Очистка кэша настроек сайта"""
+        try:
+            site_settings = SiteSettings.load()
+            if site_settings:
+                cache_key = f'site_settings_{site_settings.id}'
+                cache.delete(cache_key)
+                self.stdout.write(
+                    self.style.SUCCESS(f'Кэш настроек сайта очищен: {site_settings.site_name}')
+                )
+        except Exception as e:
+            self.stdout.write(self.style.WARNING(f'Не удалось очистить кэш настроек: {e}'))
+
+    def create_gradient_image(self, width, height, color1, color2, text=""):
+        """Создает градиентное изображение с текстом"""
+        img = Image.new('RGB', (width, height), color1)
+        draw = ImageDraw.Draw(img)
+
+        # Градиент
+        for i in range(height):
+            ratio = i / height
+            r = int(color1[0] * (1 - ratio) + color2[0] * ratio)
+            g = int(color1[1] * (1 - ratio) + color2[1] * ratio)
+            b = int(color1[2] * (1 - ratio) + color2[2] * ratio)
+            draw.line([(0, i), (width, i)], fill=(r, g, b))
+
+        # Текст
+        if text:
+            try:
+                font = ImageFont.truetype("DejaVuSans-Bold.ttf", 40)
+            except:
+                font = ImageFont.load_default()
+
+            # Центрируем текст
+            bbox = draw.textbbox((0, 0), text, font=font)
+            text_width = bbox[2] - bbox[0]
+            text_height = bbox[3] - bbox[1]
+            x = (width - text_width) // 2
+            y = (height - text_height) // 2
+
+            # Тень
+            draw.text((x + 2, y + 2), text, font=font, fill=(0, 0, 0, 128))
+            # Основной текст
+            draw.text((x, y), text, font=font, fill=(255, 255, 255))
+
+        return img
+
+    def create_product_image(self, width, height, category_name, product_name):
+        """Создает изображение товара с названием категории в левом верхнем углу и названием товара по центру"""
+        # Цвета для разных категорий
+        category_colors = {
+            'Электроника': ((59, 130, 246), (37, 99, 235)),  # Синий
+            'Одежда': ((139, 92, 246), (107, 52, 235)),      # Фиолетовый
+            'Дом и Сад': ((16, 185, 129), (5, 150, 105)),    # Зеленый
+            'Спорт и Отдых': ((239, 68, 68), (202, 38, 38)), # Красный
+            'Красота и Здоровье': ((245, 158, 11), (217, 119, 6)), # Оранжевый
+            'Книги': ((107, 114, 128), (55, 65, 81)),        # Серый
+            'Мебель': ((217, 119, 6), (161, 98, 7)),         # Коричневый
+            'Игрушки': ((236, 72, 153), (197, 24, 98)),      # Розовый
+            'Продукты': ((132, 204, 22), (101, 163, 13)),    # Лайм
+            'Автотовары': ((75, 85, 99), (31, 41, 55)),      # Темно-серый
+        }
+
+        color1, color2 = category_colors.get(category_name, ((100, 100, 100), (50, 50, 50)))
+
+        # Создаем изображение
+        img = self.create_gradient_image(width, height, color1, color2)
+        draw = ImageDraw.Draw(img)
+
+        # Попробуем загрузить шрифты, если не получится - используем стандартные
+        try:
+            # Мелкий шрифт для категории (левый верхний угол)
+            category_font = ImageFont.truetype("DejaVuSans-Bold.ttf", 24)
+            # Средний шрифт для "Тестовое изображение"
+            label_font = ImageFont.truetype("DejaVuSans.ttf", 32)
+            # Большой шрифт для названия товара
+            product_font = ImageFont.truetype("DejaVuSans-Bold.ttf", 36)
+        except:
+            # Если шрифт не найден, используем стандартный
+            category_font = ImageFont.load_default()
+            label_font = ImageFont.load_default()
+            product_font = ImageFont.load_default()
+
+        # 1. Название категории в левом верхнем углу (мелко, без фона, сдвинуто вправо)
+        margin = 20
+        category_bbox = draw.textbbox((0, 0), category_name, font=category_font)
+        category_height = category_bbox[3] - category_bbox[1]
+
+        # Позиционируем текст категории (немного правее)
+        category_x = margin + 10  # Сдвинуто вправо на 10 пикселей
+        category_y = margin + 5
+
+        # Тень для текста категории
+        draw.text(
+            (category_x + 2, category_y + 2),
+            category_name,
+            font=category_font,
+            fill=(0, 0, 0, 180)
+        )
+        # Основной текст категории (без фона)
+        draw.text(
+            (category_x, category_y),
+            category_name,
+            font=category_font,
+            fill=(255, 255, 255)
+        )
+
+        # 2. "Тестовое изображение" посередине (сверху)
+        label_text = "Тестовое изображение"
+        label_bbox = draw.textbbox((0, 0), label_text, font=label_font)
+        label_width = label_bbox[2] - label_bbox[0]
+        label_height = label_bbox[3] - label_bbox[1]
+
+        label_x = (width - label_width) // 2
+        label_y = (height // 2) - label_height - 40  # Над центром
+
+        # Тень для текста
+        draw.text(
+            (label_x + 2, label_y + 2),
+            label_text,
+            font=label_font,
+            fill=(0, 0, 0, 180)
+        )
+        # Основной текст
+        draw.text(
+            (label_x, label_y),
+            label_text,
+            font=label_font,
+            fill=(255, 255, 255)
+        )
+
+        # 3. Название товара посередине (снизу от "Тестовое изображение")
+        # Ограничиваем длину названия товара
+        max_product_length = 25
+        if len(product_name) > max_product_length:
+            product_name_display = product_name[:max_product_length] + "..."
+        else:
+            product_name_display = product_name
+
+        product_bbox = draw.textbbox((0, 0), product_name_display, font=product_font)
+        product_width = product_bbox[2] - product_bbox[0]
+        product_height = product_bbox[3] - product_bbox[1]
+
+        product_x = (width - product_width) // 2
+        product_y = label_y + label_height + 30  # Под "Тестовое изображение"
+
+        # Тень для текста товара
+        draw.text(
+            (product_x + 3, product_y + 3),
+            product_name_display,
+            font=product_font,
+            fill=(0, 0, 0, 180)
+        )
+        # Основной текст товара
+        draw.text(
+            (product_x, product_y),
+            product_name_display,
+            font=product_font,
+            fill=(255, 255, 255)
+        )
+
+        return img
+
+    def save_image_to_model(self, image, filename, model_field):
+        """Сохраняет изображение в модель Django"""
+        img_io = io.BytesIO()
+        image.save(img_io, format='JPEG', quality=95)
+        img_io.seek(0)
+        model_field.save(filename, ContentFile(img_io.read()), save=True)
+
+    def create_categories(self):
+        """Создает 10 категорий с изображениями"""
+        self.stdout.write('📂 Создание категорий...')
+
         categories_data = [
-            {'name': 'Электроника', 'slug': 'electronics', 'product_count': 20},
-            {'name': 'Смартфоны и гаджеты', 'slug': 'smartphones', 'product_count': 15},
-            {'name': 'Ноутбуки и компьютеры', 'slug': 'laptops', 'product_count': 12},
-            {'name': 'Телевизоры и аудио', 'slug': 'tv-audio', 'product_count': 10},
-            {'name': 'Бытовая техника', 'slug': 'appliances', 'product_count': 15},
-            {'name': 'Одежда', 'slug': 'clothing', 'product_count': 18},
-            {'name': 'Обувь', 'slug': 'shoes', 'product_count': 12},
-            {'name': 'Аксессуары', 'slug': 'accessories', 'product_count': 10},
-            {'name': 'Книги', 'slug': 'books', 'product_count': 15},
-            {'name': 'Спорт и отдых', 'slug': 'sports', 'product_count': 12},
-            {'name': 'Красота и здоровье', 'slug': 'beauty', 'product_count': 10},
-            {'name': 'Дом и сад', 'slug': 'home-garden', 'product_count': 12},
-            {'name': 'Детские товары', 'slug': 'kids', 'product_count': 8},
-            {'name': 'Автотовары', 'slug': 'auto', 'product_count': 6},
-            {'name': 'Игры и консоли', 'slug': 'games', 'product_count': 8},
+            {
+                'name': 'Электроника',
+                'slug': 'electronics',
+                'description': 'Современные гаджеты, смартфоны, ноутбуки и аксессуары.',
+                'meta_title': 'Электроника - Купить в интернет-магазине',
+                'meta_description': 'Широкий выбор электроники по выгодным ценам.',
+                'meta_keywords': 'электроника, гаджеты, смартфоны, ноутбуки, техника',
+            },
+            {
+                'name': 'Одежда',
+                'slug': 'clothing',
+                'description': 'Модная одежда для мужчин и женщин. Всегда в тренде.',
+                'meta_title': 'Одежда - Стильные вещи в интернет-магазине',
+                'meta_description': 'Стильная и удобная одежда для любого случая.',
+                'meta_keywords': 'одежда, стиль, мода, мужская, женская, одежда онлайн',
+            },
+            {
+                'name': 'Дом и Сад',
+                'slug': 'home-garden',
+                'description': 'Все для дома, сада, ремонта и уюта.',
+                'meta_title': 'Дом и Сад - Товары для дома и сада',
+                'meta_description': 'Товары для уюта, ремонта и садоводства.',
+                'meta_keywords': 'дом, сад, интерьер, ремонт, садоводство, товары для дома',
+            },
+            {
+                'name': 'Спорт и Отдых',
+                'slug': 'sports-recreation',
+                'description': 'Оборудование для спорта, фитнеса и активного отдыха.',
+                'meta_title': 'Спорт и Отдых - Спортивные товары',
+                'meta_description': 'Спортивные товары и экипировка для отдыха.',
+                'meta_keywords': 'спорт, отдых, тренажеры, инвентарь, фитнес, активный отдых',
+            },
+            {
+                'name': 'Красота и Здоровье',
+                'slug': 'beauty-health',
+                'description': 'Косметика, парфюмерия и товары для здоровья.',
+                'meta_title': 'Красота и Здоровье - Косметика и уход',
+                'meta_description': 'Продукты и аксессуары для красоты и здоровья.',
+                'meta_keywords': 'красота, здоровье, косметика, уход, парфюмерия',
+            },
+            {
+                'name': 'Книги',
+                'slug': 'books',
+                'description': 'Книги на любой вкус: художественная литература, учебники, детские книги.',
+                'meta_title': 'Книги - Купить книги онлайн',
+                'meta_description': 'Широкий выбор книг по доступным ценам.',
+                'meta_keywords': 'книги, литература, учебники, детские книги, книги онлайн',
+            },
+            {
+                'name': 'Мебель',
+                'slug': 'furniture',
+                'description': 'Качественная мебель для дома и офиса.',
+                'meta_title': 'Мебель - Купить мебель для дома',
+                'meta_description': 'Стильная и удобная мебель для любого интерьера.',
+                'meta_keywords': 'мебель, диваны, столы, стулья, шкафы, мебель для дома',
+            },
+            {
+                'name': 'Игрушки',
+                'slug': 'toys',
+                'description': 'Игрушки для детей всех возрастов.',
+                'meta_title': 'Игрушки - Детские игрушки',
+                'meta_description': 'Безопасные и качественные игрушки для детей.',
+                'meta_keywords': 'игрушки, детские, развивающие, конструкторы, куклы',
+            },
+            {
+                'name': 'Продукты',
+                'slug': 'food',
+                'description': 'Продукты питания, напитки и товары для кухни.',
+                'meta_title': 'Продукты - Продукты питания онлайн',
+                'meta_description': 'Качественные продукты питания и напитки.',
+                'meta_keywords': 'продукты, еда, напитки, продукты питания, онлайн',
+            },
+            {
+                'name': 'Автотовары',
+                'slug': 'auto',
+                'description': 'Товары для автомобилей и автолюбителей.',
+                'meta_title': 'Автотовары - Товары для автомобиля',
+                'meta_description': 'Аксессуары и запчасти для вашего автомобиля.',
+                'meta_keywords': 'автотовары, автоаксессуары, запчасти, автомобиль',
+            }
         ]
 
         categories = []
-        for cat_data in categories_data:
+        for data in categories_data:
+            # Создаем или получаем категорию
             category, created = Category.objects.get_or_create(
-                slug=cat_data['slug'],
-                defaults={
-                    'name': cat_data['name'],
-                    'description': f'Категория {cat_data["name"]}. Широкий выбор товаров по выгодным ценам.',
-                    'is_active': True,
-                    'order': len(categories) + 1
-                }
+                name=data['name'],
+                defaults=data
             )
+
+            # Создаем изображение для категории
+            if not category.image:
+                img = self.create_gradient_image(
+                    400, 300,
+                    (random.randint(50, 150), random.randint(50, 150), random.randint(50, 150)),
+                    (random.randint(20, 100), random.randint(20, 100), random.randint(20, 100)),
+                    data['name']
+                )
+                filename = f"category_{category.slug}.jpg"
+                self.save_image_to_model(img, filename, category.image)
+                category.save()
+
             if created:
-                categories.append((category, cat_data['product_count']))
-                self.stdout.write(self.style.SUCCESS(f'✓ Создана категория: {cat_data["name"]}'))
+                self.stdout.write(f'  ✅ Создана категория: {category.name}')
             else:
-                categories.append((category, cat_data['product_count']))
-                self.stdout.write(self.style.WARNING(f'Категория "{cat_data["name"]}" уже существует'))
+                self.stdout.write(f'  ℹ️  Категория уже существует: {category.name}')
 
-        # Удаляем старые товары
-        Product.objects.all().delete()
-        self.stdout.write(self.style.WARNING('Старые товары удалены'))
+            categories.append(category)
 
-        # Словари товаров по категориям
-        product_names_by_category = {
-            'Электроника': [
-                'Смартфон', 'Планшет', 'Смарт-часы', 'Фитнес-браслет', 'Электронная книга',
-                'Электросамокат', 'Power Bank', 'Солнечная батарея', 'Камера видеонаблюдения',
-                'Дрон', 'Электронная сигарета', 'VR-очки', '3D-принтер', 'Графический планшет'
-            ],
-            'Смартфоны и гаджеты': [
-                'Смартфон', 'Чехол для телефона', 'Защитное стекло', 'Монопод',
-                'Bluetooth гарнитура', 'Портативная колонка', 'Автомобильное зарядное устройство',
-                'Мобильный роутер', 'Смартфон', 'Умные часы', 'Фитнес-трекер', 'Селфи-палка'
-            ],
-            'Ноутбуки и компьютеры': [
-                'Ноутбук', 'Игровой ноутбук', 'Системный блок', 'Монитор', 'Клавиатура',
-                'Компьютерная мышь', 'Веб-камера', 'Игровая мышь', 'Механическая клавиатура',
-                'Коврик для мыши', 'Монитор 4K', 'Ноутбук для работы', 'Ультрабук'
-            ],
-            'Телевизоры и аудио': [
-                'Телевизор', 'Домашний кинотеатр', 'Саундбар', 'Акустическая система',
-                'Наушники', 'Беспроводные наушники', 'Bluetooth колонка', 'Усилитель звука',
-                'Сабвуфер', 'Микрофон', 'FM-тюнер', 'Цифровая антенна', 'Кронштейн для ТВ'
-            ],
-            'Бытовая техника': [
-                'Холодильник', 'Стиральная машина', 'Пылесос', 'Микроволновая печь',
-                'Духовой шкаф', 'Варочная панель', 'Посудомоечная машина', 'Кофемашина',
-                'Блендер', 'Мультиварка', 'Электрочайник', 'Тостер', 'Вытяжка'
-            ],
-            'Одежда': [
-                'Футболка', 'Джинсы', 'Рубашка', 'Платье', 'Юбка',
-                'Свитер', 'Толстовка', 'Куртка', 'Пальто', 'Пиджак',
-                'Шорты', 'Брюки', 'Блузка', 'Кардиган'
-            ],
-            'Обувь': [
-                'Кроссовки', 'Туфли', 'Ботинки', 'Сапоги', 'Сандалии',
-                'Тапочки', 'Лоферы', 'Босоножки', 'Кеды', 'Мокасины'
-            ],
-            'Аксессуары': [
-                'Рюкзак', 'Сумка', 'Кошелек', 'Ремень', 'Шарф',
-                'Шапка', 'Перчатки', 'Зонт', 'Очки', 'Брелок'
-            ],
-            'Книги': [
-                'Роман', 'Детектив', 'Фэнтези', 'Научная фантастика', 'Биография',
-                'Учебник', 'Справочник', 'Кулинарная книга', 'Детская книга', 'Комикс',
-                'Поэзия', 'Историческая литература', 'Бизнес-литература'
-            ],
-            'Спорт и отдых': [
-                'Велосипед', 'Самокат', 'Роликовые коньки', 'Тренажер', 'Гантели',
-                'Коврик для йоги', 'Спортивный костюм', 'Футбольный мяч', 'Баскетбольный мяч',
-                'Теннисная ракетка', 'Спортивная сумка', 'Бутылка для воды'
-            ],
-            'Красота и здоровье': [
-                'Крем для лица', 'Шампунь', 'Гель для душа', 'Дезодорант',
-                'Парфюм', 'Косметичка', 'Расческа', 'Зеркало', 'Маникюрный набор',
-                'Эпилятор', 'Массажер', 'Термометр', 'Тонометр'
-            ],
-            'Дом и сад': [
-                'Диван', 'Кресло', 'Стол', 'Стул', 'Кровать',
-                'Шкаф', 'Тумба', 'Светильник', 'Шторы', 'Ковер',
-                'Подушка', 'Одеяло', 'Горшок для цветов', 'Садовые инструменты'
-            ],
-            'Детские товары': [
-                'Игрушка', 'Конструктор', 'Кукла', 'Машинка', 'Пазл',
-                'Краски', 'Пластилин', 'Детская одежда', 'Детская обувь', 'Коляска'
-            ],
-            'Автотовары': [
-                'Автомобильное кресло', 'Авточехлы', 'Коврики в салон', 'Автохимия',
-                'Автоаксессуары', 'Навигатор', 'Видеорегистратор', 'Радар-детектор'
-            ],
-            'Игры и консоли': [
-                'Игровая консоль', 'Игровой контроллер', 'Игра для консоли',
-                'Настольная игра', 'Карточная игра', 'Головоломка', 'Развивающая игра'
-            ]
+        return categories
+
+    def create_products(self, categories):
+        """Создает 200 товаров с изображениями"""
+        self.stdout.write('🛍️  Создание товаров...')
+
+        # Префиксы для названий товаров
+        product_prefixes = {
+            'Электроника': ['Смартфон', 'Ноутбук', 'Планшет', 'Наушники', 'Часы', 'Камера', 'Колонка', 'Роутер'],
+            'Одежда': ['Футболка', 'Джинсы', 'Куртка', 'Платье', 'Рубашка', 'Шорты', 'Свитер', 'Пальто'],
+            'Дом и Сад': ['Лампа', 'Ковер', 'Шторы', 'Посуда', 'Инструмент', 'Семена', 'Горшок', 'Кресло'],
+            'Спорт и Отдых': ['Мяч', 'Ролики', 'Велосипед', 'Рюкзак', 'Палатка', 'Спальник', 'Коврик', 'Гантели'],
+            'Красота и Здоровье': ['Крем', 'Шампунь', 'Парфюм', 'Маска', 'Скраб', 'Лосьон', 'Зубная паста', 'Дезодорант'],
+            'Книги': ['Роман', 'Учебник', 'Детская книга', 'Комикс', 'Энциклопедия', 'Блокнот', 'Альбом', 'Календарь'],
+            'Мебель': ['Стул', 'Стол', 'Диван', 'Кровать', 'Шкаф', 'Тумба', 'Полка', 'Кресло'],
+            'Игрушки': ['Конструктор', 'Кукла', 'Машинка', 'Пазл', 'Мягкая игрушка', 'Набор', 'Робот', 'Пистолет'],
+            'Продукты': ['Шоколад', 'Кофе', 'Чай', 'Молоко', 'Хлеб', 'Сыр', 'Колбаса', 'Сок'],
+            'Автотовары': ['Шины', 'Аккумулятор', 'Масло', 'Щетки', 'Коврики', 'Чехлы', 'Огнетушитель', 'Аптечка'],
         }
+
+        # Описания для товаров
+        descriptions = [
+            'Высокое качество по доступной цене.',
+            'Популярный товар среди наших клиентов.',
+            'Новинка сезона с отличными характеристиками.',
+            'Проверенный временем и покупателями товар.',
+            'Идеальный выбор для повседневного использования.',
+            'Стильный дизайн и надежность в каждой детали.',
+            'Произведено с использованием современных технологий.',
+            'Гарантия качества от производителя.',
+            'Отличное соотношение цены и качества.',
+            'Рекомендуем к покупке!',
+        ]
 
         # Бренды
-        brands = {
-            'Электроника': ['Apple', 'Samsung', 'Xiaomi', 'Huawei', 'Sony', 'LG', 'Canon', 'Nikon'],
-            'Смартфоны и гаджеты': ['Apple', 'Samsung', 'Xiaomi', 'Huawei', 'Realme', 'OnePlus', 'Google'],
-            'Ноутбуки и компьютеры': ['Apple', 'Dell', 'HP', 'Lenovo', 'Asus', 'Acer', 'Microsoft'],
-            'Телевизоры и аудио': ['Samsung', 'LG', 'Sony', 'Philips', 'Panasonic', 'JBL', 'Bose'],
-            'Бытовая техника': ['Bosch', 'Siemens', 'LG', 'Samsung', 'Indesit', 'Electrolux', 'Miele'],
-            'Одежда': ['Zara', 'H&M', 'Adidas', 'Nike', 'Puma', 'Levi\'s', 'Tommy Hilfiger'],
-            'Обувь': ['Nike', 'Adidas', 'Puma', 'Reebok', 'Geox', 'Ecco', 'Clarks'],
-            'Аксессуары': ['Guess', 'Michael Kors', 'Fossil', 'Casio', 'Swatch', 'Gant'],
-            'Книги': ['Эксмо', 'АСТ', 'Питер', 'Манн, Иванов и Фербер', 'Альпина Паблишер'],
-            'Спорт и отдых': ['Adidas', 'Nike', 'Reebok', 'Puma', 'Under Armour', 'Decathlon'],
-            'Красота и здоровье': ['L\'Oreal', 'Garnier', 'Nivea', 'Vichy', 'La Roche-Posay'],
-            'Дом и сад': ['IKEA', 'Hoff', 'Mebelion', 'Askona', 'Togas'],
-            'Детские товары': ['Lego', 'Hasbro', 'Mattel', 'Fisher-Price', 'Chicco'],
-            'Автотовары': ['Mann', 'Bosch', 'NGK', 'Castrol', 'Liqui Moly'],
-            'Игры и консоли': ['Sony', 'Microsoft', 'Nintendo', 'EA', 'Ubisoft']
-        }
+        brands = ['Brand A', 'Brand B', 'Brand C', 'Brand D', 'Brand E', 'Premium', 'Eco', 'Pro', 'Max', 'Plus']
 
-        # Генерируем товары для каждой категории
-        product_counter = 1
-        total_products_created = 0
+        created_count = 0
+        for category in categories:
+            # Создаем 20 товаров для каждой категории
+            for i in range(20):
+                # Генерируем уникальные данные
+                prefix = random.choice(product_prefixes[category.name])
+                model_num = f"{random.randint(100, 999)}{chr(random.randint(65, 90))}"
+                name = f"{prefix} {model_num}"
+                slug = f"{prefix.lower().replace(' ', '-')}-{model_num}-{random.randint(1000, 9999)}"
 
-        for category_obj, product_count in categories:
-            category_name = category_obj.name
-            category_specific_names = product_names_by_category.get(category_name, ['Товар'])
-            category_brands = brands.get(category_name, ['Бренд'])
+                # Генерируем цену в зависимости от категории
+                base_price_ranges = {
+                    'Электроника': (5000, 100000),
+                    'Одежда': (1000, 15000),
+                    'Дом и Сад': (500, 20000),
+                    'Спорт и Отдых': (1000, 30000),
+                    'Красота и Здоровье': (300, 5000),
+                    'Книги': (200, 3000),
+                    'Мебель': (3000, 50000),
+                    'Игрушки': (500, 10000),
+                    'Продукты': (100, 2000),
+                    'Автотовары': (1000, 40000),
+                }
+                min_price, max_price = base_price_ranges[category.name]
+                price = Decimal(random.randint(min_price, max_price))
 
-            for i in range(product_count):
-                product_name = f'{random.choice(category_specific_names)} {product_counter}'
+                # 30% товаров со скидкой
+                discount_price = None
+                if random.random() < 0.3:
+                    discount = random.randint(10, 40)  # Скидка 10-40%
+                    discount_price = price * Decimal((100 - discount) / 100)
+                    discount_price = discount_price.quantize(Decimal('0.01'))
 
-                # Цены в зависимости от категории
-                if category_name in ['Электроника', 'Смартфоны и гаджеты', 'Ноутбуки и компьютеры']:
-                    price = Decimal(random.randint(5000, 150000))
-                elif category_name in ['Телевизоры и аудио', 'Бытовая техника']:
-                    price = Decimal(random.randint(10000, 300000))
-                elif category_name in ['Одежда', 'Обувь']:
-                    price = Decimal(random.randint(1000, 15000))
-                elif category_name in ['Книги']:
-                    price = Decimal(random.randint(300, 3000))
-                else:
-                    price = Decimal(random.randint(500, 20000))
+                # Генерируем уникальный артикул
+                sku = f"{category.slug.upper()[:3]}-{random.randint(10000, 99999)}-{model_num}"
 
-                # Скидка (30% товаров со скидкой)
-                has_discount = random.random() < 0.3
-                discount_price = price * Decimal('0.8') if has_discount else None
-
-                # Создаем slug с транслитерацией
-                base_slug = transliterate_ru_to_en(product_name)
-                slug = f'{base_slug}-{product_counter}'
-
-                # Ограничиваем длину slug (max_length=200)
-                if len(slug) > 200:
-                    slug = slug[:200]
-
-                # Выбираем бренд
-                brand = random.choice(category_brands)
-
-                # Наличие на складе (80% товаров в наличии)
-                in_stock = random.random() < 0.8
-
-                # Новинка (20% товаров)
-                is_new = random.random() < 0.2
-
-                # Рейтинг
-                rating = Decimal(random.randint(35, 50)) / 10
-                review_count = random.randint(0, 200)
-
-                # Описание
-                descriptions = [
-                    f'<p>Высококачественный {product_name.lower()} от производителя {brand}. Идеально подходит для повседневного использования.</p>',
-                    f'<p>Инновационный дизайн и передовые технологии в {product_name.lower()}. Гарантия качества от {brand}.</p>',
-                    f'<p>Надежный и долговечный {product_name.lower()}. Отличное соотношение цены и качества.</p>',
-                    f'<p>Современный {product_name.lower()} с уникальными характеристиками. Подчеркнет ваш стиль и статус.</p>'
-                ]
-
-                short_descriptions = [
-                    f'Качественный товар от {brand}',
-                    f'Лучшее предложение на рынке',
-                    f'Популярная модель с отличными отзывами',
-                    f'Новинка сезона от {brand}',
-                    f'Эргономичный дизайн и удобство использования'
-                ]
-
-                product = Product.objects.create(
-                    name=product_name,
+                # Создаем товар
+                product = Product(
+                    name=name,
                     slug=slug,
-                    category=category_obj,
+                    category=category,
+                    description=f'<p>{random.choice(descriptions)}</p><p>Модель: {model_num}</p><p>Гарантия: 12 месяцев</p>',
+                    short_description=f'{prefix} высокого качества. Модель {model_num}.',
                     price=price,
                     discount_price=discount_price,
-                    short_description=random.choice(short_descriptions),
-                    description=random.choice(descriptions),
-                    sku=f'PROD{10000 + product_counter}',
-                    brand=brand,
-                    rating=rating,
-                    review_count=review_count,
-                    is_new=is_new,
-                    in_stock=in_stock,
+                    sku=sku,
+                    brand=random.choice(brands),
+                    stock=random.randint(0, 100),
+                    in_stock=random.random() < 0.9,  # 90% товаров в наличии
+                    is_new=random.random() < 0.2,     # 20% товаров - новинки
+                    is_featured=random.random() < 0.15,  # 15% товаров - рекомендуемые
                     is_active=True,
-                    stock=random.randint(0, 100) if in_stock else 0
+                    rating=round(random.uniform(3.5, 5.0), 1),
+                    review_count=random.randint(0, 200),
                 )
 
-                product_counter += 1
-                total_products_created += 1
+                # Создаем и сохраняем изображение
+                img = self.create_product_image(800, 600, category.name, name)
+                filename = f"product_{category.slug}_{i+1}_{random.randint(1000, 9999)}.jpg"
+                self.save_image_to_model(img, filename, product.image)
+                product.save()
 
-        self.stdout.write(self.style.SUCCESS(f'✓ Создано {total_products_created} товаров в {len(categories)} категориях'))
+                created_count += 1
+                if created_count % 20 == 0:
+                    self.stdout.write(f'  ✅ Создано {created_count} товаров...')
 
-        # Создаем промо-акции с новыми полями
-        Promotion.objects.all().delete()
-        self.stdout.write(self.style.WARNING('Старые промо-акции удалены'))
-
-        today = datetime.now().date()
-        promotions_data = [
-            {
-                'title': 'Скидка 20% на всю электронику',
-                'slug': 'electronics-sale',
-                'description': '<p>Только этой недели скидка 20% на всю электронику. Успейте купить!</p>',
-                'button_text': 'Смотреть электронику',
-                'button_url': '/products/category/electronics/',
-                'is_active': True,
-                'start_date': today - timedelta(days=2),
-                'end_date': today + timedelta(days=5)
-            },
-            {
-                'title': 'Бесплатная доставка при заказе от 5000₽',
-                'slug': 'free-delivery',
-                'description': '<p>При заказе от 5000 рублей - бесплатная доставка по всей России. Акция действует до конца месяца.</p>',
-                'button_text': 'Условия доставки',
-                'button_url': '/pages/delivery/',
-                'is_active': True,
-                'start_date': today - timedelta(days=5),
-                'end_date': today + timedelta(days=25)
-            },
-            {
-                'title': 'Новинки весенней коллекции 2024',
-                'slug': 'new-season',
-                'description': '<p>Встречайте новинки весенней коллекции 2024 года. Скидки на предыдущие коллекции.</p>',
-                'button_text': 'Смотреть новинки',
-                'button_url': '/products/',
-                'is_active': True,
-                'start_date': today - timedelta(days=10),
-                'end_date': today + timedelta(days=50)
-            },
-            {
-                'title': 'Распродажа зимней одежды',
-                'slug': 'winter-sale',
-                'description': '<p>Супер распродажа зимней одежды со скидками до 50%. Только пока товары есть в наличии.</p>',
-                'button_text': 'В раздел одежды',
-                'button_url': '/products/category/clothing/',
-                'is_active': True,
-                'start_date': today - timedelta(days=15),
-                'end_date': today + timedelta(days=15)
-            },
-            {
-                'title': 'Акция закончилась',
-                'slug': 'ended-promo',
-                'description': '<p>Эта акция уже закончилась, но у нас всегда есть интересные предложения.</p>',
-                'button_text': 'Все акции',
-                'button_url': '/',
-                'is_active': False,
-                'start_date': today - timedelta(days=60),
-                'end_date': today - timedelta(days=30)
-            }
-        ]
-
-        for promo in promotions_data:
-            Promotion.objects.create(
-                title=promo['title'],
-                slug=promo['slug'],
-                description=promo['description'],
-                button_text=promo['button_text'],
-                button_url=promo['button_url'],
-                is_active=promo['is_active'],
-                start_date=promo['start_date'],
-                end_date=promo['end_date']
-            )
-            self.stdout.write(self.style.SUCCESS(f'✓ Создана промо-акция: {promo["title"]}'))
-
-        # Создаем SEO-страницы
-        Page.objects.all().delete()
-        self.stdout.write(self.style.WARNING('Старые SEO-страницы удалены'))
-
-        pages_data = [
-            {
-                'title': 'О компании',
-                'slug': 'about',
-                'content': '''
-                    <h2>О компании MyBiz</h2>
-                    <p>Мы - современная компания, специализирующаяся на продаже качественных товаров с 2010 года. Наша миссия - сделать покупки удобными и доступными для каждого.</p>
-                    <h3>Наши преимущества:</h3>
-                    <ul>
-                        <li>Широкий ассортимент товаров</li>
-                        <li>Гарантия качества на все товары</li>
-                        <li>Быстрая доставка по всей России</li>
-                        <li>Профессиональная поддержка клиентов</li>
-                        <li>Удобные способы оплаты</li>
-                    </ul>
-                ''',
-                'excerpt': 'Информация о нашей компании, миссии и преимуществах',
-                'meta_title': 'О компании MyBiz - интернет-магазин качественных товаров',
-                'meta_description': 'Узнайте больше о компании MyBiz, нашей миссии и преимуществах. Мы работаем с 2010 года.'
-            },
-            {
-                'title': 'Доставка и оплата',
-                'slug': 'delivery',
-                'content': '''
-                    <h2>Условия доставки и оплаты</h2>
-                    <h3>Способы доставки:</h3>
-                    <ul>
-                        <li><strong>Курьерская доставка</strong> - в течение 1-3 дней</li>
-                        <li><strong>Почта России</strong> - 5-14 дней по всей стране</li>
-                        <li><strong>Самовывоз</strong> - из пунктов выдачи в вашем городе</li>
-                        <li><strong>Экспресс-доставка</strong> - день в день (для Москвы)</li>
-                    </ul>
-                    <h3>Способы оплаты:</h3>
-                    <ul>
-                        <li>Банковские карты (Visa, MasterCard, Мир)</li>
-                        <li>Наличными курьеру</li>
-                        <li>Электронные кошельки (ЮMoney, Qiwi)</li>
-                        <li>Банковский перевод</li>
-                    </ul>
-                ''',
-                'excerpt': 'Информация о способах доставки и оплаты товаров',
-                'meta_title': 'Доставка и оплата - условия доставки и способы оплаты',
-                'meta_description': 'Условия доставки товаров по России. Способы оплаты: карты, наличные, электронные кошельки.'
-            },
-            {
-                'title': 'Гарантия и возврат',
-                'slug': 'warranty',
-                'content': '''
-                    <h2>Гарантия и возврат товаров</h2>
-                    <h3>Гарантийные обязательства:</h3>
-                    <p>Мы предоставляем гарантию на все товары от 1 года до 3 лет в зависимости от категории товара.</p>
-                    <h3>Возврат товаров:</h3>
-                    <p>Вы можете вернуть товар в течение 14 дней с момента получения при соблюдении условий:</p>
-                    <ul>
-                        <li>Товар не был в употреблении</li>
-                        <li>Сохранен товарный вид</li>
-                        <li>Сохранены все ярлыки и упаковка</li>
-                        <li>Имеются все документы на покупку</li>
-                    </ul>
-                ''',
-                'excerpt': 'Информация о гарантии на товары и условиях возврата',
-                'meta_title': 'Гарантия и возврат товаров - условия гарантии и возврата',
-                'meta_description': 'Информация о гарантийных обязательствах и условиях возврата товаров.'
-            },
-            {
-                'title': 'Контакты',
-                'slug': 'contacts',
-                'content': '''
-                    <h2>Наши контакты</h2>
-                    <h3>Контактная информация:</h3>
-                    <ul>
-                        <li><strong>Телефон:</strong> +7 (999) 123-45-67</li>
-                        <li><strong>Email:</strong> info@mybiz.ru</li>
-                        <li><strong>Адрес:</strong> Москва, ул. Примерная, д. 1</li>
-                        <li><strong>Время работы:</strong> Пн-Пт: 9:00-18:00, Сб: 10:00-16:00</li>
-                    </ul>
-                    <h3>Реквизиты компании:</h3>
-                    <p>ООО "МайБиз"<br>
-                    ИНН: 1234567890<br>
-                    ОГРН: 1234567890123</p>
-                ''',
-                'excerpt': 'Контактная информация компании MyBiz',
-                'meta_title': 'Контакты компании MyBiz - как с нами связаться',
-                'meta_description': 'Контактная информация, адрес и реквизиты компании MyBiz.'
-            },
-            {
-                'title': 'Политика конфиденциальности',
-                'slug': 'privacy',
-                'content': '''
-                    <h2>Политика конфиденциальности</h2>
-                    <p>Настоящая Политика конфиденциальности регулирует порядок обработки и использования персональных данных.</p>
-                    <h3>Какие данные мы собираем:</h3>
-                    <ul>
-                        <li>Имя и контактные данные</li>
-                        <li>Информация о заказах</li>
-                        <li>История покупок</li>
-                        <li>Технические данные (IP-адрес, браузер)</li>
-                    </ul>
-                    <h3>Как мы используем данные:</h3>
-                    <ul>
-                        <li>Для обработки заказов</li>
-                        <li>Для улучшения сервиса</li>
-                        <li>Для отправки информации о акциях</li>
-                        <li>Для аналитики работы сайта</li>
-                    </ul>
-                ''',
-                'excerpt': 'Политика обработки персональных данных',
-                'meta_title': 'Политика конфиденциальности - защита персональных данных',
-                'meta_description': 'Политика обработки и защиты персональных данных пользователей сайта MyBiz.'
-            },
-            {
-                'title': 'Публичная оферта',
-                'slug': 'offer',
-                'content': '''
-                    <h2>Публичная оферта</h2>
-                    <p>Настоящий документ является публичной офертой, адресованной физическим лицам, о заключении Договора купли-продажи товаров дистанционным способом.</p>
-                    <h3>Общие положения:</h3>
-                    <p>Продавец предлагает Покупателю заключить Договор купли-продажи товаров (далее - Договор) на условиях настоящей оферты.</p>
-                    <h3>Порядок заключения Договора:</h3>
-                    <p>Договор считается заключенным с момента оплаты Покупателем товара.</p>
-                ''',
-                'excerpt': 'Публичная оферта интернет-магазина',
-                'meta_title': 'Публичная оферта - условия договора купли-продажи',
-                'meta_description': 'Публичная оферта интернет-магазина MyBiz о заключении договора купли-продажи.'
-            }
-        ]
-
-        for page in pages_data:
-            Page.objects.create(
-                title=page['title'],
-                slug=page['slug'],
-                content=page['content'],
-                excerpt=page['excerpt'],
-                meta_title=page['meta_title'],
-                meta_description=page['meta_description'],
-                is_active=True
-            )
-            self.stdout.write(self.style.SUCCESS(f'✓ Создана страница: {page["title"]}'))
-
-        # Выводим статистику
-        self.stdout.write("\n" + "="*50)
-        self.stdout.write(self.style.SUCCESS("📊 СТАТИСТИКА СОЗДАННЫХ ДАННЫХ:"))
-        self.stdout.write(f"📁 Категорий: {len(categories)}")
-        self.stdout.write(f"📦 Товаров: {total_products_created}")
-        self.stdout.write(f"🎁 Промо-акций: {len(promotions_data)}")
-        self.stdout.write(f"📄 SEO-страниц: {len(pages_data)}")
-
-        # Статистика по категориям
-        self.stdout.write("\n📈 Товаров по категориям:")
-        for category_obj, product_count in categories:
-            actual_count = Product.objects.filter(category=category_obj).count()
-            self.stdout.write(f"   • {category_obj.name}: {actual_count} товаров")
-
-        self.stdout.write("\n" + "="*50)
-        self.stdout.write(self.style.SUCCESS('✅ Тестовые данные успешно созданы!'))
-        self.stdout.write("\n💡 Для запуска сайта выполните команду:")
-        self.stdout.write("   python manage.py runserver")
-        self.stdout.write("🌐 Откройте в браузере: http://127.0.0.1:8000/")
+        self.stdout.write(f'  ✅ Всего создано товаров: {created_count}')

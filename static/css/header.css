@@ -1,0 +1,474 @@
+/* static/css/header.css - Стили для шапки сайта */
+
+/* Общие стили для шапки */
+header {
+    min-height: 64px;
+}
+
+/* Логотип */
+.logo-container {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    padding: 2px;
+}
+
+.logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+    background: white;
+}
+
+.brand-text h1 {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Навигационные ссылки для десктопа */
+.nav-link {
+    position: relative;
+    padding: 8px 12px;
+    color: #4b5563;
+    font-weight: 500;
+    font-size: 15px;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.nav-link:hover {
+    color: var(--color-primary);
+    background: rgba(var(--color-primary-rgb), 0.1);
+}
+
+.nav-link-active {
+    color: var(--color-primary);
+    background: rgba(var(--color-primary-rgb), 0.15);
+    font-weight: 600;
+}
+
+.nav-link-active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 12px;
+    right: 12px;
+    height: 2px;
+    background: var(--color-primary);
+    border-radius: 1px;
+}
+
+/* Мега-меню категорий */
+.category-mega-item {
+    transition: transform 0.2s ease;
+}
+
+.category-mega-item:hover {
+    transform: translateY(-2px);
+}
+
+/* Поиск */
+.search-toggle-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    color: #6b7280;
+    transition: all 0.2s ease;
+}
+
+.search-toggle-btn:hover {
+    background: #f3f4f6;
+    color: var(--color-primary);
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 48px 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 15px;
+    transition: all 0.2s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+}
+
+.search-submit-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--color-primary);
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.search-submit-btn:hover {
+    background: color-mix(in srgb, var(--color-primary) 85%, black);
+}
+
+/* Социальные иконки в шапке */
+.social-header-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    color: #6b7280;
+    background: #f9fafb;
+    transition: all 0.2s ease;
+}
+
+.social-header-icon:hover {
+    color: white;
+    background: var(--color-primary);
+    transform: translateY(-2px);
+}
+
+/* Мобильная навигация */
+.mobile-search-input {
+    width: 100%;
+    padding: 14px 48px 14px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 16px;
+    transition: all 0.2s ease;
+}
+
+.mobile-search-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+}
+
+.mobile-search-submit-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--color-primary);
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-nav-link {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    color: #374151;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.mobile-nav-link:hover,
+.mobile-nav-link:focus {
+    background: rgba(var(--color-primary-rgb), 0.1);
+    color: var(--color-primary);
+}
+
+.mobile-nav-link-active {
+    background: rgba(var(--color-primary-rgb), 0.15);
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+.mobile-nav-sublink {
+    padding: 10px 12px;
+    color: #6b7280;
+    font-size: 15px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.mobile-nav-sublink:hover {
+    color: var(--color-primary);
+    background: rgba(var(--color-primary-rgb), 0.05);
+}
+
+.social-mobile-icon {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: #f3f4f6;
+    color: #4b5563;
+    transition: all 0.2s ease;
+}
+
+.social-mobile-icon:hover {
+    background: var(--color-primary);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Анимации и переходы */
+@media (prefers-reduced-motion: reduce) {
+    .search-toggle-btn,
+    .nav-link,
+    .mobile-nav-link,
+    .social-header-icon,
+    .social-mobile-icon,
+    .category-mega-item {
+        transition: none !important;
+    }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    #mobile-navigation {
+        max-height: calc(100vh - 64px);
+    }
+
+    .brand-text h1 {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 640px) {
+    .logo-container {
+        width: 36px;
+        height: 36px;
+    }
+
+    .brand-text h1 {
+        font-size: 16px;
+    }
+}
+
+/* Поддержка темной темы */
+@media (prefers-color-scheme: dark) {
+    header {
+        background: var(--color-header-bg, #1f2937);
+    }
+
+    .nav-link {
+        color: #d1d5db;
+    }
+
+    .nav-link:hover {
+        background: rgba(var(--color-primary-rgb), 0.2);
+    }
+
+    .search-input,
+    .mobile-search-input {
+        background: #374151;
+        border-color: #4b5563;
+        color: white;
+    }
+
+    .search-input:focus,
+    .mobile-search-input:focus {
+        border-color: var(--color-primary);
+    }
+
+    #mobile-navigation {
+        background: var(--color-header-bg, #1f2937);
+        border-color: #374151;
+    }
+
+    .mobile-nav-link {
+        color: #d1d5db;
+    }
+
+    .mobile-nav-sublink {
+        color: #9ca3af;
+    }
+
+    .social-header-icon {
+        background: #374151;
+        color: #d1d5db;
+    }
+
+    .social-mobile-icon {
+        background: #374151;
+        color: #d1d5db;
+    }
+}
+
+/* Альпин-специфичные стили */
+[x-cloak] {
+    display: none !important;
+}
+
+/* Анимации для мобильного меню */
+#mobile-navigation {
+    transition-property: opacity, transform;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+}
+
+/* Плавная анимация для мега-меню */
+.group:hover .group-hover\:opacity-100 {
+    opacity: 1 !important;
+}
+
+.group:hover .group-hover\:scale-100 {
+    transform: scale(1) !important;
+}
+/* Улучшенные стили для мега-меню категорий */
+.category-mega-item {
+    display: block;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    min-width: 250px; /* Минимальная ширина для предотвращения сжатия */
+}
+
+.category-mega-item:hover {
+    transform: translateY(-2px);
+    background-color: #f9fafb;
+}
+
+.category-mega-item h3 {
+    line-height: 1.4; /* Улучшенная читаемость */
+    font-size: 0.95rem; /* Немного больше размер шрифта */
+}
+
+.category-mega-item p {
+    line-height: 1.5;
+    color: #6b7280;
+}
+
+/* Сетка мега-меню */
+#categories-megamenu .grid {
+    gap: 1.5rem; /* Больше отступы между элементами */
+}
+
+#categories-megamenu .grid > div {
+    min-width: 280px; /* Минимальная ширина колонки */
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    #categories-megamenu .grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem;
+    }
+
+    .category-mega-item {
+        min-width: 100%;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    #categories-megamenu .grid {
+        grid-template-columns: repeat(2, minmax(250px, 1fr)) !important;
+    }
+}
+
+@media (min-width: 1025px) {
+    #categories-megamenu .grid {
+        grid-template-columns: repeat(3, minmax(280px, 1fr)) !important;
+    }
+}
+
+/* Улучшение читаемости текста в мега-меню */
+.category-mega-item h3,
+.category-mega-item p {
+    letter-spacing: -0.01em; /* Небольшое улучшение читаемости */
+}
+
+/* Улучшение отступов для мобильного меню */
+@media (max-width: 768px) {
+    #mobile-categories-list .mobile-nav-sublink {
+        padding: 10px 12px;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    #mobile-categories-list .mobile-nav-sublink span {
+        letter-spacing: -0.01em;
+    }
+}
+
+/* Анимация появления мега-меню */
+#categories-megamenu {
+    transition-property: opacity, transform, visibility;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+}
+
+/* Плавное исчезновение */
+[x-cloak] {
+    display: none !important;
+}
+/* Улучшенные стили для мега-меню категорий */
+.category-mega-item {
+    display: block;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    min-width: 250px; /* Минимальная ширина для предотвращения сжатия */
+}
+
+.category-mega-item:hover {
+    transform: translateY(-2px);
+    background-color: #f9fafb;
+}
+
+.category-mega-item h3 {
+    line-height: 1.4; /* Улучшенная читаемость */
+    font-size: 0.95rem; /* Немного больше размер шрифта */
+}
+
+.category-mega-item p {
+    line-height: 1.5;
+    color: #6b7280;
+}
+
+/* Сетка мега-меню */
+#categories-megamenu .grid {
+    gap: 1.5rem; /* Больше отступы между элементами */
+}
+
+#categories-megamenu .grid > div {
+    min-width: 280px; /* Минимальная ширина колонки */
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    #categories-megamenu .grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem;
+    }
+
+    .category-mega-item {
+        min-width: 100%;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    #categories-megamenu .grid {
+        grid-template-columns: repeat(2, minmax(250px, 1fr)) !important;
+    }
+}
+
+@media (min-width: 1025px) {
+    #categories-megamenu .grid {
+        grid-template-columns: repeat(3, minmax(280px, 1fr)) !important;
+    }
+}

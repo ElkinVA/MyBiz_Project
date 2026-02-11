@@ -1,0 +1,108 @@
+/* static/admin/css/color-scheme.css - обновленный */
+/* ... существующий CSS ... */
+
+/* Добавляем описания для каждой схемы */
+.color-scheme-description {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: none;
+}
+
+.color-scheme-description strong {
+    color: white;
+    font-size: 16px;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.color-scheme-description p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Улучшаем отображение кнопок схем */
+.color-scheme-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.color-scheme-option {
+    border: 2px solid transparent;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.color-scheme-option:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.color-scheme-option.active {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.color-scheme-colors {
+    display: flex;
+    height: 50px;
+}
+
+.color-scheme-color {
+    flex: 1;
+}
+
+.color-scheme-name {
+    padding: 10px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    background: white;
+}
+
+/* Подсказки для каждой схемы */
+.color-scheme-hint {
+    font-size: 11px;
+    color: #666;
+    padding: 2px 10px;
+    text-align: center;
+    background: #f9f9f9;
+    border-top: 1px solid #eee;
+}
+
+/* Цветовые подсказки для каждой схемы */
+.color-scheme-option[data-scheme="wood"] .color-scheme-hint {
+    background: #2e8b57;
+    color: white;
+}
+
+.color-scheme-option[data-scheme="coffee"] .color-scheme-hint {
+    background: #6f4e37;
+    color: white;
+}
+
+.color-scheme-option[data-scheme="flower"] .color-scheme-hint {
+    background: #e91e63;
+    color: white;
+}
+
+.color-scheme-option[data-scheme="vintage"] .color-scheme-hint {
+    background: #8d6e63;
+    color: white;
+}
+
+.color-scheme-option[data-scheme="pastel"] .color-scheme-hint {
+    background: #f8bbd0;
+    color: #546e7a;
+}

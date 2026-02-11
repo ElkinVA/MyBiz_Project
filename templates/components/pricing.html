@@ -1,0 +1,31 @@
+<!-- Ценовой план -->
+<div class="relative bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 {% if popular %}border-2 border-primary{% endif %}">
+    {% if popular %}
+    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+        <span class="bg-primary text-white px-4 py-1 rounded-full text-sm font-semibold">Популярный</span>
+    </div>
+    {% endif %}
+
+    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">{{ title }}</h3>
+
+    <div class="mb-6">
+        <span class="text-4xl font-bold text-gray-900 dark:text-white">{{ price }} ₽</span>
+        <span class="text-gray-600 dark:text-gray-400">/{{ period }}</span>
+    </div>
+
+    <ul class="space-y-3 mb-8">
+        {% for feature in features %}
+        <li class="flex items-center">
+            <svg class="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="text-gray-700 dark:text-gray-300">{{ feature }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <a href="{{ button_url }}"
+       class="block w-full text-center px-6 py-3 rounded-xl font-medium transition-all duration-300 {% if popular %}bg-gradient-to-r from-primary to-secondary text-white hover:shadow-lg hover:shadow-primary/25{% else %}bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600{% endif %}">
+        {{ button_text }}
+    </a>
+</div>

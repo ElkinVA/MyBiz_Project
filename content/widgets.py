@@ -1,5 +1,7 @@
+# content/widgets.py
 from django import forms
 from django.utils.safestring import mark_safe
+from django.utils.html import escape
 
 class ColorPickerWidget(forms.TextInput):
     """Виджет для выбора цвета с предпросмотром"""
@@ -17,7 +19,10 @@ class ColorPickerWidget(forms.TextInput):
         # Рендерим обычное поле ввода цвета
         input_html = super().render(name, value, attrs, renderer)
 
-        # Добавляем наш кастомный HTML для пикера без лишнего квадратика
+        # Безопасно экранируем значение
+        safe_value = escape(value or '#3b82f6')
+
+        # Добавляем наш кастомный HTML для пикера
         html = f'''
         <div class="color-picker-widget">
             <div class="color-picker-container">
@@ -25,7 +30,7 @@ class ColorPickerWidget(forms.TextInput):
                 <div class="color-picker-text">
                     <input type="text"
                            class="color-hex-input"
-                           value="{value or '#3b82f6'}"
+                           value="{safe_value}"
                            placeholder="#3b82f6"
                            style="width: 120px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-left: 10px;"
                            maxlength="7">
