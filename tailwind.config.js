@@ -1,109 +1,81 @@
-// tailwind.config.js - исправленный файл
+// ./tailwind.config.js
 module.exports = {
-    mode: 'jit',
-    content: [
-        './templates/**/*.html',
-        './static/js/**/*.js',
-    ],
-    darkMode: 'class',
-    theme: {
-        extend: {
-            colors: {
-                primary: 'var(--color-primary, #3b82f6)',
-                secondary: 'var(--color-secondary, #8b5cf6)',
-                accent: 'var(--color-accent, #10b981)',
-                'hero-bg': 'var(--color-hero-bg, #eff6ff)',
-                'header-bg': 'var(--color-header-bg, #ffffff)',
-                'footer-bg': 'var(--color-footer-bg, #1f2937)',
-            },
-            backgroundColor: {
-                primary: 'var(--color-primary, #3b82f6)',
-                secondary: 'var(--color-secondary, #8b5cf6)',
-                accent: 'var(--color-accent, #10b981)',
-                'header-bg': 'var(--color-header-bg, #ffffff)',
-                'footer-bg': 'var(--color-footer-bg, #1f2937)',
-            },
-            textColor: {
-                primary: 'var(--color-primary, #3b82f6)',
-                secondary: 'var(--color-secondary, #8b5cf6)',
-                accent: 'var(--color-accent, #10b981)',
-                'header-text': 'var(--color-header-text, #374151)',
-                'footer-text': 'var(--color-footer-text, #d1d5db)',
-            },
-            borderColor: {
-                primary: 'var(--color-primary, #3b82f6)',
-                secondary: 'var(--color-secondary, #8b5cf6)',
-                accent: 'var(--color-accent, #10b981)',
-            },
-            spacing: {
-                '128': '32rem',
-                '144': '36rem',
-            },
-            borderRadius: {
-                '4xl': '2rem',
-            },
-            maxWidth: {
-                'xs': '20rem',
-                'sm': '24rem',
-                'md': '28rem',
-                'lg': '32rem',
-                'xl': '36rem',
-                '2xl': '42rem',
-                '3xl': '48rem',
-                '4xl': '56rem',
-                '5xl': '64rem',
-                '6xl': '72rem',
-                '7xl': '80rem',
-                '8xl': '88rem',
-                '9xl': '96rem',
-            },
-            minHeight: {
-                'text-2': '2.5rem',
-                'text-3': '3.75rem',
-                'text-4': '5rem',
-            }
-        },
+  mode: 'jit',
+  content: [
+    './templates/**/*.html',
+    './static/js/**/*.js',
+  ],
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        primary: 'var(--color-primary, #3b82f6)',
+        secondary: 'var(--color-secondary, #8b5cf6)',
+        accent: 'var(--color-accent, #10b981)',
+        'hero-bg': 'var(--color-hero-bg, #eff6ff)',
+        'header-bg': 'var(--color-header-bg, #ffffff)',
+        'footer-bg': 'var(--color-footer-bg, #1f2937)',
+      },
+      backgroundColor: {
+        primary: 'var(--color-primary, #3b82f6)',
+        secondary: 'var(--color-secondary, #8b5cf6)',
+        accent: 'var(--color-accent, #10b981)',
+        'header-bg': 'var(--color-header-bg, #ffffff)',
+        'footer-bg': 'var(--color-footer-bg, #1f2937)',
+      },
+      textColor: {
+        primary: 'var(--color-primary, #3b82f6)',
+        secondary: 'var(--color-secondary, #8b5cf6)',
+        accent: 'var(--color-accent, #10b981)',
+      },
+      borderColor: {
+        primary: 'var(--color-primary, #3b82f6)',
+        secondary: 'var(--color-secondary, #8b5cf6)',
+        accent: 'var(--color-accent, #10b981)',
+      },
+      minHeight: {
+        'text-2': '2.5rem',
+        'text-3': '3.75rem',
+        'text-4': '5rem',
+      },
+      maxWidth: {
+        '8xl': '88rem',
+        '9xl': '96rem',
+      },
+      borderRadius: {
+        '4xl': '2rem',
+      },
+      spacing: {
+        '128': '32rem',
+        '144': '36rem',
+      },
     },
-    plugins: [
-        require('@tailwindcss/forms'),
-        require('@tailwindcss/typography'),
-        require('@tailwindcss/line-clamp'),
-    ],
-
+  },
+  plugins: [
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
+    require('@tailwindcss/line-clamp'),
+  ],
   safelist: [
     // Динамические классы для цветов
-    'bg-primary',
-    'bg-secondary',
-    'bg-accent',
-    'text-primary',
-    'text-secondary',
-    'text-accent',
-    'border-primary',
-    'border-secondary',
-    'border-accent',
-    'from-primary',
-    'to-primary',
-    'from-secondary',
-    'to-secondary',
-    'from-accent',
-    'to-accent',
-    'hover:bg-primary',
-    'hover:bg-secondary',
-    'hover:bg-accent',
-    'hover:text-primary',
-    'hover:text-secondary',
-    'hover:text-accent',
-    'hover:border-primary',
-    'hover:border-secondary',
-    'hover:border-accent',
-    // Классы для темной темы
+    { pattern: /bg-(primary|secondary|accent)/ },
+    { pattern: /text-(primary|secondary|accent)/ },
+    { pattern: /border-(primary|secondary|accent)/ },
+    { pattern: /from-(primary|secondary|accent)/ },
+    { pattern: /to-(primary|secondary|accent)/ },
+    { pattern: /hover:bg-(primary|secondary|accent)/ },
+    { pattern: /hover:text-(primary|secondary|accent)/ },
+    { pattern: /hover:border-(primary|secondary|accent)/ },
+
+    // Темная тема
     'dark:bg-gray-800',
     'dark:bg-gray-900',
     'dark:text-white',
     'dark:text-gray-300',
     'dark:text-gray-400',
     'dark:border-gray-700',
-    // Классы для обработки текста
+
+    // Обработка текста
     'truncate',
     'line-clamp-1',
     'line-clamp-2',
@@ -115,5 +87,9 @@ module.exports = {
     'shrink-0',
     'flex-grow',
     'min-w-0',
-  ]
+
+    // Размеры для продуктов
+    'aspect-square',
+    'aspect-video',
+  ],
 }

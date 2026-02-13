@@ -28,12 +28,10 @@ html {
     border-radius: 6px;
     transition: all 0.2s ease;
 }
-
 .breadcrumb-link:hover {
     color: var(--color-primary);
     background: rgba(var(--color-primary-rgb, 59, 130, 246), 0.1);
 }
-
 .breadcrumb-current {
     color: #1f2937;
     font-weight: 600;
@@ -49,7 +47,6 @@ html {
     display: inline-block;
     transition: all 0.3s ease;
 }
-
 .btn-primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 20px rgba(var(--color-primary-rgb), 0.2);
@@ -59,28 +56,9 @@ html {
 .product-card {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-
 .product-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-}
-
-/* Заголовки секций */
-.section-header {
-    text-align: center;
-    margin-bottom: 3rem;
-}
-
-.section-header .subtitle {
-    color: var(--color-primary);
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-}
-
-.section-header .title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
 }
 
 /* Формы */
@@ -92,13 +70,11 @@ html {
     font-size: 16px;
     transition: all 0.2s ease;
 }
-
 .form-input:focus {
     outline: none;
     border-color: var(--color-primary);
     box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
 }
-
 .form-label {
     display: block;
     margin-bottom: 8px;
@@ -117,31 +93,8 @@ html {
         transform: translateY(0);
     }
 }
-
 .fade-in {
     animation: fadeIn 0.5s ease forwards;
-}
-
-/* Утилиты для текста */
-.line-clamp-1 {
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
 }
 
 /* Модальные окна */
@@ -152,7 +105,6 @@ html {
     backdrop-filter: blur(4px);
     z-index: 40;
 }
-
 .modal-content {
     position: fixed;
     top: 50%;
@@ -172,13 +124,11 @@ html {
     .btn-primary {
         background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
     }
-
     .form-input {
         background: #374151;
         border-color: #4b5563;
         color: white;
     }
-
     .form-label {
         color: #d1d5db;
     }
@@ -186,91 +136,29 @@ html {
 
 /* Адаптивность */
 @media (max-width: 768px) {
-    .section-header .title {
-        font-size: 2rem;
-    }
-
     .modal-content {
         padding: 16px;
         max-width: 95%;
     }
 }
-.text-ellipsis {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
 
-.multi-line-ellipsis {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-/* Адаптивные ограничения для текста */
-.mobile-truncate {
-    max-width: 200px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.tablet-truncate {
-    max-width: 300px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/* Минимальные высоты для line-clamp элементов */
-.min-h-text-2 {
-    min-height: 2.5rem;
-}
-
-.min-h-text-3 {
-    min-height: 3.75rem;
-}
-
-/* Улучшение работы line-clamp в разных браузера */
+/* Улучшение работы line-clamp */
 .line-clamp-fallback {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
-
 .line-clamp-1 {
     -webkit-line-clamp: 1;
     line-clamp: 1;
 }
-
 .line-clamp-2 {
     -webkit-line-clamp: 2;
     line-clamp: 2;
 }
-
 .line-clamp-3 {
     -webkit-line-clamp: 3;
     line-clamp: 3;
-}
-
-/* Адаптивный truncate */
-@media (max-width: 640px) {
-    .truncate-mobile {
-        max-width: 180px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-}
-
-@media (max-width: 768px) {
-    .truncate-tablet {
-        max-width: 250px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
 }
 
 /* Поддержка переноса длинных слов */
@@ -286,8 +174,7 @@ html {
     display: flex;
     align-items: flex-start;
 }
-
 .flex-text-content {
     flex: 1;
-    min-width: 0; /* Критически важно для truncate во flex-контейнерах */
+    min-width: 0;
 }

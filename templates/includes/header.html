@@ -96,11 +96,27 @@
                     Главная
                 </a>
 
-                <!-- Категории с мега-меню -->
+                <!-- ========== ИСПРАВЛЕННЫЙ БЛОК КАТЕГОРИЙ ========== -->
                 <div class="relative group"
-                     x-data="{ open: false }"
-                     @mouseenter="open = true"
-                     @mouseleave="setTimeout(() => open = false, 300)">
+                     x-data="{
+                        open: false,
+                        closeTimeout: null,
+                        clearCloseTimeout() {
+                            if (this.closeTimeout) {
+                                clearTimeout(this.closeTimeout);
+                                this.closeTimeout = null;
+                            }
+                        },
+                        scheduleClose() {
+                            this.clearCloseTimeout();
+                            this.closeTimeout = setTimeout(() => {
+                                this.open = false;
+                                this.closeTimeout = null;
+                            }, 300);
+                        }
+                     }"
+                     @mouseenter="clearCloseTimeout(); open = true"
+                     @mouseleave="scheduleClose()">
 
                     <button @click="open = !open"
                             @keydown.space.prevent="open = !open"
@@ -115,62 +131,68 @@
                         </svg>
                     </button>
 
-               <!-- Мега-меню категорий -->
-<!-- Мега-меню категорий -->
-<div class="absolute left-0 right-0 top-full mt-2 bg-white shadow-xl rounded-2xl border border-gray-100 z-50 overflow-hidden transform opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 origin-top"
-     x-show="open"
-     @mouseenter="open = true"
-     @mouseleave="open = false"
-     id="categories-megamenu"
-     role="menu"
-     aria-label="Категории товаров"
-     x-cloak>
-    <div class="p-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {% for cat in categories|slice:":9" %}
-                {% if cat.is_active %}
-                    <a href="{{ cat.get_absolute_url }}"
-                       class="category-mega-item group"
-                       role="menuitem">
-                        <div class="flex items-start gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors min-h-[80px]">
-                            {% if cat.image %}
-                                <div class="flex-shrink-0">
-                                    <img src="{{ cat.image.url }}"
-                                         alt="{{ cat.name }}"
-                                         class="w-12 h-12 rounded-lg object-cover"
-                                         loading="lazy">
+                    <!-- Мега-меню – теперь прижато к левому краю кнопки (left-0) и с корректной задержкой закрытия -->
+                    <div id="categories-megamenu"
+                         x-show="open"
+                         @mouseenter="clearCloseTimeout()"
+                         @mouseleave="scheduleClose()"
+                         x-cloak
+                         class="absolute left-0 top-full mt-2
+                                bg-white shadow-xl rounded-2xl border border-gray-100
+                                z-50
+                                min-w-[320px] sm:min-w-[600px] md:min-w-[800px] lg:min-w-[900px]
+                                transform opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100
+                                transition-all duration-300 origin-top"
+                         role="menu"
+                         aria-label="Категории товаров">
+
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {% for cat in categories|slice:":9" %}
+                                    {% if cat.is_active %}
+                                        <a href="{{ cat.get_absolute_url }}"
+                                           class="category-mega-item group"
+                                           role="menuitem">
+                                            <div class="flex items-start gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors min-h-[80px]">
+                                                {% if cat.image %}
+                                                    <div class="flex-shrink-0">
+                                                        <img src="{{ cat.image.url }}"
+                                                             alt="{{ cat.name }}"
+                                                             class="w-12 h-12 rounded-lg object-cover"
+                                                             loading="lazy">
+                                                    </div>
+                                                {% endif %}
+                                                <div class="flex-1 min-w-0">
+                                                    <h3 class="font-semibold text-gray-900 group-hover:text-primary transition-colors truncate md:line-clamp-2 break-words"
+                                                        title="{{ cat.name }}">
+                                                        {{ cat.name }}
+                                                    </h3>
+                                                    {% if cat.products_count %}
+                                                        <p class="text-sm text-gray-500 mt-1 truncate">
+                                                            {{ cat.products_count }} товаров
+                                                        </p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </a>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            {% if categories|length > 9 %}
+                                <div class="mt-6 pt-6 border-t border-gray-100">
+                                    <a href="{% url 'mybiz_core:product_list' %}"
+                                       class="inline-flex items-center text-primary font-semibold hover:text-primary-dark transition-colors">
+                                        Все категории
+                                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                                        </svg>
+                                    </a>
                                 </div>
                             {% endif %}
-                            <div class="flex-1 min-w-0">
-                                <h3 class="font-semibold text-gray-900 group-hover:text-primary transition-colors truncate md:line-clamp-2 break-words"
-                                    title="{{ cat.name }}">
-                                    {{ cat.name }}
-                                </h3>
-                                {% if cat.products_count %}
-                                    <p class="text-sm text-gray-500 mt-1 truncate">
-                                        {{ cat.products_count }} товаров
-                                    </p>
-                                {% endif %}
-                            </div>
                         </div>
-                    </a>
-                {% endif %}
-            {% endfor %}
-        </div>
-        {% if categories|length > 9 %}
-            <div class="mt-6 pt-6 border-t border-gray-100">
-                <a href="{% url 'mybiz_core:product_list' %}"
-                   class="inline-flex items-center text-primary font-semibold hover:text-primary-dark transition-colors">
-                    Все категории
-                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                    </svg>
-                </a>
-            </div>
-        {% endif %}
-    </div>
-</div>
+                    </div>
                 </div>
+                <!-- ========== КОНЕЦ БЛОКА КАТЕГОРИЙ ========== -->
 
                 <!-- SEO-страницы -->
                 {% for page in header_pages|slice:":4" %}

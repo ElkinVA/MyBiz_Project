@@ -50,17 +50,6 @@ header {
     font-weight: 600;
 }
 
-.nav-link-active::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 12px;
-    right: 12px;
-    height: 2px;
-    background: var(--color-primary);
-    border-radius: 1px;
-}
-
 /* Мега-меню категорий */
 .category-mega-item {
     transition: transform 0.2s ease;

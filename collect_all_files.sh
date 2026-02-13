@@ -55,7 +55,7 @@ add_file() {
     local total_files=$2
     local added_files=$3
 
-    echo "[$added_files/$total_files] Обработка: $file_path" >> "$LOG_FILE"
+    echo "[$added_files/$total_files] $file_path" >> "$LOG_FILE"
 
     echo "================================================================================" >> "$OUTPUT_FILE"
     echo "ФАЙЛ: $file_path" >> "$OUTPUT_FILE"

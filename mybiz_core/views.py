@@ -27,7 +27,6 @@ def home(request):
 
 def product_list(request, category_slug=None):
     """Список товаров с фильтрацией по категории"""
-    # ИСПРАВЛЕНО: убрана сортировка по 'order'
     categories = Category.objects.filter(is_active=True)
     products = Product.objects.filter(is_active=True)
 
@@ -103,7 +102,6 @@ def product_list(request, category_slug=None):
         'total_products': products.count(),
     }
 
-    # ИСПРАВЛЕНО: правильный путь к шаблону
     return render(request, 'products/product_list.html', context)
 
 
@@ -129,28 +127,14 @@ def product_detail(request, pk, slug):
 
     return render(request, 'products/product_detail.html', context)
 
-def about(request):
-    """Страница 'О нас'"""
-    site_settings = SiteSettings.load()
-    return render(request, 'mybiz_core/about.html', {
-        'site_settings': site_settings,
-    })
-
-def contact(request):
-    """Страница 'Контакты'"""
-    site_settings = SiteSettings.load()
-    return render(request, 'mybiz_core/contact.html', {
-        'site_settings': site_settings,
-    })
-
 
 # Обработчики ошибок
 def bad_request(request, exception=None):
-    return render(request, '400.html', status=400)
+    return render(request, '404.html', status=400)
 
 
 def permission_denied(request, exception=None):
-    return render(request, '403.html', status=403)
+    return render(request, '404.html', status=403)
 
 
 def page_not_found(request, exception=None):
