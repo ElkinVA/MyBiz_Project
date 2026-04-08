@@ -71,7 +71,7 @@ loading="lazy">
 </h1>
 {% if site_settings.site_tagline %}
 <p class="text-xs text-default/60 hidden md:block break-words hyphens-auto">
-{{ site_settings.site_tagline }}
+{{ site_settings.site_tagline|striptags }}
 </p>
 {% endif %}
 </div>

@@ -20,16 +20,16 @@
     <div class="container mx-auto px-4 py-12 md:py-24 relative z-10">
         <div class="max-w-4xl mx-auto text-center">
             <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-default dark:text-white mb-6 leading-tight">
-                <span class="block">{{ site_settings.hero_heading_prefix|safe }}</span>
+                <span class="block">{{ site_settings.hero_heading_prefix|striptags }}</span>
                 <span class="text-gradient">
-                    {{ site_settings.site_name|safe }}
+                    {{ site_settings.site_name|striptags }}
                 </span>
             </h1>
             <p class="text-xl md:text-2xl text-default/80 dark:text-gray-300 font-medium mb-8">
-                {{ site_settings.hero_subtitle|default:site_settings.site_tagline|safe }}
+                {{ site_settings.hero_subtitle|default:site_settings.site_tagline|striptags }}
             </p>
             <p class="text-lg text-default/60 dark:text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-                {{ site_settings.welcome_text|safe }}
+                {{ site_settings.welcome_text|striptags }}
             </p>
 
             <!-- Hero image -->
@@ -57,10 +57,10 @@
                 Акции и предложения
             </span>
             <h2 class="text-3xl md:text-4xl font-bold text-default dark:text-white mb-4">
-                {{ site_settings.promotions_title|default:"Специальные предложения"|safe }}
+                {{ site_settings.promotions_title|default:"Специальные предложения"|striptags }}
             </h2>
             <p class="text-lg text-default/60 dark:text-gray-400 max-w-2xl mx-auto">
-                {{ site_settings.promotions_subtitle|default:"Не упустите возможность приобрести товары по выгодным ценам"|safe }}
+                {{ site_settings.promotions_subtitle|default:"Не упустите возможность приобрести товары по выгодным ценам"|striptags }}
             </p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -134,10 +134,10 @@
                 Популярное
             </span>
             <h2 class="text-3xl md:text-4xl font-bold text-default dark:text-white mb-4">
-                {{ site_settings.featured_products_title|default:"Популярные товары"|safe }}
+                {{ site_settings.featured_products_title|default:"Популярные товары"|striptags }}
             </h2>
             <p class="text-lg text-default/60 dark:text-gray-400 max-w-2xl mx-auto">
-                {{ site_settings.featured_products_subtitle|default:"Самые востребованные товары среди наших покупателей"|safe }}
+                {{ site_settings.featured_products_subtitle|default:"Самые востребованные товары среди наших покупателей"|striptags }}
             </p>
         </div>
         {% if featured_products %}
