@@ -63,3 +63,11 @@ typing-inspection==0.4.2
 typing_extensions==4.15.0
 urllib3==2.6.2
 whitenoise==6.12.0
+django-ratelimit==4.1.0
+sentry-sdk==2.34.1
+djangorestframework==3.15.2
+pytest==8.3.5
+pytest-django==4.11.1
+pytest-cov==6.1.1
+factory-boy==3.3.3
+faker==37.6.0

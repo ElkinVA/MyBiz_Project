@@ -1,0 +1,13 @@
+[flake8]
+max-line-length = 120
+exclude = 
+    .git,
+    __pycache__,
+    */migrations/*,
+    */static/*,
+    */media/*,
+    venv,
+    env,
+    node_modules
+ignore = E203, W503, E701
+max-complexity = 10
