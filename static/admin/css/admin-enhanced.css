@@ -1,0 +1,466 @@
+/* ============================================
+   MyBiz Admin Enhanced Styles
+   Улучшенные стили для админ-панели Django
+   ============================================ */
+
+/* --- Типографика --- */
+body.admin-enhanced {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--color-text, #1f2937);
+    background-color: var(--color-background, #f9fafb);
+}
+
+/* --- Брендинг --- */
+.admin-branding {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: white !important;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--color-primary, #3b82f6), var(--color-secondary, #8b5cf6));
+    transition: all 0.2s ease;
+}
+
+.admin-branding:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.brand-icon {
+    font-size: 1.5rem;
+}
+
+.brand-text {
+    letter-spacing: -0.025em;
+}
+
+/* --- Модули и карточки --- */
+.module {
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    border: 1px solid var(--color-border, #e5e7eb);
+    margin-bottom: 20px;
+}
+
+.module h2 {
+    background: linear-gradient(135deg, var(--color-primary, #3b82f6), var(--color-secondary, #8b5cf6));
+    color: white !important;
+    padding: 14px 18px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+.module table {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.module table thead th {
+    background: var(--color-background, #f9fafb);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    padding: 12px 16px;
+    border-bottom: 2px solid var(--color-border, #e5e7eb);
+}
+
+.module table tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--color-border, #e5e7eb);
+    vertical-align: middle;
+}
+
+.module table tbody tr:hover {
+    background-color: rgba(59, 130, 246, 0.05);
+}
+
+/* --- Кнопки --- */
+.button,
+input[type=submit],
+input[type=button],
+.submit-row input,
+input[type="submit"].default {
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 10px 20px;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.button.default,
+input[type=submit].default,
+.submit-row input.default {
+    background: linear-gradient(135deg, var(--color-primary, #3b82f6), var(--color-secondary, #8b5cf6));
+    color: white;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.button.default:hover,
+input[type=submit].default:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+.button:hover,
+input[type=submit]:hover,
+input[type=button]:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.deletelink-button,
+.submit-row a.deletelink {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    border-radius: 8px;
+}
+
+.deletelink-button:hover,
+.submit-row a.deletelink:hover {
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+/* --- Формы --- */
+.form-row {
+    padding: 16px;
+    border-bottom: 1px solid var(--color-border, #e5e7eb);
+    transition: background-color 0.2s ease;
+}
+
+.form-row:hover {
+    background-color: rgba(59, 130, 246, 0.03);
+}
+
+.form-row:last-child {
+    border-bottom: none;
+}
+
+.form-row label {
+    font-weight: 500;
+    color: var(--color-text, #1f2937);
+    padding-right: 10px;
+}
+
+.form-row input[type="text"],
+.form-row input[type="email"],
+.form-row input[type="password"],
+.form-row input[type="number"],
+.form-row input[type="url"],
+.form-row textarea,
+.form-row select {
+    border-radius: 8px;
+    border: 2px solid var(--color-border, #e5e7eb);
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-row input:focus,
+.form-row textarea:focus,
+.form-row select:focus {
+    outline: none;
+    border-color: var(--color-primary, #3b82f6);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* --- Changelist --- */
+#changelist {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+#changelist table {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#changelist table thead th {
+    background: var(--color-background, #f9fafb);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    padding: 14px 16px;
+}
+
+#changelist table tbody td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--color-border, #e5e7eb);
+}
+
+#changelist table tbody tr:hover {
+    background-color: rgba(59, 130, 246, 0.05);
+}
+
+#changelist .actions {
+    background: var(--color-background, #f9fafb);
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--color-border, #e5e7eb);
+    border-radius: 8px 8px 0 0;
+}
+
+/* --- Фильтры --- */
+#changelist-filter {
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+#changelist-filter h2 {
+    background: var(--color-background, #f9fafb);
+    padding: 14px 16px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--color-border, #e5e7eb);
+}
+
+#changelist-filter li {
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--color-border, #e5e7eb);
+}
+
+#changelist-filter li:hover {
+    background-color: rgba(59, 130, 246, 0.05);
+}
+
+#changelist-filter li.selected {
+    background-color: rgba(59, 130, 246, 0.1);
+    border-left: 3px solid var(--color-primary, #3b82f6);
+}
+
+#changelist-filter li.selected a {
+    color: var(--color-primary, #3b82f6);
+    font-weight: 600;
+}
+
+/* --- Messages --- */
+ul.messagelist {
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+ul.messagelist li {
+    padding: 14px 18px;
+    font-weight: 500;
+    border-left: 4px solid;
+}
+
+ul.messagelist li.success {
+    background-color: rgba(16, 185, 129, 0.1);
+    border-left-color: #10b981;
+    color: #059669;
+}
+
+ul.messagelist li.error {
+    background-color: rgba(239, 68, 68, 0.1);
+    border-left-color: #ef4444;
+    color: #dc2626;
+}
+
+ul.messagelist li.warning {
+    background-color: rgba(245, 158, 11, 0.1);
+    border-left-color: #f59e0b;
+    color: #d97706;
+}
+
+ul.messagelist li.info {
+    background-color: rgba(59, 130, 246, 0.1);
+    border-left-color: #3b82f6;
+    color: #2563eb;
+}
+
+/* --- Breadcrumbs --- */
+div.breadcrumbs {
+    background: linear-gradient(135deg, var(--color-primary, #3b82f6), var(--color-secondary, #8b5cf6));
+    color: white;
+    padding: 14px 20px;
+    font-weight: 500;
+    border-radius: 0 0 12px 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+div.breadcrumbs a {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+}
+
+div.breadcrumbs a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+/* --- Submit Row --- */
+.submit-row {
+    background: var(--color-background, #f9fafb);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-top: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.submit-row p.deletelink-box {
+    margin-left: auto;
+}
+
+/* --- Fieldsets --- */
+fieldset.module {
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+fieldset.module h2 {
+    background: linear-gradient(135deg, var(--color-primary, #3b82f6), var(--color-secondary, #8b5cf6));
+    color: white !important;
+    padding: 14px 18px;
+    font-weight: 600;
+    margin: 0;
+    border-radius: 12px 12px 0 0;
+}
+
+fieldset.module .description {
+    background: rgba(59, 130, 246, 0.05);
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--color-border, #e5e7eb);
+    font-size: 0.9rem;
+    color: var(--color-text, #1f2937);
+    opacity: 0.8;
+}
+
+/* --- Collapse --- */
+fieldset.collapse {
+    border: 1px solid var(--color-border, #e5e7eb);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+fieldset.collapse h2 {
+    cursor: pointer;
+    background: var(--color-background, #f9fafb);
+    color: var(--color-text, #1f2937) !important;
+    border-bottom: 1px solid var(--color-border, #e5e7eb);
+}
+
+fieldset.collapse.collapsed h2 {
+    border-radius: 12px;
+    border-bottom: none;
+}
+
+/* --- User Info --- */
+.admin-user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+}
+
+.admin-user-info .username {
+    font-weight: 500;
+    color: white;
+}
+
+.admin-user-info .logout-link {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.admin-user-info .logout-link:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+/* --- Dark Mode --- */
+@media (prefers-color-scheme: dark) {
+    body.admin-enhanced {
+        background-color: #111827;
+        color: #f9fafb;
+    }
+
+    .module {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        border-color: #374151;
+    }
+
+    .module table thead th {
+        background: #1f2937;
+        border-bottom-color: #374151;
+    }
+
+    .module table tbody td {
+        border-bottom-color: #374151;
+    }
+
+    .form-row input[type="text"],
+    .form-row input[type="email"],
+    .form-row input[type="password"],
+    .form-row input[type="number"],
+    .form-row input[type="url"],
+    .form-row textarea,
+    .form-row select {
+        background: #1f2937;
+        border-color: #374151;
+        color: #f9fafb;
+    }
+
+    .form-row input:focus,
+    .form-row textarea:focus,
+    .form-row select:focus {
+        border-color: var(--color-primary, #3b82f6);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    .submit-row {
+        background: #1f2937;
+    }
+
+    fieldset.collapse h2 {
+        background: #1f2937;
+        border-bottom-color: #374151;
+    }
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+    .dashboard-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .stat-card .stat-number {
+        font-size: 1.8rem;
+    }
+
+    .admin-branding .brand-text {
+        display: none;
+    }
+
+    #changelist-filter {
+        float: none;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+}

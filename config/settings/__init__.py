@@ -1,8 +1,9 @@
+# config/settings/__init__.py
 """
 Настройки проекта - экспорт основной конфигурации.
 """
 import os
-import sys  # <-- Добавьте эту строку
+import sys
 
 # Определяем среду выполнения
 settings_module = os.environ.get('DJANGO_SETTINGS_MODULE', '')
@@ -18,7 +19,6 @@ if 'production' in settings_module or os.environ.get('DJANGO_ENV') == 'productio
 elif 'test' in sys.argv:
     # Тестовые настройки
     from .base import *
-    # Можно добавить тестовые переопределения
 else:
     # По умолчанию development настройки
     try:

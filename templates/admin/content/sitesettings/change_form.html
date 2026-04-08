@@ -1,0 +1,241 @@
+{% extends "admin/change_form.html" %}
+{% load static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+/* Стили для формы настроек сайта */
+.field-color_scheme select {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 2px solid #e5e7eb;
+    font-size: 0.95rem;
+}
+
+.field-color_scheme select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Цветовые поля в одну строку */
+.form-row.field-primary_color,
+.form-row.field-secondary_color,
+.form-row.field-accent_color,
+.form-row.field-text_color,
+.form-row.field-background_color,
+.form-row.field-header_bg_color,
+.form-row.field-footer_bg_color,
+.form-row.field-hero_bg_color {
+    display: inline-block;
+    width: 48%;
+    margin-right: 2%;
+    vertical-align: top;
+}
+
+.form-row.field-primary_color:nth-child(even),
+.form-row.field-secondary_color:nth-child(even),
+.form-row.field-accent_color:nth-child(even),
+.form-row.field-text_color:nth-child(even),
+.form-row.field-background_color:nth-child(even),
+.form-row.field-header_bg_color:nth-child(even),
+.form-row.field-footer_bg_color:nth-child(even),
+.form-row.field-hero_bg_color:nth-child(even) {
+    margin-right: 0;
+}
+
+/* Превью цветов */
+.color-preview-box {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 2px solid #e5e7eb;
+    margin-left: 10px;
+    vertical-align: middle;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Поля изображений */
+.field-logo .file-upload,
+.field-favicon .file-upload,
+.field-hero_image .file-upload {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.field-logo img,
+.field-favicon img,
+.field-hero_image img {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 8px;
+    border: 2px solid #e5e7eb;
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 768px) {
+    .form-row.field-primary_color,
+    .form-row.field-secondary_color,
+    .form-row.field-accent_color,
+    .form-row.field-text_color,
+    .form-row.field-background_color,
+    .form-row.field-header_bg_color,
+    .form-row.field-footer_bg_color,
+    .form-row.field-hero_bg_color {
+        width: 100%;
+        margin-right: 0;
+    }
+}
+
+/* Уведомление о сохранении */
+.settings-saved-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    padding: 16px 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    z-index: 10000;
+    animation: slideInDown 0.3s ease;
+    display: none;
+}
+
+.settings-saved-notification.show {
+    display: block;
+}
+
+@keyframes slideInDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Помощь по цветовой схеме */
+.color-scheme-help {
+    background: rgba(59, 130, 246, 0.05);
+    border-left: 4px solid #3b82f6;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    border-radius: 0 8px 8px 0;
+}
+
+.color-scheme-help p {
+    margin: 0;
+    color: #1f2937;
+    font-size: 0.9rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+{{ block.super }}
+
+<!-- Уведомление о сохранении -->
+<div id="settings-saved-notification" class="settings-saved-notification">
+    ✅ Настройки успешно сохранены!
+</div>
+{% endblock %}
+
+{% block admin_change_form_document_ready %}
+{{ block.super }}
+<script>
+(function() {
+    'use strict';
+
+    // Показ уведомления при успешном сохранении
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('_saved')) {
+        const notification = document.getElementById('settings-saved-notification');
+        if (notification) {
+            notification.classList.add('show');
+            setTimeout(function() {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+    }
+
+    // Обновление превью цветов
+    document.querySelectorAll('input[type="color"], input.vColorPickerField').forEach(function(input) {
+        input.addEventListener('input', function() {
+            const preview = this.parentElement.querySelector('.color-preview');
+            if (preview) {
+                preview.style.backgroundColor = this.value;
+            }
+        });
+    });
+
+    // Предпросмотр изображений
+    document.querySelectorAll('input[type="file"][accept="image/*"]').forEach(function(input) {
+        input.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const previewContainer = input.parentElement.querySelector('.image-preview-container');
+                    const previewImg = previewContainer.querySelector('.image-preview');
+                    if (previewContainer && previewImg) {
+                        previewImg.src = e.target.result;
+                        previewContainer.style.display = 'block';
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+
+    // Авто-сохранение в localStorage
+    const form = document.querySelector('#content-main form');
+    if (form) {
+        const formInputs = form.querySelectorAll('input, textarea, select');
+        const formId = 'sitesettings_form';
+
+        // Загрузка сохранённых данных
+        formInputs.forEach(function(input) {
+            const inputName = input.name;
+            if (inputName) {
+                const savedValue = localStorage.getItem('autosave_' + formId + '_' + inputName);
+                if (savedValue && input.type !== 'hidden' && input.type !== 'file') {
+                    if (input.type === 'checkbox') {
+                        input.checked = savedValue === 'true';
+                    } else {
+                        input.value = savedValue;
+                    }
+                }
+            }
+        });
+
+        // Сохранение при изменении
+        formInputs.forEach(function(input) {
+            input.addEventListener('change', function() {
+                const inputName = input.name;
+                if (inputName) {
+                    const value = input.type === 'checkbox' ? input.checked : input.value;
+                    localStorage.setItem('autosave_' + formId + '_' + inputName, value);
+                }
+            });
+        });
+
+        // Очистка при отправке
+        form.addEventListener('submit', function() {
+            formInputs.forEach(function(input) {
+                const inputName = input.name;
+                if (inputName) {
+                    localStorage.removeItem('autosave_' + formId + '_' + inputName);
+                }
+            });
+        });
+    }
+})();
+</script>
+{% endblock %}

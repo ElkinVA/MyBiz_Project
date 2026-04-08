@@ -4,6 +4,10 @@ from django.urls import reverse
 from django.utils.text import slugify
 from django_ckeditor_5.fields import CKEditor5Field
 from .validators import validate_image_extension, validate_image_size, validate_image_dimensions
+from django.db.models.signals import post_save, post_delete
+from django.core.cache import cache
+from django.dispatch import receiver
+from django.db.models import Q, Count
 
 
 class Category(models.Model):
@@ -29,8 +33,8 @@ class Category(models.Model):
     meta_description = models.TextField(blank=True, verbose_name="Мета-описание")
     meta_keywords = models.TextField(blank=True, verbose_name="Мета-ключевые слова")
     is_active = models.BooleanField(default=True, verbose_name="Активна")
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+    created_at = models.DateTimeField(auto_now_add=True, editable=False, verbose_name="Дата создания")
+    updated_at = models.DateTimeField(auto_now=True, editable=False, verbose_name="Дата обновления")
 
     class Meta:
         verbose_name = "Категория"
@@ -41,16 +45,39 @@ class Category(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        # ИСПРАВЛЕНО: используем правильное имя URL
         return reverse('mybiz_core:product_list_by_category', kwargs={'category_slug': self.slug})
+
+    def get_descendants_ids(self):
+        """Возвращает список ID всех дочерних категорий (рекурсивно)"""
+        ids = []
+        for child in self.children.all():
+            ids.append(child.pk)
+            ids.extend(child.get_descendants_ids())
+        return ids
 
     @property
     def products_count(self):
-        """Количество товаров в категории (включая подкатегории)"""
-        count = self.products.filter(is_active=True).count()
-        for child in self.children.all():
-            count += child.products_count
+        """
+        Количество товаров в категории (включая подкатегории)
+        ✅ ИСПРАВЛЕНО: Добавлено кэширование для избежания N+1
+        """
+        cache_key = f'category_{self.pk}_products_count'
+        count = cache.get(cache_key)
+
+        if count is None:
+            category_ids = [self.pk]
+            category_ids.extend(self.get_descendants_ids())
+            count = Product.objects.filter(
+                category_id__in=category_ids,
+                is_active=True
+            ).count()
+            cache.set(cache_key, count, 300)  # 5 минут
+
         return count
+
+    def clear_cache(self):
+        """Очищает кэш категорий"""
+        cache.delete('categories')
 
 
 class Product(models.Model):
@@ -76,6 +103,8 @@ class Product(models.Model):
     brand = models.CharField(max_length=100, blank=True, verbose_name="Бренд")
     image = models.ImageField(
         upload_to='products/',
+        blank=True,
+        null=True,
         verbose_name="Изображение",
         validators=[validate_image_extension, validate_image_size, validate_image_dimensions]
     )
@@ -86,8 +115,8 @@ class Product(models.Model):
     stock = models.IntegerField(default=0, verbose_name="Остаток на складе")
     is_active = models.BooleanField(default=True, verbose_name="Активен")
     is_featured = models.BooleanField(default=False, verbose_name="Рекомендуемый")
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+    created_at = models.DateTimeField(auto_now_add=True, editable=False, verbose_name="Дата создания")
+    updated_at = models.DateTimeField(auto_now=True, editable=False, verbose_name="Дата обновления")
 
     class Meta:
         verbose_name = "Товар"
@@ -111,3 +140,17 @@ class Product(models.Model):
     def display_price(self):
         """Возвращает отображаемую цену (со скидкой если есть)"""
         return self.discount_price if self.discount_price else self.price
+
+
+# Сигналы для очистки кэша
+@receiver([post_save, post_delete], sender=Category)
+def clear_categories_cache(sender, **kwargs):
+    """Очищает кэш категорий при изменении"""
+    cache.delete('categories')
+
+
+@receiver([post_save, post_delete], sender=Product)
+def clear_products_cache(sender, **kwargs):
+    """Очищает кэш продуктов при изменении"""
+    cache.delete('featured_products')
+    cache.delete('new_products')

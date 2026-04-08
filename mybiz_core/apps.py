@@ -4,3 +4,4 @@ from django.apps import AppConfig
 class MybizCoreConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'mybiz_core'
+    verbose_name = 'Товары и категории'

@@ -1,87 +1,19 @@
 # content/admin.py
 from django.contrib import admin
-from django.utils.html import format_html
+from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from django.http import HttpResponseRedirect
-from django_ckeditor_5.widgets import CKEditor5Widget
-from django import forms
-from .models import Promotion, SiteSettings
-from .widgets import ColorPickerWidget
-
-
-class PromotionForm(forms.ModelForm):
-    class Meta:
-        model = Promotion
-        fields = '__all__'
-        widgets = {
-            'description': CKEditor5Widget(
-                config_name='default',
-                attrs={'class': 'django_ckeditor_5'}
-            ),
-        }
-
-
-@admin.register(Promotion)
-class PromotionAdmin(admin.ModelAdmin):
-    form = PromotionForm
-    list_display = ('title', 'is_active', 'start_date', 'end_date', 'image_preview')
-    list_filter = ('is_active', 'start_date', 'end_date')
-    search_fields = ('title', 'description')
-    readonly_fields = ('image_preview',)
-
-    def image_preview(self, obj):
-        if obj.image:
-            return format_html('<img src="{}" width="200" style="max-height: 200px;" />', obj.image.url)
-        return "Нет изображения"
-
-    image_preview.short_description = 'Превью изображения'
-
-
-class SiteSettingsForm(forms.ModelForm):
-    # Добавляем поле для предпросмотра цветов
-    color_preview = forms.CharField(
-        required=False,
-        widget=forms.TextInput(attrs={
-            'readonly': 'readonly',
-            'class': 'color-scheme-preview'
-        }),
-        label='Предпросмотр цветов',
-        help_text='Выбранная цветовая схема'
-    )
-
-    class Meta:
-        model = SiteSettings
-        fields = '__all__'
-        widgets = {
-            'color_scheme': forms.Select(attrs={'class': 'color-scheme-selector'}),
-            'meta_description': forms.Textarea(attrs={'rows': 3}),
-            'meta_keywords': forms.Textarea(attrs={'rows': 3}),
-            'primary_color': ColorPickerWidget(attrs={'class': 'color-field', 'data-color-type': 'primary'}),
-            'secondary_color': ColorPickerWidget(attrs={'class': 'color-field', 'data-color-type': 'secondary'}),
-            'accent_color': ColorPickerWidget(attrs={'class': 'color-field', 'data-color-type': 'accent'}),
-            'text_color': ColorPickerWidget(attrs={'class': 'color-field', 'data-color-type': 'text'}),
-            'background_color': ColorPickerWidget(attrs={'class': 'color-field', 'data-color-type': 'background'}),
-            'header_bg_color': ColorPickerWidget(attrs={'class': 'color-field', 'data-color-type': 'header_bg'}),
-            'footer_bg_color': ColorPickerWidget(attrs={'class': 'color-field', 'data-color-type': 'footer_bg'}),
-            'hero_bg_color': ColorPickerWidget(attrs={'class': 'color-field', 'data-color-type': 'hero_bg'}),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Устанавливаем начальное значение для предпросмотра
-        if self.instance and self.instance.pk:
-            scheme_name = dict(self.instance.COLOR_SCHEME_CHOICES).get(
-                self.instance.color_scheme, 'Пользовательская'
-            )
-            self.initial['color_preview'] = scheme_name
+from .models import SiteSettings, Promotion, StockNotification, NewsletterSubscriber
+from .forms import SiteSettingsForm
 
 
 @admin.register(SiteSettings)
 class SiteSettingsAdmin(admin.ModelAdmin):
+    """Админка для настроек сайта"""
     form = SiteSettingsForm
-    list_display_links = None
+    save_on_top = True
 
+    # Запрет создания дубликатов
     def has_add_permission(self, request):
         return not SiteSettings.objects.exists()
 
@@ -89,74 +21,273 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         return False
 
     def get_actions(self, request):
+        """Удалить действие массового удаления"""
         actions = super().get_actions(request)
         if 'delete_selected' in actions:
             del actions['delete_selected']
         return actions
 
     def changelist_view(self, request, extra_context=None):
+        """Перенаправление на редактирование единственного объекта"""
         obj = SiteSettings.load()
         return HttpResponseRedirect(
             reverse('admin:content_sitesettings_change', args=[obj.id])
         )
 
-    def get_fieldsets(self, request, obj=None):
-        fieldsets = (
-            ('Основные настройки', {
-                'fields': ('site_name', 'site_tagline', 'logo', 'favicon', 'hero_image')
-            }),
-            ('Цветовая палитра', {
-                'fields': (
-                    'color_scheme',
-                    'color_preview',
-                    'primary_color',
-                    'secondary_color',
-                    'accent_color',
-                    'text_color',
-                    'background_color',
-                    'header_bg_color',
-                    'footer_bg_color',
-                    'hero_bg_color',
-                ),
-                'classes': ('wide', 'color-scheme-fields'),
-                'description': '''
-                    <div class="color-scheme-description">
-                        <strong>🎨 Выберите цветовую схему сайта:</strong>
-                        <p>Выберите готовую схему или настройте цвета вручную.</p>
-                    </div>
-                '''
-            }),
-            ('Контактная информация', {
-                'fields': ('contact_email', 'contact_phone', 'contact_address', 'working_hours')
-            }),
-            ('Социальные сети', {
-                'fields': (
-                    ('telegram_url', 'telegram_visible'),
-                    ('vk_url', 'vk_visible'),
-                    ('max_url', 'max_visible'),
-                    ('instagram_url', 'instagram_visible'),
-                ),
-                'description': '''
-                    <div style="background: #f5f5f5; padding: 10px; border-radius: 4px; margin-bottom: 10px; font-size: 13px;">
-                        <strong>🔗 Настройка социальных сетей:</strong><br>
-                        Для каждой соцсети укажите ссылку и включите/выключите отображение.
-                    </div>
-                '''
-            }),
-            ('SEO', {
-                'fields': ('meta_title', 'meta_description', 'meta_keywords')
-            }),
-        )
-        return fieldsets
+    # ✅ ИСПРАВЛЕНО: Поля соответствуют реальной модели SiteSettings
+    fieldsets = (
+        ('📋 Основные настройки', {
+            'fields': ('site_name', 'site_tagline', 'favicon', 'logo'),
+            'description': 'Базовая информация о сайте'
+        }),
+        ('🎨 Цветовая схема', {
+            'fields': ('color_scheme', 'primary_color', 'secondary_color',
+                      'accent_color', 'text_color', 'background_color'),
+            'classes': ('wide',)
+        }),
+        ('🖼️ Изображения главной', {
+            'fields': ('hero_image', 'hero_bg_color'),
+            'classes': ('collapse',)
+        }),
+        ('📝 Тексты главной', {
+            'fields': ('hero_heading_prefix', 'hero_subtitle', 'welcome_text'),
+            'classes': ('collapse',)
+        }),
+        ('🛍️ Блок товаров', {
+            'fields': ('featured_products_title', 'featured_products_subtitle'),
+            'classes': ('collapse',)
+        }),
+        ('🏷️ Блок акций', {
+            'fields': ('promotions_title', 'promotions_subtitle'),
+            'classes': ('collapse',)
+        }),
+        ('📞 Контакты', {
+            'fields': ('contact_phone', 'contact_email', 'contact_address', 'working_hours'),
+            'classes': ('collapse',)
+        }),
+        ('🔗 Социальные сети', {
+            'fields': (
+                ('telegram_url', 'telegram_visible'),
+                ('vk_url', 'vk_visible'),
+                ('instagram_url', 'instagram_visible'),
+                ('max_url', 'max_visible'),
+            ),
+            'classes': ('collapse',)
+        }),
+        ('📊 SEO настройки', {
+            'fields': ('meta_title', 'meta_description', 'meta_keywords'),
+            'classes': ('collapse',)
+        }),
+        ('⚙️ Дополнительно', {
+            'fields': ('header_bg_color', 'footer_bg_color'),
+            'classes': ('collapse',)
+        }),
+    )
+
+    readonly_fields = ['updated_at']
 
     class Media:
         css = {
             'all': (
-                'admin/css/color-picker.css',
                 'admin/css/color-scheme.css',
+                'admin/css/color-picker.css',
+                'admin/css/color-fields-compact.css',
+                'admin/css/admin-common.css',
             )
         }
         js = (
-            'admin/js/color-picker.js',
             'admin/js/color-scheme.js',
+            'admin/js/color-picker.js',
         )
+
+
+@admin.register(Promotion)
+class PromotionAdmin(admin.ModelAdmin):
+    """Админка для акций"""
+    list_display = ['title', 'is_active', 'start_date', 'end_date', 'created_at']
+    list_filter = ['is_active', 'start_date', 'end_date']
+    search_fields = ['title', 'description']
+    prepopulated_fields = {'slug': ('title',)}
+    ordering = ['-start_date']
+    list_per_page = 25
+
+    actions = ['activate_promotions', 'deactivate_promotions']
+
+    fieldsets = (
+        ('📋 Основные настройки', {
+            'fields': ('site_name', 'site_tagline', 'favicon', 'logo'),
+            'description': 'Базовая информация о сайте'
+        }),
+        ('🎨 Цветовая схема', {
+            'fields': ('color_scheme', 'primary_color', 'secondary_color',
+                       'accent_color', 'text_color', 'background_color', 'border_color'),
+            'classes': ('wide',)
+        }),
+        ('🖼️ Изображения главной', {
+            'fields': ('hero_image', 'hero_bg_color'),
+            'classes': ('collapse',)
+        }),
+        ('📝 Тексты главной', {
+            'fields': ('hero_heading_prefix', 'hero_subtitle', 'welcome_text'),
+            'classes': ('collapse',)
+        }),
+        ('🛍️ Блок товаров', {
+            'fields': ('featured_products_title', 'featured_products_subtitle'),
+            'classes': ('collapse',)
+        }),
+        ('🏷️ Блок акций', {
+            'fields': ('promotions_title', 'promotions_subtitle'),
+            'classes': ('collapse',)
+        }),
+        ('📞 Контакты', {
+            'fields': ('contact_phone', 'contact_email', 'contact_address', 'working_hours'),
+            'classes': ('collapse',)
+        }),
+        ('🔗 Социальные сети', {
+            'fields': (
+                ('telegram_url', 'telegram_visible'),
+                ('vk_url', 'vk_visible'),
+                ('instagram_url', 'instagram_visible'),
+                ('max_url', 'max_visible'),
+            ),
+            'classes': ('collapse',)
+        }),
+        ('📊 SEO настройки', {
+            'fields': ('meta_title', 'meta_description', 'meta_keywords'),
+            'classes': ('collapse',)
+        }),
+        ('⚙️ Дополнительно', {
+            'fields': ('header_bg_color', 'footer_bg_color'),
+            'classes': ('collapse',)
+        }),
+    )
+
+    readonly_fields = ['created_at', 'updated_at']
+
+    def activate_promotions(self, request, queryset):
+        """Активировать акции"""
+        queryset.update(is_active=True)
+        self.message_user(
+            request,
+            f'{queryset.count()} акций активированы',
+            level='success'
+        )
+    activate_promotions.short_description = '✅ Активировать'
+
+    def deactivate_promotions(self, request, queryset):
+        """Деактивировать акции"""
+        queryset.update(is_active=False)
+        self.message_user(
+            request,
+            f'{queryset.count()} акций деактивированы',
+            level='warning'
+        )
+    deactivate_promotions.short_description = '❌ Деактивировать'
+
+
+@admin.register(StockNotification)
+class StockNotificationAdmin(admin.ModelAdmin):
+    """Админка для уведомлений о поступлении"""
+    list_display = ['email', 'product', 'is_notified', 'created_at']
+    list_filter = ['is_notified', 'created_at', 'product']
+    search_fields = ['email']
+    readonly_fields = ['created_at']
+    ordering = ['-created_at']
+    list_per_page = 25
+
+    actions = ['send_notification', 'mark_as_notified']
+
+    def send_notification(self, request, queryset):
+        """Отправить уведомления"""
+        from django.core.mail import send_mail
+        from django.conf import settings
+
+        count = 0
+        for notification in queryset:
+            if not notification.is_notified and notification.product:
+                try:
+                    send_mail(
+                        subject=f'Товар "{notification.product.name}" появился в наличии!',
+                        message=f'Здравствуйте!\n\nТовар "{notification.product.name}" теперь доступен для покупки.\n\nПерейдите по ссылке: {notification.product.get_absolute_url()}',
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        recipient_list=[notification.email],
+                        fail_silently=False,
+                    )
+                    notification.is_notified = True
+                    notification.save()
+                    count += 1
+                except Exception as e:
+                    self.message_user(request, f'Ошибка отправки: {e}', level='error')
+
+        if count > 0:
+            self.message_user(
+                request,
+                f'{count} уведомлений отправлено',
+                level='success'
+            )
+    send_notification.short_description = '📧 Отправить уведомления'
+
+    def mark_as_notified(self, request, queryset):
+        """Отметить как уведомлённые"""
+        queryset.update(is_notified=True)
+        self.message_user(
+            request,
+            f'{queryset.count()} записей отмечены как уведомлённые',
+            level='info'
+        )
+    mark_as_notified.short_description = '✅ Отметить как уведомлённые'
+
+
+@admin.register(NewsletterSubscriber)
+class NewsletterSubscriberAdmin(admin.ModelAdmin):
+    """Админка для подписчиков рассылки"""
+    list_display = ['email', 'is_active', 'created_at']
+    list_filter = ['is_active', 'created_at']
+    search_fields = ['email']
+    readonly_fields = ['created_at']
+    ordering = ['-created_at']
+    list_per_page = 25
+
+    actions = ['activate_subscribers', 'deactivate_subscribers', 'export_subscribers']
+
+    def activate_subscribers(self, request, queryset):
+        """Активировать подписчиков"""
+        queryset.update(is_active=True)
+        self.message_user(
+            request,
+            f'{queryset.count()} подписчиков активированы',
+            level='success'
+        )
+    activate_subscribers.short_description = '✅ Активировать'
+
+    def deactivate_subscribers(self, request, queryset):
+        """Деактивировать подписчиков"""
+        queryset.update(is_active=False)
+        self.message_user(
+            request,
+            f'{queryset.count()} подписчиков деактивированы',
+            level='warning'
+        )
+    deactivate_subscribers.short_description = '❌ Деактивировать'
+
+    def export_subscribers(self, request, queryset):
+        """Экспорт подписчиков в CSV"""
+        import csv
+        from django.http import HttpResponse
+
+        response = HttpResponse(content_type='text/csv; charset=utf-8')
+        response['Content-Disposition'] = 'attachment; filename="subscribers.csv"'
+        response.write('\ufeff')
+
+        writer = csv.writer(response)
+        writer.writerow(['Email', 'Активен', 'Дата подписки'])
+
+        for obj in queryset:
+            writer.writerow([
+                obj.email,
+                'Да' if obj.is_active else 'Нет',
+                obj.created_at.strftime('%d.%m.%Y %H:%M')
+            ])
+
+        return response
+    export_subscribers.short_description = '📥 Экспорт в CSV'

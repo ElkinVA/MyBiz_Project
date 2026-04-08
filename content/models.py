@@ -6,23 +6,25 @@ from django_ckeditor_5.fields import CKEditor5Field
 from mybiz_core.validators import validate_image_extension, validate_image_size, validate_image_dimensions
 import re
 import logging
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
+from django.core.cache import cache
 
 logger = logging.getLogger(__name__)
+
 
 class Promotion(models.Model):
     title = models.CharField(max_length=200, verbose_name="Заголовок")
     slug = models.SlugField(max_length=200, unique=True, blank=True, verbose_name="URL")
-    description = CKEditor5Field(verbose_name="Описание", config_name='default')
+    description = CKEditor5Field(verbose_name="Описание", config_name='extends')
     short_description = models.CharField(max_length=300, blank=True, verbose_name="Краткое описание")
     button_text = models.CharField(max_length=50, blank=True, verbose_name="Текст кнопки")
     button_url = models.CharField(max_length=200, blank=True, verbose_name="URL кнопки")
     is_active = models.BooleanField(default=True, verbose_name="Активна")
     start_date = models.DateField(blank=True, null=True, verbose_name="Дата начала")
     end_date = models.DateField(blank=True, null=True, verbose_name="Дата окончания")
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+    created_at = models.DateTimeField(auto_now_add=True, editable=False, verbose_name="Дата создания")
+    updated_at = models.DateTimeField(auto_now=True, editable=False, verbose_name="Дата обновления")
     image = models.ImageField(
         upload_to='promotions/',
         verbose_name="Изображение",
@@ -43,23 +45,18 @@ class Promotion(models.Model):
         super().save(*args, **kwargs)
 
     def _generate_unique_slug(self, title):
-        """Генерирует уникальный slug"""
         base_slug = slugify(title, allow_unicode=True)
         slug = base_slug
         counter = 1
-
         while Promotion.objects.filter(slug=slug).exists():
             slug = f"{base_slug}-{counter}"
             counter += 1
-
             if len(slug) > 200:
                 slug = slug[:200]
-
         return slug
 
 
 class SiteSettings(models.Model):
-    # Выбор цветовой схемы
     COLOR_SCHEME_CHOICES = [
         ('wood', '🌳 Дерево - Натуральные экологичные тона'),
         ('coffee', '☕ Кофе - Теплые уютные оттенки'),
@@ -74,13 +71,34 @@ class SiteSettings(models.Model):
         choices=COLOR_SCHEME_CHOICES,
         default='wood',
         verbose_name="Цветовая схема сайта",
-        help_text="Выберите одну из 5 готовых профессиональных схем или настройте вручную"
     )
 
-    # Основные настройки сайта
-    site_name = models.CharField(max_length=100, default="MyBiz", verbose_name="Название сайта")
-    site_tagline = models.CharField(max_length=200, blank=True, verbose_name="Слоган сайта")
+    # ===== ПОЛЯ С ВИЗУАЛЬНЫМ РЕДАКТОРОМ =====
+    site_name = CKEditor5Field(
+        max_length=200,
+        default="MyBiz",
+        verbose_name="Название сайта",
+        help_text="Название сайта (может содержать простое форматирование)",
+        config_name='minimal'
+    )
+    site_tagline = CKEditor5Field(
+        max_length=200,
+        blank=True,
+        default="Лучшие товары по доступным ценам",
+        verbose_name="Слоган сайта",
+        help_text="Краткий слоган (может содержать простое форматирование)",
+        config_name='minimal'
+    )
+    hero_heading_prefix = CKEditor5Field(
+        max_length=100,
+        blank=True,
+        default="Добро пожаловать в",
+        verbose_name="Префикс заголовка (hero)",
+        help_text="Текст перед названием сайта в главном баннере (может содержать простое форматирование)",
+        config_name='minimal'
+    )
 
+    # ===== ОСТАЛЬНЫЕ ПОЛЯ =====
     favicon = models.ImageField(
         upload_to='site/',
         blank=True,
@@ -88,7 +106,6 @@ class SiteSettings(models.Model):
         verbose_name="Фавикон",
         validators=[validate_image_extension, validate_image_size]
     )
-
     logo = models.ImageField(
         upload_to='site/',
         blank=True,
@@ -96,7 +113,6 @@ class SiteSettings(models.Model):
         verbose_name="Логотип",
         validators=[validate_image_extension, validate_image_size, validate_image_dimensions]
     )
-
     hero_image = models.ImageField(
         upload_to='site/',
         blank=True,
@@ -105,7 +121,7 @@ class SiteSettings(models.Model):
         validators=[validate_image_extension, validate_image_size, validate_image_dimensions]
     )
 
-    # Цветовая палитра
+    # ===== ЦВЕТОВЫЕ ПОЛЯ =====
     primary_color = models.CharField(
         max_length=7,
         default='#3b82f6',
@@ -154,14 +170,63 @@ class SiteSettings(models.Model):
         verbose_name="Фон герой-секции",
         help_text="Фоновый цвет главного баннера на главной странице"
     )
+    # ✅ ДОБАВЛЕНО: Поле border_color
+    border_color = models.CharField(
+        max_length=7,
+        default='#e5e7eb',
+        verbose_name="Цвет границ",
+        help_text="Цвет границ элементов"
+    )
 
-    # Контактная информация
+    # ----- Поля главной страницы -----
+    welcome_text = CKEditor5Field(
+        blank=True,
+        default='Современная витрина качественных товаров. Мы тщательно отбираем каждый продукт, чтобы предложить вам лучшее сочетание цены и качества.',
+        verbose_name='Приветственный текст',
+        help_text='Основной текст под заголовком на главной (поддерживает форматирование)',
+        config_name='extends'
+    )
+    hero_subtitle = CKEditor5Field(
+        blank=True,
+        default='Лучшие товары по доступным ценам',
+        verbose_name='Подзаголовок Hero',
+        help_text='Отображается под названием сайта на главной. Если пусто – используется site_tagline',
+        config_name='extends'
+    )
+    promotions_title = CKEditor5Field(
+        blank=True,
+        default='Специальные предложения',
+        verbose_name='Заголовок блока акций',
+        help_text='Заголовок секции акций',
+        config_name='extends'
+    )
+    promotions_subtitle = CKEditor5Field(
+        blank=True,
+        default='Не упустите возможность приобрести товары по выгодным ценам',
+        verbose_name='Подзаголовок блока акций',
+        config_name='extends'
+    )
+    featured_products_title = CKEditor5Field(
+        blank=True,
+        default='Популярные товары',
+        verbose_name='Заголовок блока популярных товаров',
+        help_text='Заголовок секции популярных товаров',
+        config_name='extends'
+    )
+    featured_products_subtitle = CKEditor5Field(
+        blank=True,
+        default='Самые востребованные товары среди наших покупателей',
+        verbose_name='Подзаголовок блока популярных товаров',
+        config_name='extends'
+    )
+
+    # ===== КОНТАКТЫ =====
     contact_email = models.EmailField(blank=True, verbose_name="Контактный email")
     contact_phone = models.CharField(max_length=20, blank=True, verbose_name="Контактный телефон")
     contact_address = models.TextField(blank=True, verbose_name="Контактный адрес")
     working_hours = models.CharField(max_length=100, blank=True, verbose_name="Время работы")
 
-    # Социальные сети с видимостью
+    # ===== СОЦИАЛЬНЫЕ СЕТИ =====
     telegram_url = models.URLField(blank=True, verbose_name="Telegram")
     telegram_visible = models.BooleanField(default=True, verbose_name="Показывать Telegram")
     vk_url = models.URLField(blank=True, verbose_name="VK")
@@ -171,11 +236,12 @@ class SiteSettings(models.Model):
     instagram_url = models.URLField(blank=True, verbose_name="Instagram")
     instagram_visible = models.BooleanField(default=True, verbose_name="Показывать Instagram")
 
-    # SEO
+    # ===== SEO =====
     meta_title = models.CharField(max_length=200, blank=True, verbose_name="Мета-заголовок")
     meta_description = models.TextField(blank=True, verbose_name="Мета-описание")
     meta_keywords = models.TextField(blank=True, verbose_name="Мета-ключевые слова")
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+
+    updated_at = models.DateTimeField(auto_now=True, editable=False, verbose_name="Дата обновления")
 
     class Meta:
         verbose_name = "Настройки сайта"
@@ -185,54 +251,47 @@ class SiteSettings(models.Model):
         return self.site_name
 
     def save(self, *args, **kwargs):
-        # Singleton pattern - обновляем существующую запись или создаем новую
-        if SiteSettings.objects.exists() and not self.pk:
-            # Обновляем существующую запись вместо создания новой
+        # ✅ ИСПРАВЛЕНО: Безопасная установка pk=1
+        if not self.pk and SiteSettings.objects.exists():
             existing = SiteSettings.objects.first()
-            for field in self._meta.fields:
-                if field.name != 'id':
-                    setattr(existing, field.name, getattr(self, field.name))
+            if existing:
+                self.pk = existing.pk
+            else:
+                self.pk = 1
+        else:
+            self.pk = 1
 
-            # Применяем цветовую схему для существующей записи
-            if existing.color_scheme != 'custom':
-                colors = SiteSettings.get_scheme_colors_by_name(existing.color_scheme)
-                for field_name, color_value in colors.items():
-                    if hasattr(existing, field_name):
-                        setattr(existing, field_name, color_value)
-
-            # Валидация HEX цветов
-            existing._validate_hex_colors()
-
-            # Сохраняем через прямой вызов родительского метода save
-            return super(SiteSettings, existing).save(*args, **kwargs)
-
-        # Применяем цветовую схему при сохранении
         if self.color_scheme != 'custom':
             colors = SiteSettings.get_scheme_colors_by_name(self.color_scheme)
             for field_name, color_value in colors.items():
                 if hasattr(self, field_name):
                     setattr(self, field_name, color_value)
 
-        # Валидация HEX цветов
         self._validate_hex_colors()
-
-        super().save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     def _validate_hex_colors(self):
-        """Валидация HEX цветов"""
-        hex_fields = ['primary_color', 'secondary_color', 'accent_color',
-                     'text_color', 'background_color', 'header_bg_color',
-                     'footer_bg_color', 'hero_bg_color']
-
+        """✅ ИСПРАВЛЕНО: Валидация с нормализацией цветов"""
+        hex_fields = [
+            'primary_color', 'secondary_color', 'accent_color',
+            'text_color', 'background_color', 'header_bg_color',
+            'footer_bg_color', 'hero_bg_color', 'border_color'
+        ]
         for field_name in hex_fields:
             color = getattr(self, field_name, '')
-            if color and not re.match(r'^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$', color):
-                raise ValidationError(f'Поле {field_name}: неверный формат HEX цвета')
+            if color:
+                # Нормализация короткого формата
+                color = color.lstrip('#')
+                if len(color) == 3:
+                    color = ''.join([c*2 for c in color])
+                    setattr(self, field_name, f'#{color}')
+                elif not re.match(r'^[A-Fa-f0-9]{6}$', color):
+                    raise ValidationError(f'Поле {field_name}: неверный формат HEX цвета')
 
     @classmethod
     def load(cls):
-        """Загружает или создает настройки сайта"""
         obj, created = cls.objects.get_or_create(
+            pk=1,
             defaults={
                 'site_name': 'MyBiz Витрина',
                 'site_tagline': 'Лучшие товары по доступным ценам',
@@ -246,9 +305,7 @@ class SiteSettings(models.Model):
         return obj
 
     def get_visible_social_links(self):
-        """Возвращает список видимых социальных сетей"""
         social_links = []
-
         if self.telegram_url and self.telegram_visible:
             social_links.append({
                 'name': 'Telegram',
@@ -256,7 +313,6 @@ class SiteSettings(models.Model):
                 'icon': 'telegram',
                 'title': 'Telegram'
             })
-
         if self.vk_url and self.vk_visible:
             social_links.append({
                 'name': 'VK',
@@ -264,7 +320,6 @@ class SiteSettings(models.Model):
                 'icon': 'vk',
                 'title': 'ВКонтакте'
             })
-
         if self.max_url and self.max_visible:
             social_links.append({
                 'name': 'MAX',
@@ -272,7 +327,6 @@ class SiteSettings(models.Model):
                 'icon': 'max',
                 'title': 'MAX (Мессенджер Mail.ru)'
             })
-
         if self.instagram_url and self.instagram_visible:
             social_links.append({
                 'name': 'Instagram',
@@ -280,79 +334,114 @@ class SiteSettings(models.Model):
                 'icon': 'instagram',
                 'title': 'Instagram'
             })
-
         return social_links
 
     @staticmethod
     def get_scheme_colors_by_name(scheme_name):
-        """Возвращает цвета для указанной схемы"""
         schemes = {
             'wood': {
-                'primary_color': '#2e8b57',
-                'secondary_color': '#8b7355',
-                'accent_color': '#d2691e',
-                'text_color': '#2f4f4f',
-                'background_color': '#f5f5f5',
-                'header_bg_color': '#ffffff',
-                'footer_bg_color': '#556b2f',
-                'hero_bg_color': '#8fbc8f',
+                'primary_color': '#2E5C44',
+                'secondary_color': '#4F3A2B',
+                'accent_color': '#D9734C',
+                'text_color': '#1E2B26',
+                'background_color': '#F3F0E9',
+                'header_bg_color': '#FFFFFF',
+                'footer_bg_color': '#2C4238',
+                'hero_bg_color': '#DFD9CE',
+                'border_color': '#e5e7eb',
             },
             'coffee': {
-                'primary_color': '#6f4e37',
-                'secondary_color': '#8b7355',
-                'accent_color': '#d2691e',
-                'text_color': '#3e2723',
-                'background_color': '#fff8e1',
-                'header_bg_color': '#5d4037',
-                'footer_bg_color': '#3e2723',
-                'hero_bg_color': '#a1887f',
+                'primary_color': '#87492E',
+                'secondary_color': '#684E39',
+                'accent_color': '#E6B17E',
+                'text_color': '#342015',
+                'background_color': '#FCF5E8',
+                'header_bg_color': '#FFFFFF',
+                'footer_bg_color': '#583C2B',
+                'hero_bg_color': '#F0E2D3',
+                'border_color': '#e5e7eb',
             },
             'flower': {
-                'primary_color': '#e91e63',
-                'secondary_color': '#9c27b0',
-                'accent_color': '#ff9800',
-                'text_color': '#5d4037',
-                'background_color': '#fff3e0',
-                'header_bg_color': '#fce4ec',
-                'footer_bg_color': '#9c27b0',
-                'hero_bg_color': '#f8bbd0',
+                'primary_color': '#8F2E55',
+                'secondary_color': '#624766',
+                'accent_color': '#F9A26C',
+                'text_color': '#2D232E',
+                'background_color': '#FEF6F9',
+                'header_bg_color': '#FFFFFF',
+                'footer_bg_color': '#663A5F',
+                'hero_bg_color': '#FCE4E4',
+                'border_color': '#e5e7eb',
             },
             'vintage': {
-                'primary_color': '#8d6e63',
-                'secondary_color': '#a1887f',
-                'accent_color': '#5d4037',
-                'text_color': '#4e342e',
-                'background_color': '#efebe9',
-                'header_bg_color': '#d7ccc8',
-                'footer_bg_color': '#5d4037',
-                'hero_bg_color': '#bcaaa4',
+                'primary_color': '#5F4F3F',
+                'secondary_color': '#5F4A3A',
+                'accent_color': '#B95C3C',
+                'text_color': '#31261D',
+                'background_color': '#EEE7DF',
+                'header_bg_color': '#F8F1E8',
+                'footer_bg_color': '#53453A',
+                'hero_bg_color': '#DBCFC2',
+                'border_color': '#e5e7eb',
             },
             'pastel': {
-                'primary_color': '#f8bbd0',
-                'secondary_color': '#c5cae9',
-                'accent_color': '#80deea',
-                'text_color': '#546e7a',
-                'background_color': '#fce4ec',
-                'header_bg_color': '#f3e5f5',
-                'footer_bg_color': '#b39ddb',
-                'hero_bg_color': '#e1bee7',
+                'primary_color': '#2E5454',
+                'secondary_color': '#7A4F4F',
+                'accent_color': '#5E4563',
+                'text_color': '#202A33',
+                'background_color': '#F9F6F0',
+                'header_bg_color': '#FFFFFF',
+                'footer_bg_color': '#38434D',
+                'hero_bg_color': '#E2F0F0',
+                'border_color': '#e5e7eb',
             },
             'custom': {}
         }
         return schemes.get(scheme_name, schemes['wood'])
 
     def clear_cache(self):
-        from django.core.cache import cache
         cache.delete('site_settings')
         cache.delete('active_promotions')
         cache.delete('header_pages')
         cache.delete('visible_social_links')
 
+
 @receiver(post_save, sender=SiteSettings)
 def clear_site_settings_cache(sender, instance, **kwargs):
-    """Очищает кэш настроек сайта при сохранении"""
-    from django.core.cache import cache
     cache_keys = ['site_settings', 'active_promotions', 'header_pages', 'visible_social_links']
     for key in cache_keys:
         cache.delete(key)
     logger.info(f"Кэш настроек сайта очищен: {instance}")
+
+
+@receiver([post_save, post_delete], sender=Promotion)
+def clear_promotions_cache(sender, **kwargs):
+    cache.delete('active_promotions')
+
+
+class NewsletterSubscriber(models.Model):
+    email = models.EmailField(unique=True, verbose_name="Email")
+    created_at = models.DateTimeField(auto_now_add=True, editable=False, verbose_name="Дата подписки")
+    is_active = models.BooleanField(default=True, verbose_name="Активен")
+
+    class Meta:
+        verbose_name = "Подписчик"
+        verbose_name_plural = "Подписчики"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.email
+
+
+class StockNotification(models.Model):
+    product = models.ForeignKey('mybiz_core.Product', on_delete=models.CASCADE, verbose_name="Товар")
+    email = models.EmailField(verbose_name="Email")
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    is_notified = models.BooleanField(default=False, verbose_name="Уведомление отправлено")
+
+    class Meta:
+        unique_together = ('product', 'email')
+        verbose_name = "Запрос о поступлении"
+        verbose_name_plural = "Запросы о поступлении"
+
+    def __str__(self):
+        return f"{self.email} - {self.product.name}"

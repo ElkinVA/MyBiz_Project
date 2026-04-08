@@ -11,7 +11,7 @@ class PageAdminForm(forms.ModelForm):
         fields = '__all__'
         widgets = {
             'content': CKEditor5Widget(
-                config_name='default',
+                config_name='extends',  # 👈 расширенный редактор
                 attrs={'class': 'django_ckeditor_5'}
             ),
         }
@@ -24,4 +24,5 @@ class PageAdmin(admin.ModelAdmin):
     list_filter = ('is_active', 'show_in_header', 'show_in_footer')
     search_fields = ('title', 'content')
     prepopulated_fields = {'slug': ('title',)}
-    ordering = ('title',)  # Убрал 'order'
+    ordering = ('title',)
+    save_on_top = True  # 👈 Кнопки сохранения сверху

@@ -7,11 +7,11 @@ from .models import Category, Product
 
 def home(request):
     """Главная страница"""
-    # Получаем featured_products из базы данных
+    # Получаем рекомендуемые товары из базы данных
     featured_products = Product.objects.filter(
         is_active=True,
         is_featured=True
-    )[:8]  # Ограничиваем 8 товарами
+    ).select_related('category')[:8]
 
     # Получаем общее количество активных товаров
     total_products = Product.objects.filter(is_active=True).count()
@@ -19,16 +19,15 @@ def home(request):
     context = {
         'featured_products': featured_products,
         'total_products': total_products,
-        # promotions и header_pages уже добавлены через context_processors
     }
-
     return render(request, 'home.html', context)
 
 
 def product_list(request, category_slug=None):
     """Список товаров с фильтрацией по категории"""
-    categories = Category.objects.filter(is_active=True)
-    products = Product.objects.filter(is_active=True)
+    # Оптимизация: prefetch_related для избежания N+1 запросов
+    categories = Category.objects.filter(is_active=True).prefetch_related('children')
+    products = Product.objects.filter(is_active=True).select_related('category')
 
     # Фильтрация по категории
     current_category = None
@@ -88,7 +87,7 @@ def product_list(request, category_slug=None):
         products = products.order_by('-created_at')
 
     # Пагинация
-    paginator = Paginator(products, 12)  # 12 товаров на странице
+    paginator = Paginator(products, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -101,7 +100,6 @@ def product_list(request, category_slug=None):
         'sort_by': sort_by,
         'total_products': products.count(),
     }
-
     return render(request, 'products/product_list.html', context)
 
 
@@ -118,28 +116,31 @@ def product_detail(request, pk, slug):
     related_products = Product.objects.filter(
         category=product.category,
         is_active=True
-    ).exclude(pk=product.pk)[:4]
+    ).select_related('category').exclude(pk=product.pk)[:4]
 
     context = {
         'product': product,
         'related_products': related_products,
     }
-
     return render(request, 'products/product_detail.html', context)
 
 
 # Обработчики ошибок
 def bad_request(request, exception=None):
-    return render(request, '404.html', status=400)
+    """Ошибка 400 - Некорректный запрос"""
+    return render(request, '400.html', status=400)
 
 
 def permission_denied(request, exception=None):
-    return render(request, '404.html', status=403)
+    """Ошибка 403 - Доступ запрещен"""
+    return render(request, '403.html', status=403)
 
 
 def page_not_found(request, exception=None):
+    """Ошибка 404 - Страница не найдена"""
     return render(request, '404.html', status=404)
 
 
 def server_error(request, exception=None):
+    """Ошибка 500 - Внутренняя ошибка сервера"""
     return render(request, '500.html', status=500)

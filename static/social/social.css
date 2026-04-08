@@ -1,48 +1,76 @@
 /* static/social/social.css - стили для социальных иконок */
-.social-icon {
-    width: 24px;
-    height: 24px;
+
+/* Базовые стили для всех социальных иконок */
+.social-icon,
+footer a svg,
+header a svg {
+    width: 1.5rem;
+    height: 1.5rem;
     fill: currentColor;
-    transition: fill 0.3s ease;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
 }
 
-.social-icon:hover {
-    transform: scale(1.1);
-    opacity: 0.9;
-}
-
-/* Убедимся что SVG принимает цвет */
-svg.social-icon {
-    fill: currentColor !important;
-}
-
-/* Специфичные стили для разных соцсетей */
-a:hover .social-icon {
+/* При наведении - белый цвет */
+footer a:hover svg,
+header a:hover svg {
     fill: white !important;
 }
 
-/* Адаптация для разных тем */
+/* Для темной темы */
 @media (prefers-color-scheme: dark) {
-    .social-icon {
-        fill: #d1d5db; /* серый для темной темы */
+    .social-icon,
+    footer a svg,
+    header a svg {
+        fill: #d1d5db;
     }
 }
-.flex.space-x-4 {
+
+/* Гарантируем правильный размер в flex-контейнерах */
+.flex.space-x-4,
+.flex.gap-3 {
     align-items: center;
-    min-height: 2rem; /* Гарантируем минимальную высоту */
+    min-height: 2rem;
 }
 
 /* Принудительное наследование цвета для SVG */
-footer a svg {
+footer a svg,
+header a svg {
     fill: currentColor;
-    flex-shrink: 0; /* Не даем SVG сжиматься в flex-контейнере */
+    flex-shrink: 0;
 }
 
 /* Гарантируем что SVG имеет правильный размер */
-footer .w-6 {
+footer .w-6,
+header .w-6 {
     width: 1.5rem !important;
 }
 
-footer .h-6 {
+footer .h-6,
+header .h-6 {
     height: 1.5rem !important;
+}
+
+/* Стили для иконок в футере */
+footer [class*="social"] svg {
+    display: block;
+}
+
+/* Стили для иконок в шапке */
+.social-header-icon svg {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+/* Стили для мобильных иконок */
+.social-mobile-icon svg {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+/* Убираем возможные стили которые могут скрывать SVG */
+svg[class*="w-6"] {
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }

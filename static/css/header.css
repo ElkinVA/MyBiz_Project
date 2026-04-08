@@ -252,10 +252,6 @@ header {
 
 /* Поддержка темной темы */
 @media (prefers-color-scheme: dark) {
-    header {
-        background: var(--color-header-bg, #1f2937);
-    }
-
     .nav-link {
         color: #d1d5db;
     }
@@ -274,11 +270,6 @@ header {
     .search-input:focus,
     .mobile-search-input:focus {
         border-color: var(--color-primary);
-    }
-
-    #mobile-navigation {
-        background: var(--color-header-bg, #1f2937);
-        border-color: #374151;
     }
 
     .mobile-nav-link {
@@ -325,7 +316,7 @@ header {
     display: block;
     text-decoration: none;
     transition: all 0.2s ease;
-    min-width: 250px; /* Минимальная ширина для предотвращения сжатия */
+    min-width: 250px;
 }
 
 .category-mega-item:hover {
@@ -334,8 +325,8 @@ header {
 }
 
 .category-mega-item h3 {
-    line-height: 1.4; /* Улучшенная читаемость */
-    font-size: 0.95rem; /* Немного больше размер шрифта */
+    line-height: 1.4;
+    font-size: 0.95rem;
 }
 
 .category-mega-item p {
@@ -343,102 +334,14 @@ header {
     color: #6b7280;
 }
 
-/* Сетка мега-меню */
 #categories-megamenu .grid {
-    gap: 1.5rem; /* Больше отступы между элементами */
+    gap: 1.5rem;
 }
 
 #categories-megamenu .grid > div {
-    min-width: 280px; /* Минимальная ширина колонки */
+    min-width: 280px;
 }
 
-/* Адаптивность */
-@media (max-width: 768px) {
-    #categories-megamenu .grid {
-        grid-template-columns: 1fr !important;
-        gap: 1rem;
-    }
-
-    .category-mega-item {
-        min-width: 100%;
-    }
-}
-
-@media (min-width: 768px) and (max-width: 1024px) {
-    #categories-megamenu .grid {
-        grid-template-columns: repeat(2, minmax(250px, 1fr)) !important;
-    }
-}
-
-@media (min-width: 1025px) {
-    #categories-megamenu .grid {
-        grid-template-columns: repeat(3, minmax(280px, 1fr)) !important;
-    }
-}
-
-/* Улучшение читаемости текста в мега-меню */
-.category-mega-item h3,
-.category-mega-item p {
-    letter-spacing: -0.01em; /* Небольшое улучшение читаемости */
-}
-
-/* Улучшение отступов для мобильного меню */
-@media (max-width: 768px) {
-    #mobile-categories-list .mobile-nav-sublink {
-        padding: 10px 12px;
-        font-size: 0.95rem;
-        line-height: 1.5;
-    }
-
-    #mobile-categories-list .mobile-nav-sublink span {
-        letter-spacing: -0.01em;
-    }
-}
-
-/* Анимация появления мега-меню */
-#categories-megamenu {
-    transition-property: opacity, transform, visibility;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 300ms;
-}
-
-/* Плавное исчезновение */
-[x-cloak] {
-    display: none !important;
-}
-/* Улучшенные стили для мега-меню категорий */
-.category-mega-item {
-    display: block;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    min-width: 250px; /* Минимальная ширина для предотвращения сжатия */
-}
-
-.category-mega-item:hover {
-    transform: translateY(-2px);
-    background-color: #f9fafb;
-}
-
-.category-mega-item h3 {
-    line-height: 1.4; /* Улучшенная читаемость */
-    font-size: 0.95rem; /* Немного больше размер шрифта */
-}
-
-.category-mega-item p {
-    line-height: 1.5;
-    color: #6b7280;
-}
-
-/* Сетка мега-меню */
-#categories-megamenu .grid {
-    gap: 1.5rem; /* Больше отступы между элементами */
-}
-
-#categories-megamenu .grid > div {
-    min-width: 280px; /* Минимальная ширина колонки */
-}
-
-/* Адаптивность */
 @media (max-width: 768px) {
     #categories-megamenu .grid {
         grid-template-columns: 1fr !important;

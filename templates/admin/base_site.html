@@ -1,0 +1,53 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block branding %}
+<div id="site-name">
+    <a href="{% url 'admin:index' %}" class="admin-branding">
+        <span class="brand-icon">🏪</span>
+        <span class="brand-text">MyBiz Администрирование</span>
+    </a>
+</div>
+{% if user.is_anonymous %}
+    {% include "admin/color_theme_toggle.html" %}
+{% endif %}
+{% endblock %}
+
+{% block nav-global %}
+{% if user.is_authenticated %}
+<div class="admin-user-info">
+    <span class="username">{{ user.get_username }}</span>
+    <a href="{% url 'admin:logout' %}" class="logout-link">Выйти</a>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'admin/css/admin-enhanced.css' %}">
+<link rel="stylesheet" href="{% static 'admin/css/color-scheme.css' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<script src="{% static 'admin/js/admin-enhanced.js' %}" defer></script>
+{% endblock %}
+
+{% block bodyclass %}{{ block.super }} admin-enhanced{% endblock %}
+
+{% block usertools %}
+{% if user.has_usable_password %}
+<div id="user-tools">
+    Привет, {{ user.get_username }}
+    {% url 'django-admindocs-docroot' as docsroot %}
+    {% if docsroot %}
+    <a href="{{ docsroot }}">Документация</a>
+    {% endif %}
+    <a href="{% url 'admin:password_change' %}">Изменить пароль</a>
+    <a href="{% url 'admin:logout' %}">Выйти</a>
+</div>
+{% endif %}
+{% endblock %}

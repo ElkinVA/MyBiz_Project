@@ -1,0 +1,81 @@
+/* static/admin/css/admin-common.css */
+/* Общие стили для цветовых полей в админке */
+
+.form-row.field-primary_color,
+.form-row.field-secondary_color,
+.form-row.field-accent_color,
+.form-row.field-text_color,
+.form-row.field-background_color,
+.form-row.field-header_bg_color,
+.form-row.field-footer_bg_color,
+.form-row.field-hero_bg_color {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #eee;
+}
+
+.form-row.field-primary_color label,
+.form-row.field-secondary_color label,
+.form-row.field-accent_color label,
+.form-row.field-text_color label,
+.form-row.field-background_color label,
+.form-row.field-header_bg_color label,
+.form-row.field-footer_bg_color label,
+.form-row.field-hero_bg_color label {
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: block;
+    color: #333;
+    font-size: 14px;
+}
+
+.form-row.field-primary_color .help,
+.form-row.field-secondary_color .help,
+.form-row.field-accent_color .help,
+.form-row.field-text_color .help,
+.form-row.field-background_color .help,
+.form-row.field-header_bg_color .help,
+.form-row.field-footer_bg_color .help,
+.form-row.field-hero_bg_color .help {
+    color: #666;
+    font-size: 12px;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+/* Темная тема для общих полей */
+@media (prefers-color-scheme: dark) {
+    .form-row.field-primary_color,
+    .form-row.field-secondary_color,
+    .form-row.field-accent_color,
+    .form-row.field-text_color,
+    .form-row.field-background_color,
+    .form-row.field-header_bg_color,
+    .form-row.field-footer_bg_color,
+    .form-row.field-hero_bg_color {
+        background: #2d2d2d;
+        border-color: #444;
+    }
+    .form-row.field-primary_color label,
+    .form-row.field-secondary_color label,
+    .form-row.field-accent_color label,
+    .form-row.field-text_color label,
+    .form-row.field-background_color label,
+    .form-row.field-header_bg_color label,
+    .form-row.field-footer_bg_color label,
+    .form-row.field-hero_bg_color label {
+        color: #ddd;
+    }
+    .form-row.field-primary_color .help,
+    .form-row.field-secondary_color .help,
+    .form-row.field-accent_color .help,
+    .form-row.field-text_color .help,
+    .form-row.field-background_color .help,
+    .form-row.field-header_bg_color .help,
+    .form-row.field-footer_bg_color .help,
+    .form-row.field-hero_bg_color .help {
+        color: #aaa;
+    }
+}

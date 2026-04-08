@@ -1,9 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load thumbnail %}
-
 {% block title %}{% if category %}{{ category.name }} - {% endif %}Каталог товаров - {{ site_settings.site_name|default:"Интернет-магазин" }}{% endblock %}
-
 {% block meta %}
 <meta name="description" content="{% if category and category.meta_description %}{{ category.meta_description|truncatewords:20 }}{% else %}Широкий ассортимент товаров по выгодным ценам. Качественные товары с доставкой.{% endif %}">
 <meta name="keywords" content="{% if category and category.meta_keywords %}{{ category.meta_keywords }}{% else %}товары, магазин, купить, онлайн, доставка{% endif %}">
@@ -12,1023 +10,638 @@
 {% if category and category.image %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ category.image.url }}">{% endif %}
 <link rel="canonical" href="{{ request.build_absolute_uri }}">
 {% endblock %}
-
 {% block content %}
 <div class="container mx-auto px-4 py-8">
-
-    <!-- Хлебные крошки -->
-    <nav class="breadcrumbs mb-8" aria-label="Хлебные крошки">
-        <ol class="flex items-center flex-wrap gap-2 text-sm">
-            <li>
-                <a href="{% url 'mybiz_core:home' %}" class="breadcrumb-link" aria-label="На главную">
-                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 0 0 1 1h3m10-11l2 2m-2-2v10a1 1 0 0 1 1 1h-3m-6 0a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1m-6 0h6"/>
-                    </svg>
-                    Главная
-                </a>
-            </li>
-            {% if category and category.parent %}
-            <li class="flex items-center">
-                <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                </svg>
-                <a href="{{ category.parent.get_absolute_url }}" class="breadcrumb-link">{{ category.parent.name }}</a>
-            </li>
-            {% endif %}
-            <li class="flex items-center" aria-current="page">
-                <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                </svg>
-                <span class="breadcrumb-current font-medium">{% if category %}{{ category.name }}{% else %}Все товары{% endif %}</span>
-            </li>
-        </ol>
-    </nav>
-
-    <!-- Заголовок и описание -->
-    <header class="page-header mb-10">
-        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 break-words">
-            {% if category %}
-            {{ category.name }}
-            {% else %}
-            Каталог товаров
-            {% endif %}
-        </h1>
-
-        {% if category and category.description %}
-        <div class="prose prose-lg text-gray-600 max-w-3xl mb-4">
-            {{ category.description|safe|truncatewords_html:100 }}
-        </div>
-        {% else %}
-        <p class="text-lg text-gray-600 max-w-3xl">
-            Широкий выбор качественных товаров по доступным ценам. Используйте фильтры для быстрого поиска.
-        </p>
-        {% endif %}
-
-        <!-- Информация о количестве -->
-        <div class="mt-4 text-gray-700">
-            <p>Найдено: <strong class="text-gray-900">{{ products.paginator.count|default:0 }}</strong> товаров</p>
-            {% if category %}
-            <p class="text-sm text-gray-600 mt-1">В категории: <strong>{{ category.products_count|default:0 }}</strong> товаров</p>
-            {% endif %}
-        </div>
-    </header>
-
-    <!-- Кнопка мобильных фильтров -->
-    <div class="lg:hidden mb-6">
-        <button type="button"
-                id="mobileFiltersToggle"
-                class="flex items-center justify-center w-full py-3 px-4 bg-white border border-gray-300 rounded-lg text-gray-700 hover:border-gray-400 transition-colors"
-                aria-expanded="false"
-                aria-controls="mobileFiltersPanel">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
-            </svg>
-            Фильтры и сортировка
-        </button>
-    </div>
-
-    <!-- Основной контейнер -->
-    <div class="product-layout">
-        <!-- Левая колонка - фильтры (десктоп) -->
-        <aside class="product-filters-desktop" aria-label="Фильтры товаров">
-            <div class="filters-container sticky top-24">
-                <!-- Заголовок фильтров -->
-                <div class="filters-header mb-6">
-                    <h2 class="text-xl font-bold text-gray-900">Фильтры</h2>
-                    {% if request.GET %}
-                    <a href="{% url 'mybiz_core:product_list' %}{% if category %}?category={{ category.slug }}{% endif %}"
-                       class="filters-clear">
-                        Сбросить все
-                    </a>
-                    {% endif %}
-                </div>
-
-                <!-- Форма фильтров -->
-                <form method="get" id="filtersForm" class="space-y-6">
-                    <!-- Скрытые поля для пагинации -->
-                    <input type="hidden" name="page" value="1">
-
-                    {% if category %}
-                    <input type="hidden" name="category" value="{{ category.slug }}">
-                    {% endif %}
-
-                    <!-- Фильтр по категориям -->
-                    <div class="filter-section">
-                        <h3 class="filter-section-title">Категории</h3>
-                        <div class="filter-options">
-                            <label class="filter-option {% if not category %}filter-option-active{% endif %}">
-                                <input type="radio"
-                                       name="category"
-                                       value=""
-                                       {% if not category %}checked{% endif %}
-                                       class="sr-only"
-                                       onchange="this.form.submit()">
-                                <span class="truncate flex-grow">Все категории</span>
-                                <span class="filter-count shrink-0">{{ total_products|default:products.paginator.count|default:0 }}</span>
-                            </label>
-                            {% for cat in categories %}
-                            {% if cat.is_active and cat.products_count > 0 %}
-                            <label class="filter-option {% if category and category.id == cat.id %}filter-option-active{% endif %}">
-                                <input type="radio"
-                                       name="category"
-                                       value="{{ cat.slug }}"
-                                       {% if category and category.id == cat.id %}checked{% endif %}
-                                       class="sr-only"
-                                       onchange="this.form.submit()">
-                                <span class="truncate flex-grow" title="{{ cat.name }}">{{ cat.name }}</span>
-                                <span class="filter-count shrink-0">{{ cat.products_count|default:0 }}</span>
-                            </label>
-                            {% endif %}
-                            {% empty %}
-                            <div class="text-gray-500 text-sm py-2">Категории не найдены</div>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <!-- Фильтр по цене -->
-                    <div class="filter-section">
-                        <h3 class="filter-section-title">Цена, руб.</h3>
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between gap-4">
-                                <input type="number"
-                                       name="min_price"
-                                       value="{{ request.GET.min_price|default:'' }}"
-                                       placeholder="От"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                                       min="0"
-                                       onchange="this.form.submit()">
-                                <span class="text-gray-500">–</span>
-                                <input type="number"
-                                       name="max_price"
-                                       value="{{ request.GET.max_price|default:'' }}"
-                                       placeholder="До"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                                       min="0"
-                                       onchange="this.form.submit()">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Быстрые фильтры -->
-                    <div class="quick-filters">
-                        <h3 class="filter-section-title">Сортировка</h3>
-                        <div class="quick-filter-buttons">
-                            <label class="quick-filter-btn {% if request.GET.sort == 'price_asc' or not request.GET.sort %}quick-filter-btn-active{% endif %}">
-                                <input type="radio"
-                                       name="sort"
-                                       value="price_asc"
-                                       {% if request.GET.sort == 'price_asc' or not request.GET.sort %}checked{% endif %}
-                                       class="sr-only"
-                                       onchange="this.form.submit()">
-                                Сначала дешевле
-                            </label>
-                            <label class="quick-filter-btn {% if request.GET.sort == 'price_desc' %}quick-filter-btn-active{% endif %}">
-                                <input type="radio"
-                                       name="sort"
-                                       value="price_desc"
-                                       {% if request.GET.sort == 'price_desc' %}checked{% endif %}
-                                       class="sr-only"
-                                       onchange="this.form.submit()">
-                                Сначала дороже
-                            </label>
-                            <label class="quick-filter-btn {% if request.GET.sort == 'newest' %}quick-filter-btn-active{% endif %}">
-                                <input type="radio"
-                                       name="sort"
-                                       value="newest"
-                                       {% if request.GET.sort == 'newest' %}checked{% endif %}
-                                       class="sr-only"
-                                       onchange="this.form.submit()">
-                                Сначала новинки
-                            </label>
-                            <label class="quick-filter-btn {% if request.GET.sort == 'popular' %}quick-filter-btn-active{% endif %}">
-                                <input type="radio"
-                                       name="sort"
-                                       value="popular"
-                                       {% if request.GET.sort == 'popular' %}checked{% endif %}
-                                       class="sr-only"
-                                       onchange="this.form.submit()">
-                                По популярности
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Чекбоксы -->
-                    <div class="filter-section">
-                        <h3 class="filter-section-title">Дополнительно</h3>
-                        <div class="space-y-3">
-                            <label class="flex items-center space-x-3 cursor-pointer">
-                                <input type="checkbox"
-                                       name="in_stock"
-                                       value="true"
-                                       {% if request.GET.in_stock %}checked{% endif %}
-                                       class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
-                                       onchange="this.form.submit()">
-                                <span class="text-gray-700 text-sm">Только в наличии</span>
-                            </label>
-                            <label class="flex items-center space-x-3 cursor-pointer">
-                                <input type="checkbox"
-                                       name="is_new"
-                                       value="true"
-                                       {% if request.GET.is_new %}checked{% endif %}
-                                       class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
-                                       onchange="this.form.submit()">
-                                <span class="text-gray-700 text-sm">Только новинки</span>
-                            </label>
-                            <label class="flex items-center space-x-3 cursor-pointer">
-                                <input type="checkbox"
-                                       name="has_discount"
-                                       value="true"
-                                       {% if request.GET.has_discount %}checked{% endif %}
-                                       class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
-                                       onchange="this.form.submit()">
-                                <span class="text-gray-700 text-sm">Только со скидкой</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="hidden">Применить фильтры</button>
-                </form>
-            </div>
-        </aside>
-
-        <!-- Правая колонка - товары -->
-        <main class="product-main" id="productsList">
-            <!-- Активные фильтры -->
-            {% if request.GET and products %}
-            <div class="mb-6 p-4 bg-gray-50 rounded-lg">
-                <div class="flex flex-wrap items-center gap-2">
-                    <span class="text-sm text-gray-600">Активные фильтры:</span>
-                    {% for key, value in request.GET.items %}
-                    {% if key != 'page' and key != 'sort' and value %}
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-white border border-gray-300 text-gray-700">
-                        {{ key }}: {{ value }}
-                        <a href="?{% for k,v in request.GET.items %}{% if k != key %}{{ k }}={{ v|urlencode }}&{% endif %}{% endfor %}"
-                           class="ml-1 text-gray-500 hover:text-gray-700"
-                           aria-label="Удалить фильтр">
-                            &times;
-                        </a>
-                    </span>
-                    {% endif %}
-                    {% endfor %}
-                    {% if request.GET %}
-                    <a href="{% url 'mybiz_core:product_list' %}{% if category %}?category={{ category.slug }}{% endif %}"
-                       class="text-sm text-primary-600 hover:text-primary-800 ml-2">
-                        Сбросить все
-                    </a>
-                    {% endif %}
-                </div>
-            </div>
-            {% endif %}
-
-            <!-- Сетка товаров -->
-            {% if products %}
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12"
-                 role="list"
-                 aria-label="Список товаров">
-                {% for product in products %}
-                <div class="h-full" role="listitem">
-                      {% include 'products/product_items.html' with product=product %}
-                </div>
-                {% endfor %}
-            </div>
-
-            <!-- Пагинация -->
-            {% if products.has_other_pages %}
-            <nav class="product-pagination" aria-label="Навигация по страницам">
-                <ul class="pagination-list">
-                    {% if products.has_previous %}
-                    <li>
-                        <a href="?page={{ products.previous_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}"
-                           class="pagination-item pagination-prev"
-                           rel="prev"
-                           aria-label="Предыдущая страница">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                            </svg>
-                            Назад
-                        </a>
-                    </li>
-                    {% endif %}
-
-                    {% for i in products.paginator.page_range %}
-                    {% if products.number == i %}
-                    <li>
-                        <span class="pagination-item pagination-active" aria-current="page">{{ i }}</span>
-                    </li>
-                    {% elif i >= products.number|add:"-2" and i <= products.number|add:"2" %}
-                    <li>
-                        <a href="?page={{ i }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}"
-                           class="pagination-item"
-                           aria-label="Страница {{ i }}">
-                            {{ i }}
-                        </a>
-                    </li>
-                    {% elif i == 1 or i == products.paginator.num_pages %}
-                    <li>
-                        <a href="?page={{ i }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}"
-                           class="pagination-item"
-                           aria-label="Страница {{ i }}">
-                            {{ i }}
-                        </a>
-                    </li>
-                    {% elif i == products.number|add:"-3" or i == products.number|add:"3" %}
-                    <li>
-                        <span class="pagination-item pagination-ellipsis">…</span>
-                    </li>
-                    {% endif %}
-                    {% endfor %}
-
-                    {% if products.has_next %}
-                    <li>
-                        <a href="?page={{ products.next_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}"
-                           class="pagination-item pagination-next"
-                           rel="next"
-                           aria-label="Следующая страница">
-                            Далее
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                            </svg>
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
-
-                <div class="mt-4 text-center text-sm text-gray-600">
-                    Страница {{ products.number }} из {{ products.paginator.num_pages }}
-                </div>
-            </nav>
-            {% endif %}
-
-            {% else %}
-            <!-- Состояние "нет товаров" -->
-            <div class="empty-state" role="status">
-                <div class="empty-state-icon">
-                    <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 0 0 -2-2H6a2 2 0 0 0 -2 2v7m16 0v5a2 2 0 0 1 -2 2H6a2 2 0 0 1 -2-2v-5m16 0h-2.586a1 1 0 0 0 -.707.293l-2.414 2.414a1 1 0 0 1 -.707.293h-3.172a1 1 0 0 1 -.707-.293l-2.414-2.414A1 1 0 0 0 6.586 13H4"/>
-                    </svg>
-                </div>
-                <h2 class="empty-state-title">Товары не найдены</h2>
-                <p class="empty-state-description">
-                    Попробуйте изменить параметры фильтрации или выбрать другую категорию.
-                </p>
-                <div class="empty-state-actions">
-                    {% if request.GET %}
-                    <a href="{% url 'mybiz_core:product_list' %}{% if category %}?category={{ category.slug }}{% endif %}"
-                       class="empty-state-btn-primary">
-                        Сбросить фильтры
-                    </a>
-                    {% endif %}
-                    <a href="{% url 'mybiz_core:home' %}" class="empty-state-btn-secondary">
-                        На главную
-                    </a>
-                </div>
-            </div>
-            {% endif %}
-        </main>
-    </div>
-
-    <!-- Мобильные фильтры (модальное окно) -->
-    <!-- Мобильные фильтры (модальное окно) -->
+<!-- Хлебные крошки -->
+<nav class="breadcrumbs mb-8" aria-label="Хлебные крошки">
+<ol class="flex items-center flex-wrap gap-2 text-sm">
+<li>
+<a href="{% url 'mybiz_core:home' %}" class="breadcrumb-link text-default/60 hover:text-primary transition-colors" aria-label="На главную">
+<svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 0 0 1 1h3m10-11l2 2m-2-2v10a1 1 0 0 1 1 1h-3m-6 0a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1m-6 0h6"/>
+</svg>
+Главная
+</a>
+</li>
+{% if category and category.parent %}
+<li class="flex items-center">
+<svg class="w-4 h-4 mx-2 text-default/40" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+</svg>
+<a href="{{ category.parent.get_absolute_url }}" class="breadcrumb-link text-default/60 hover:text-primary">{{ category.parent.name }}</a>
+</li>
+{% endif %}
+<li class="flex items-center" aria-current="page">
+<svg class="w-4 h-4 mx-2 text-default/40" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+</svg>
+<span class="breadcrumb-current font-medium text-default">{% if category %}{{ category.name }}{% else %}Все товары{% endif %}</span>
+</li>
+</ol>
+</nav>
+<!-- Заголовок и описание -->
+<header class="page-header mb-10">
+<h1 class="text-3xl md:text-4xl font-bold text-default mb-4 break-words hyphens-auto">
+{% if category %}
+{{ category.name }}
+{% else %}
+Каталог товаров
+{% endif %}
+</h1>
+{% if category and category.description %}
+<div class="prose prose-lg text-default/60 max-w-3xl mb-4">
+{{ category.description|safe|truncatewords_html:100 }}
+</div>
+{% else %}
+<p class="text-lg text-default/60 max-w-3xl">
+Широкий выбор качественных товаров по доступным ценам. Используйте фильтры для быстрого поиска.
+</p>
+{% endif %}
+<!-- Информация о количестве -->
+<div class="mt-4 text-default/60">
+<p>Найдено: <strong class="text-default">{{ products.paginator.count|default:0 }}</strong> товаров</p>
+{% if category %}
+<p class="text-sm text-default/50 mt-1">В категории: <strong>{{ category.products_count|default:0 }}</strong> товаров</p>
+{% endif %}
+</div>
+</header>
+<!-- Кнопка мобильных фильтров -->
+<div class="lg:hidden mb-6">
+<button type="button"
+id="mobileFiltersToggle"
+class="flex items-center justify-center w-full py-3 px-4 bg-default border border-default rounded-lg text-default/60 hover:text-primary hover:border-primary transition-colors"
+aria-expanded="false"
+aria-controls="mobileFiltersPanel">
+<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+</svg>
+Фильтры и сортировка
+</button>
+</div>
+<!-- Основной контейнер -->
+<div class="product-layout">
+<!-- Левая колонка - фильтры (десктоп) -->
+<aside class="product-filters-desktop" aria-label="Фильтры товаров">
+<div class="filters-container sticky top-24 bg-default rounded-xl p-6 shadow-sm border border-default">
+<!-- Заголовок фильтров -->
+<div class="filters-header mb-6 flex justify-between items-center">
+<h2 class="text-xl font-bold text-default">Фильтры</h2>
+{% if request.GET %}
+<a href="{% url 'mybiz_core:product_list' %}{% if category %}?category={{ category.slug }}{% endif %}"
+class="filters-clear text-sm text-default/60 hover:text-primary">
+Сбросить все
+</a>
+{% endif %}
+</div>
+<!-- Форма фильтров -->
+<form method="get" id="filtersForm" class="space-y-6">
+<!-- Скрытые поля для пагинации -->
+<input type="hidden" name="page" value="1">
+{% if category %}
+<input type="hidden" name="category" value="{{ category.slug }}">
+{% endif %}
+<!-- Фильтр по категориям -->
+<div class="filter-section">
+<h3 class="filter-section-title font-semibold text-default mb-3">Категории</h3>
+<div class="filter-options space-y-1">
+<label class="filter-option flex items-center justify-between p-2 rounded cursor-pointer {% if not category %}bg-primary/10 border border-primary text-primary{% else %}hover:bg-default/20{% endif %}">
+<input type="radio"
+name="category"
+value=""
+{% if not category %}checked{% endif %}
+class="hidden"
+onchange="this.form.submit()">
+<span class="truncate flex-grow">Все категории</span>
+<span class="filter-count text-xs bg-default/20 px-2 py-1 rounded-full shrink-0">{{ total_products|default:products.paginator.count|default:0 }}</span>
+</label>
+{% for cat in categories %}
+{% if cat.is_active and cat.products_count > 0 %}
+<label class="filter-option flex items-center justify-between p-2 rounded cursor-pointer {% if category and category.id == cat.id %}bg-primary/10 border border-primary text-primary{% else %}hover:bg-default/20{% endif %}">
+<input type="radio"
+name="category"
+value="{{ cat.slug }}"
+{% if category and category.id == cat.id %}checked{% endif %}
+class="hidden"
+onchange="this.form.submit()">
+<span class="truncate flex-grow" title="{{ cat.name }}">{{ cat.name }}</span>
+<span class="filter-count text-xs bg-default/20 px-2 py-1 rounded-full shrink-0">{{ cat.products_count|default:0 }}</span>
+</label>
+{% endif %}
+{% empty %}
+<div class="text-default/50 text-sm py-2">Категории не найдены</div>
+{% endfor %}
+</div>
+</div>
+<!-- Фильтр по цене -->
+<div class="filter-section">
+<h3 class="filter-section-title font-semibold text-default mb-3">Цена, руб.</h3>
+<div class="space-y-4">
+<div class="flex items-center justify-between gap-4">
+<label for="min_price" class="sr-only">Минимальная цена</label>
+<input type="number"
+id="min_price"
+name="min_price"
+value="{{ request.GET.min_price|default:'' }}"
+placeholder="От"
+class="w-full px-3 py-2 border border-default rounded-lg text-sm bg-default text-default"
+min="0"
+onchange="this.form.submit()">
+<span class="text-default/50">–</span>
+<label for="max_price" class="sr-only">Максимальная цена</label>
+<input type="number"
+id="max_price"
+name="max_price"
+value="{{ request.GET.max_price|default:'' }}"
+placeholder="До"
+class="w-full px-3 py-2 border border-default rounded-lg text-sm bg-default text-default"
+min="0"
+onchange="this.form.submit()">
+</div>
+</div>
+</div>
+<!-- Быстрые фильтры -->
+<div class="quick-filters">
+<h3 class="filter-section-title font-semibold text-default mb-3">Сортировка</h3>
+<div class="quick-filter-buttons space-y-1">
+<label class="quick-filter-btn block p-2 rounded border border-default cursor-pointer {% if request.GET.sort == 'price_asc' or not request.GET.sort %}bg-primary/10 border-primary text-primary{% else %}hover:bg-default/20{% endif %}">
+<input type="radio"
+name="sort"
+value="price_asc"
+{% if request.GET.sort == 'price_asc' or not request.GET.sort %}checked{% endif %}
+class="hidden"
+onchange="this.form.submit()">
+Сначала дешевле
+</label>
+<label class="quick-filter-btn block p-2 rounded border border-default cursor-pointer {% if request.GET.sort == 'price_desc' %}bg-primary/10 border-primary text-primary{% else %}hover:bg-default/20{% endif %}">
+<input type="radio"
+name="sort"
+value="price_desc"
+{% if request.GET.sort == 'price_desc' %}checked{% endif %}
+class="hidden"
+onchange="this.form.submit()">
+Сначала дороже
+</label>
+<label class="quick-filter-btn block p-2 rounded border border-default cursor-pointer {% if request.GET.sort == 'newest' %}bg-primary/10 border-primary text-primary{% else %}hover:bg-default/20{% endif %}">
+<input type="radio"
+name="sort"
+value="newest"
+{% if request.GET.sort == 'newest' %}checked{% endif %}
+class="hidden"
+onchange="this.form.submit()">
+Сначала новинки
+</label>
+<label class="quick-filter-btn block p-2 rounded border border-default cursor-pointer {% if request.GET.sort == 'popular' %}bg-primary/10 border-primary text-primary{% else %}hover:bg-default/20{% endif %}">
+<input type="radio"
+name="sort"
+value="popular"
+{% if request.GET.sort == 'popular' %}checked{% endif %}
+class="hidden"
+onchange="this.form.submit()">
+По популярности
+</label>
+</div>
+</div>
+<!-- Чекбоксы -->
+<div class="filter-section">
+<h3 class="filter-section-title font-semibold text-default mb-3">Дополнительно</h3>
+<div class="space-y-3">
+<label class="flex items-center space-x-3 cursor-pointer text-default/80">
+<input type="checkbox"
+name="in_stock"
+value="true"
+{% if request.GET.in_stock %}checked{% endif %}
+class="form-checkbox h-4 w-4 text-primary border-default rounded focus:ring-primary"
+onchange="this.form.submit()">
+<span class="text-default text-sm">Только в наличии</span>
+</label>
+<label class="flex items-center space-x-3 cursor-pointer text-default/80">
+<input type="checkbox"
+name="is_new"
+value="true"
+{% if request.GET.is_new %}checked{% endif %}
+class="form-checkbox h-4 w-4 text-primary border-default rounded focus:ring-primary"
+onchange="this.form.submit()">
+<span class="text-default text-sm">Только новинки</span>
+</label>
+<label class="flex items-center space-x-3 cursor-pointer text-default/80">
+<input type="checkbox"
+name="has_discount"
+value="true"
+{% if request.GET.has_discount %}checked{% endif %}
+class="form-checkbox h-4 w-4 text-primary border-default rounded focus:ring-primary"
+onchange="this.form.submit()">
+<span class="text-default text-sm">Только со скидкой</span>
+</label>
+</div>
+</div>
+<button type="submit" class="hidden">Применить фильтры</button>
+</form>
+</div>
+</aside>
+<!-- Правая колонка - товары -->
+<main class="product-main" id="productsList">
+<!-- Активные фильтры -->
+{% if request.GET and products %}
+<div class="mb-6 p-4 bg-default/80 rounded-lg border border-default">
+<div class="flex flex-wrap items-center gap-2">
+<span class="text-sm text-default/60">Активные фильтры:</span>
+{% for key, value in request.GET.items %}
+{% if key != 'page' and key != 'sort' and value %}
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-default border border-default text-default/80">
+{{ key }}: {{ value }}
+<a href="?{% for k,v in request.GET.items %}{% if k != key %}{{ k }}={{ v|urlencode }}&{% endif %}{% endfor %}"
+class="ml-1 text-default/50 hover:text-default"
+aria-label="Удалить фильтр">
+&times;
+</a>
+</span>
+{% endif %}
+{% endfor %}
+{% if request.GET %}
+<a href="{% url 'mybiz_core:product_list' %}{% if category %}?category={{ category.slug }}{% endif %}"
+class="text-sm text-primary hover:text-primary/80 ml-2">
+Сбросить все
+</a>
+{% endif %}
+</div>
+</div>
+{% endif %}
+<!-- Сетка товаров -->
+{% if products %}
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12"
+role="list"
+aria-label="Список товаров">
+{% for product in products %}
+<div class="h-full" role="listitem">
+{% include 'products/product_items.html' with product=product %}
+</div>
+{% endfor %}
+</div>
+<!-- Пагинация -->
+{% if products.has_other_pages %}
+<nav class="product-pagination mt-12 pt-8 border-t border-default" aria-label="Навигация по страницам">
+<ul class="pagination-list flex items-center justify-center gap-2 flex-wrap">
+{% if products.has_previous %}
+<li>
+<a href="?page={{ products.previous_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}"
+class="pagination-item flex items-center gap-1 px-3 py-2 border border-default rounded-lg text-default/60 hover:text-primary hover:border-primary transition-colors"
+rel="prev"
+aria-label="Предыдущая страница">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+</svg>
+Назад
+</a>
+</li>
+{% endif %}
+{% for i in products.paginator.page_range %}
+{% if products.number == i %}
+<li>
+<span class="pagination-item flex items-center justify-center min-w-[40px] h-10 px-3 border border-primary bg-primary/10 text-primary font-semibold rounded-lg" aria-current="page">{{ i }}</span>
+</li>
+{% elif i >= products.number|add:"-2" and i <= products.number|add:"2" %}
+<li>
+<a href="?page={{ i }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}"
+class="pagination-item flex items-center justify-center min-w-[40px] h-10 px-3 border border-default rounded-lg text-default/60 hover:text-primary hover:border-primary transition-colors"
+aria-label="Страница {{ i }}">
+{{ i }}
+</a>
+</li>
+{% elif i == 1 or i == products.paginator.num_pages %}
+<li>
+<a href="?page={{ i }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}"
+class="pagination-item flex items-center justify-center min-w-[40px] h-10 px-3 border border-default rounded-lg text-default/60 hover:text-primary hover:border-primary transition-colors"
+aria-label="Страница {{ i }}">
+{{ i }}
+</a>
+</li>
+{% elif i == products.number|add:"-3" or i == products.number|add:"3" %}
+<li>
+<span class="pagination-item flex items-center justify-center min-w-[40px] h-10 px-3 text-default/40">…</span>
+</li>
+{% endif %}
+{% endfor %}
+{% if products.has_next %}
+<li>
+<a href="?page={{ products.next_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}"
+class="pagination-item flex items-center gap-1 px-3 py-2 border border-default rounded-lg text-default/60 hover:text-primary hover:border-primary transition-colors"
+rel="next"
+aria-label="Следующая страница">
+Далее
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+</svg>
+</a>
+</li>
+{% endif %}
+</ul>
+<div class="mt-4 text-center text-sm text-default/60">
+Страница {{ products.number }} из {{ products.paginator.num_pages }}
+</div>
+</nav>
+{% endif %}
+{% else %}
+<!-- Состояние "нет товаров" -->
+<div class="empty-state text-center py-16 px-4 bg-default border-2 border-dashed border-default rounded-2xl" role="status">
+<div class="empty-state-icon mb-6">
+<svg class="w-16 h-16 text-default/40 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 0 0 -2-2H6a2 2 0 0 0 -2 2v7m16 0v5a2 2 0 0 1 -2 2H6a2 2 0 0 1 -2-2v-5m16 0h-2.586a1 1 0 0 0 -.707.293l-2.414 2.414a1 1 0 0 1 -.707.293h-3.172a1 1 0 0 1 -.707-.293l-2.414-2.414A1 1 0 0 0 6.586 13H4"/>
+</svg>
+</div>
+<h2 class="empty-state-title text-2xl font-semibold text-default mb-3">Товары не найдены</h2>
+<p class="empty-state-description text-default/60 max-w-md mx-auto mb-8">
+Попробуйте изменить параметры фильтрации или выбрать другую категорию.
+</p>
+<div class="empty-state-actions flex gap-3 justify-center flex-wrap">
+{% if request.GET %}
+<a href="{% url 'mybiz_core:product_list' %}{% if category %}?category={{ category.slug }}{% endif %}"
+class="empty-state-btn-primary px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
+Сбросить фильтры
+</a>
+{% endif %}
+<a href="{% url 'mybiz_core:home' %}" class="empty-state-btn-secondary px-6 py-3 border border-default text-default/60 rounded-lg hover:text-primary hover:border-primary transition-colors">
+На главную
+</a>
+</div>
+</div>
+{% endif %}
+</main>
+</div>
+<!-- Мобильные фильтры (модальное окно) -->
 <div id="mobileFiltersPanel"
-     class="fixed inset-0 z-50 hidden lg:hidden"
-     aria-modal="true"
-     aria-labelledby="mobileFiltersTitle"
-     role="dialog">
-    <div class="fixed inset-0 bg-black bg-opacity-50"
-         id="mobileFiltersOverlay"
-         tabindex="-1"></div>
-    <div class="fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-xl transform transition-transform">
-        <div class="h-full flex flex-col">
-            <!-- Заголовок -->
-            <div class="flex items-center justify-between p-4 border-b">
-                <h3 id="mobileFiltersTitle" class="text-lg font-semibold text-gray-900">Фильтры и сортировка</h3>
-                <button type="button"
-                        id="mobileFiltersClose"
-                        class="text-gray-500 hover:text-gray-700"
-                        aria-label="Закрыть фильтры">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Контент фильтров -->
-            <div class="flex-1 overflow-y-auto p-4">
-                <!-- Форма фильтров для мобильных устройств -->
-                <form method="get" id="mobileFiltersForm" class="space-y-6">
-                    <input type="hidden" name="page" value="1">
-                    {% if category %}
-                    <input type="hidden" name="category" value="{{ category.slug }}">
-                    {% endif %}
-
-                    <!-- Фильтр по категориям -->
-                    <div class="filter-section">
-                        <h3 class="filter-section-title">Категории</h3>
-                        <div class="filter-options">
-                            <label class="filter-option {% if not category %}filter-option-active{% endif %}">
-                                <input type="radio" name="category" value="" {% if not category %}checked{% endif %} class="sr-only">
-                                <span class="truncate flex-grow">Все категории</span>
-                                <span class="filter-count shrink-0">{{ total_products|default:products.paginator.count|default:0 }}</span>
-                            </label>
-                            {% for cat in categories %}
-                            {% if cat.is_active and cat.products_count > 0 %}
-                            <label class="filter-option {% if category and category.id == cat.id %}filter-option-active{% endif %}">
-                                <input type="radio" name="category" value="{{ cat.slug }}" {% if category and category.id == cat.id %}checked{% endif %} class="sr-only">
-                                <span class="truncate flex-grow" title="{{ cat.name }}">{{ cat.name }}</span>
-                                <span class="filter-count shrink-0">{{ cat.products_count|default:0 }}</span>
-                            </label>
-                            {% endif %}
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <!-- Фильтр по цене -->
-                    <div class="filter-section">
-                        <h3 class="filter-section-title">Цена, руб.</h3>
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between gap-4">
-                                <input type="number" name="min_price" value="{{ request.GET.min_price|default:'' }}" placeholder="От" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" min="0">
-                                <span class="text-gray-500">–</span>
-                                <input type="number" name="max_price" value="{{ request.GET.max_price|default:'' }}" placeholder="До" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" min="0">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Сортировка -->
-                    <div class="quick-filters">
-                        <h3 class="filter-section-title">Сортировка</h3>
-                        <div class="quick-filter-buttons">
-                            <label class="quick-filter-btn {% if request.GET.sort == 'price_asc' or not request.GET.sort %}quick-filter-btn-active{% endif %}">
-                                <input type="radio" name="sort" value="price_asc" {% if request.GET.sort == 'price_asc' or not request.GET.sort %}checked{% endif %} class="sr-only">
-                                Сначала дешевле
-                            </label>
-                            <label class="quick-filter-btn {% if request.GET.sort == 'price_desc' %}quick-filter-btn-active{% endif %}">
-                                <input type="radio" name="sort" value="price_desc" {% if request.GET.sort == 'price_desc' %}checked{% endif %} class="sr-only">
-                                Сначала дороже
-                            </label>
-                            <label class="quick-filter-btn {% if request.GET.sort == 'newest' %}quick-filter-btn-active{% endif %}">
-                                <input type="radio" name="sort" value="newest" {% if request.GET.sort == 'newest' %}checked{% endif %} class="sr-only">
-                                Сначала новинки
-                            </label>
-                            <label class="quick-filter-btn {% if request.GET.sort == 'popular' %}quick-filter-btn-active{% endif %}">
-                                <input type="radio" name="sort" value="popular" {% if request.GET.sort == 'popular' %}checked{% endif %} class="sr-only">
-                                По популярности
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Чекбоксы -->
-                    <div class="filter-section">
-                        <h3 class="filter-section-title">Дополнительно</h3>
-                        <div class="space-y-3">
-                            <label class="flex items-center space-x-3 cursor-pointer">
-                                <input type="checkbox" name="in_stock" value="true" {% if request.GET.in_stock %}checked{% endif %} class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500">
-                                <span class="text-gray-700 text-sm">Только в наличии</span>
-                            </label>
-                            <label class="flex items-center space-x-3 cursor-pointer">
-                                <input type="checkbox" name="is_new" value="true" {% if request.GET.is_new %}checked{% endif %} class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500">
-                                <span class="text-gray-700 text-sm">Только новинки</span>
-                            </label>
-                            <label class="flex items-center space-x-3 cursor-pointer">
-                                <input type="checkbox" name="has_discount" value="true" {% if request.GET.has_discount %}checked{% endif %} class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500">
-                                <span class="text-gray-700 text-sm">Только со скидкой</span>
-                            </label>
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Кнопки действий -->
-            <div class="p-4 border-t bg-gray-50 space-y-3">
-                <button type="button"
-                        onclick="document.getElementById('mobileFiltersForm').submit()"
-                        class="w-full py-3 px-4 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors">
-                    Применить фильтры
-                </button>
-                <button type="button"
-                        onclick="window.location.href='{% url 'mybiz_core:product_list' %}{% if category %}?category={{ category.slug }}{% endif %}'"
-                        class="w-full py-3 px-4 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
-                    Сбросить все
-                </button>
-            </div>
-        </div>
-    </div>
+class="fixed inset-0 z-50 hidden lg:hidden"
+aria-modal="true"
+aria-labelledby="mobileFiltersTitle"
+role="dialog">
+<div class="fixed inset-0 bg-black bg-opacity-50"
+id="mobileFiltersOverlay"
+tabindex="-1"></div>
+<div class="fixed inset-y-0 right-0 w-full max-w-md bg-default shadow-xl transform transition-transform">
+<div class="h-full flex flex-col">
+<!-- Заголовок -->
+<div class="flex items-center justify-between p-4 border-b border-default">
+<h3 id="mobileFiltersTitle" class="text-lg font-semibold text-default">Фильтры и сортировка</h3>
+<button type="button"
+id="mobileFiltersClose"
+class="text-default/60 hover:text-default"
+aria-label="Закрыть фильтры">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+</svg>
+</button>
+</div>
+<!-- Контент фильтров -->
+<div class="flex-1 overflow-y-auto p-4">
+<!-- Форма фильтров для мобильных устройств -->
+<form method="get" id="mobileFiltersForm" class="space-y-6">
+<input type="hidden" name="page" value="1">
+{% if category %}
+<input type="hidden" name="category" value="{{ category.slug }}">
+{% endif %}
+<!-- Фильтр по категориям -->
+<div class="filter-section">
+<h3 class="filter-section-title font-semibold text-default mb-3">Категории</h3>
+<div class="filter-options space-y-1">
+<label class="filter-option flex items-center justify-between p-2 rounded cursor-pointer {% if not category %}bg-primary/10 border border-primary text-primary{% else %}hover:bg-default/20{% endif %}">
+<input type="radio" name="category" value="" {% if not category %}checked{% endif %} class="hidden">
+<span class="truncate flex-grow">Все категории</span>
+<span class="filter-count text-xs bg-default/20 px-2 py-1 rounded-full shrink-0">{{ total_products|default:products.paginator.count|default:0 }}</span>
+</label>
+{% for cat in categories %}
+{% if cat.is_active and cat.products_count > 0 %}
+<label class="filter-option flex items-center justify-between p-2 rounded cursor-pointer {% if category and category.id == cat.id %}bg-primary/10 border border-primary text-primary{% else %}hover:bg-default/20{% endif %}">
+<input type="radio" name="category" value="{{ cat.slug }}" {% if category and category.id == cat.id %}checked{% endif %} class="hidden">
+<span class="truncate flex-grow" title="{{ cat.name }}">{{ cat.name }}</span>
+<span class="filter-count text-xs bg-default/20 px-2 py-1 rounded-full shrink-0">{{ cat.products_count|default:0 }}</span>
+</label>
+{% endif %}
+{% endfor %}
+</div>
+</div>
+<!-- Фильтр по цене -->
+<div class="filter-section">
+<h3 class="filter-section-title font-semibold text-default mb-3">Цена, руб.</h3>
+<div class="space-y-4">
+<div class="flex items-center justify-between gap-4">
+<input type="number" name="min_price" value="{{ request.GET.min_price|default:'' }}" placeholder="От" class="w-full px-3 py-2 border border-default rounded-lg text-sm bg-default text-default" min="0">
+<span class="text-default/50">–</span>
+<input type="number" name="max_price" value="{{ request.GET.max_price|default:'' }}" placeholder="До" class="w-full px-3 py-2 border border-default rounded-lg text-sm bg-default text-default" min="0">
+</div>
+</div>
+</div>
+<!-- Сортировка -->
+<div class="quick-filters">
+<h3 class="filter-section-title font-semibold text-default mb-3">Сортировка</h3>
+<div class="quick-filter-buttons space-y-1">
+<label class="quick-filter-btn block p-2 rounded border border-default cursor-pointer {% if request.GET.sort == 'price_asc' or not request.GET.sort %}bg-primary/10 border-primary text-primary{% else %}hover:bg-default/20{% endif %}">
+<input type="radio" name="sort" value="price_asc" {% if request.GET.sort == 'price_asc' or not request.GET.sort %}checked{% endif %} class="hidden">
+Сначала дешевле
+</label>
+<label class="quick-filter-btn block p-2 rounded border border-default cursor-pointer {% if request.GET.sort == 'price_desc' %}bg-primary/10 border-primary text-primary{% else %}hover:bg-default/20{% endif %}">
+<input type="radio" name="sort" value="price_desc" {% if request.GET.sort == 'price_desc' %}checked{% endif %} class="hidden">
+Сначала дороже
+</label>
+<label class="quick-filter-btn block p-2 rounded border border-default cursor-pointer {% if request.GET.sort == 'newest' %}bg-primary/10 border-primary text-primary{% else %}hover:bg-default/20{% endif %}">
+<input type="radio" name="sort" value="newest" {% if request.GET.sort == 'newest' %}checked{% endif %} class="hidden">
+Сначала новинки
+</label>
+<label class="quick-filter-btn block p-2 rounded border border-default cursor-pointer {% if request.GET.sort == 'popular' %}bg-primary/10 border-primary text-primary{% else %}hover:bg-default/20{% endif %}">
+<input type="radio" name="sort" value="popular" {% if request.GET.sort == 'popular' %}checked{% endif %} class="hidden">
+По популярности
+</label>
+</div>
+</div>
+<!-- Чекбоксы -->
+<div class="filter-section">
+<h3 class="filter-section-title font-semibold text-default mb-3">Дополнительно</h3>
+<div class="space-y-3">
+<label class="flex items-center space-x-3 cursor-pointer text-default/80">
+<input type="checkbox" name="in_stock" value="true" {% if request.GET.in_stock %}checked{% endif %} class="form-checkbox h-4 w-4 text-primary border-default rounded focus:ring-primary">
+<span class="text-default text-sm">Только в наличии</span>
+</label>
+<label class="flex items-center space-x-3 cursor-pointer text-default/80">
+<input type="checkbox" name="is_new" value="true" {% if request.GET.is_new %}checked{% endif %} class="form-checkbox h-4 w-4 text-primary border-default rounded focus:ring-primary">
+<span class="text-default text-sm">Только новинки</span>
+</label>
+<label class="flex items-center space-x-3 cursor-pointer text-default/80">
+<input type="checkbox" name="has_discount" value="true" {% if request.GET.has_discount %}checked{% endif %} class="form-checkbox h-4 w-4 text-primary border-default rounded focus:ring-primary">
+<span class="text-default text-sm">Только со скидкой</span>
+</label>
+</div>
+</div>
+</form>
+</div>
+<!-- Кнопки действий -->
+<div class="p-4 border-t border-default bg-default/80 space-y-3">
+<button type="button"
+onclick="document.getElementById('mobileFiltersForm').submit()"
+class="w-full py-3 px-4 bg-primary text-white font-medium rounded-lg hover:bg-primary-dark transition-colors">
+Применить фильтры
+</button>
+<button type="button"
+onclick="window.location.href='{% url 'mybiz_core:product_list' %}{% if category %}?category={{ category.slug }}{% endif %}'"
+class="w-full py-3 px-4 border border-default text-default/60 font-medium rounded-lg hover:text-primary hover:border-primary transition-colors">
+Сбросить все
+</button>
+</div>
+</div>
+</div>
 </div>
 </div>
 {% endblock %}
-
 {% block extra_css %}
 <style>
-    /* CSS переменные с fallback значениями */
-    :root {
-        --primary-color: #3b82f6;
-        --primary-color-rgb: 59, 130, 246;
-    }
+/* CSS переменные с fallback значениями */
+:root {
+--primary-color: #3b82f6;
+--primary-color-rgb: 59, 130, 246;
+}
+/* Хлебные крошки */
+.breadcrumbs {
+padding: 12px 0;
+border-bottom: 1px solid var(--color-border, #e5e7eb);
+}
+/* Адаптивность */
+@media (max-width: 1024px) {
+.product-layout {
+grid-template-columns: 1fr;
+}
+.product-filters-desktop {
+display: none;
+}
+}
+@media (min-width: 1025px) {
+#mobileFiltersPanel {
+display: none !important;
+}
+}
+/* Фокус для доступности */
+:focus-visible {
+outline: 2px solid var(--color-primary);
+outline-offset: 2px;
+}
+.product-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr; /* ширина фильтров 280px, товары занимают остаток */
+    gap: 2rem;
+}
 
-    /* Хлебные крошки */
-    .breadcrumbs {
-        padding: 12px 0;
-        border-bottom: 1px solid #f3f4f6;
-    }
-
-    .breadcrumb-link {
-        color: #6b7280;
-        display: inline-flex;
-        align-items: center;
-        padding: 4px 8px;
-        border-radius: 6px;
-        transition: all 0.2s ease;
-        white-space: nowrap;
-        text-decoration: none;
-    }
-
-    .breadcrumb-link:hover,
-    .breadcrumb-link:focus {
-        color: var(--primary-color);
-        background: rgba(var(--primary-color-rgb), 0.1);
-        outline: 2px solid transparent;
-        outline-offset: 2px;
-    }
-
-    .breadcrumb-current {
-        color: #1f2937;
-        font-weight: 600;
-        max-width: 300px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    /* Заголовок страницы */
-    .page-header {
-        padding-bottom: 20px;
-        border-bottom: 1px solid #f3f4f6;
-    }
-
-    /* Основной layout */
+/* Для экранов меньше 1024px — фильтры скрываем, оставляем только товары */
+@media (max-width: 1024px) {
     .product-layout {
-        display: grid;
-        grid-template-columns: 280px 1fr;
-        gap: 32px;
-        min-height: 600px;
+        grid-template-columns: 1fr;
     }
-
-    @media (max-width: 1024px) {
-        .product-layout {
-            grid-template-columns: 1fr;
-            gap: 0;
-        }
-
-        .product-filters-desktop {
-            display: none;
-        }
-    }
-
-    @media (min-width: 1025px) {
-        #mobileFiltersPanel {
-            display: none !important;
-        }
-    }
-
-    /* Левая колонка - фильтры */
     .product-filters-desktop {
-        position: sticky;
-        align-self: start;
-        top: 20px;
+        display: none;
     }
-
-    .filters-container {
-        background: white;
-        border-radius: 16px;
-        padding: 24px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        border: 1px solid #f3f4f6;
-    }
-
-    .filters-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .filters-header h2 {
-        font-size: 20px;
-        color: #1f2937;
-    }
-
-    .filters-clear {
-        color: #6b7280;
-        font-size: 14px;
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 4px 8px;
-        border-radius: 6px;
-        transition: all 0.2s ease;
-        text-decoration: none;
-        white-space: nowrap;
-    }
-
-    .filters-clear:hover,
-    .filters-clear:focus {
-        color: var(--primary-color);
-        background: rgba(var(--primary-color-rgb), 0.1);
-        outline: none;
-    }
-
-    /* Секции фильтров */
-    .filter-section {
-        margin-bottom: 24px;
-        padding-bottom: 24px;
-        border-bottom: 1px solid #f3f4f6;
-    }
-
-    .filter-section:last-child {
-        border-bottom: none;
-        margin-bottom: 0;
-        padding-bottom: 0;
-    }
-
-    .filter-section-title {
-        font-size: 16px;
-        font-weight: 600;
-        color: #1f2937;
-        margin-bottom: 16px;
-    }
-
-    .filter-options {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .filter-option {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px 12px;
-        border-radius: 10px;
-        color: #4b5563;
-        font-size: 15px;
-        transition: all 0.2s ease;
-        border: 1px solid transparent;
-        text-decoration: none;
-        min-width: 0;
-        cursor: pointer;
-    }
-
-    .filter-option:hover {
-        color: var(--primary-color);
-        background: rgba(var(--primary-color-rgb), 0.05);
-        border-color: rgba(var(--primary-color-rgb), 0.2);
-    }
-
-    .filter-option-active {
-        color: var(--primary-color);
-        background: rgba(var(--primary-color-rgb), 0.1);
-        border-color: var(--primary-color);
-        font-weight: 500;
-    }
-
-    .filter-count {
-        background: #f3f4f6;
-        color: #6b7280;
-        font-size: 12px;
-        padding: 2px 8px;
-        border-radius: 12px;
-        font-weight: 500;
-        flex-shrink: 0;
-        margin-left: 8px;
-    }
-
-    .filter-option-active .filter-count {
-        background: var(--primary-color);
-        color: white;
-    }
-
-    /* Быстрые фильтры */
-    .quick-filter-buttons {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .quick-filter-btn {
-        padding: 10px 16px;
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
-        color: #4b5563;
-        font-size: 14px;
-        text-align: center;
-        transition: all 0.2s ease;
-        text-decoration: none;
-        display: block;
-        white-space: nowrap;
-        cursor: pointer;
-    }
-
-    .quick-filter-btn:hover {
-        border-color: var(--primary-color);
-        color: var(--primary-color);
-        background: rgba(var(--primary-color-rgb), 0.05);
-    }
-
-    .quick-filter-btn-active {
-        border-color: var(--primary-color);
-        color: var(--primary-color);
-        background: rgba(var(--primary-color-rgb), 0.1);
-        font-weight: 500;
-    }
-
-    /* Правая колонка - товары */
-    .product-main {
-        min-height: 600px;
-    }
-
-    /* Пагинация */
-    .product-pagination {
-        margin-top: 48px;
-        padding-top: 32px;
-        border-top: 1px solid #f3f4f6;
-    }
-
-    .pagination-list {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        flex-wrap: wrap;
-    }
-
-    .pagination-item {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 40px;
-        height: 40px;
-        padding: 0 12px;
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
-        color: #4b5563;
-        font-size: 14px;
-        transition: all 0.2s ease;
-        text-decoration: none;
-        white-space: nowrap;
-    }
-
-    .pagination-item:hover,
-    .pagination-item:focus {
-        border-color: var(--primary-color);
-        color: var(--primary-color);
-        background: rgba(var(--primary-color-rgb), 0.05);
-        outline: none;
-    }
-
-    .pagination-active {
-        background: var(--primary-color);
-        color: white;
-        border-color: var(--primary-color);
-        font-weight: 600;
-        cursor: default;
-    }
-
-    .pagination-ellipsis {
-        border: none;
-        background: none;
-        cursor: default;
-        color: #6b7280;
-    }
-
-    .pagination-prev,
-    .pagination-next {
-        gap: 6px;
-        font-weight: 500;
-    }
-
-    /* Состояние "нет товаров" */
-    .empty-state {
-        text-align: center;
-        padding: 80px 20px;
-        background: white;
-        border-radius: 20px;
-        border: 2px dashed #e5e7eb;
-    }
-
-    .empty-state-icon {
-        margin-bottom: 24px;
-    }
-
-    .empty-state-title {
-        font-size: 24px;
-        font-weight: 600;
-        color: #1f2937;
-        margin-bottom: 12px;
-    }
-
-    .empty-state-description {
-        color: #6b7280;
-        max-width: 400px;
-        margin: 0 auto 32px;
-        line-height: 1.6;
-    }
-
-    .empty-state-actions {
-        display: flex;
-        gap: 12px;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-
-    .empty-state-btn-primary {
-        padding: 12px 24px;
-        background: var(--primary-color);
-        color: white;
-        border-radius: 12px;
-        font-weight: 500;
-        transition: background-color 0.2s ease;
-        text-decoration: none;
-        display: inline-block;
-        white-space: nowrap;
-        border: none;
-        cursor: pointer;
-    }
-
-    .empty-state-btn-primary:hover,
-    .empty-state-btn-primary:focus {
-        background: color-mix(in srgb, var(--primary-color) 85%, black);
-        outline: none;
-    }
-
-    .empty-state-btn-secondary {
-        padding: 12px 24px;
-        border: 2px solid #e5e7eb;
-        color: #4b5563;
-        border-radius: 12px;
-        font-weight: 500;
-        transition: all 0.2s ease;
-        text-decoration: none;
-        display: inline-block;
-        white-space: nowrap;
-        background: white;
-        cursor: pointer;
-    }
-
-    .empty-state-btn-secondary:hover,
-    .empty-state-btn-secondary:focus {
-        border-color: var(--primary-color);
-        color: var(--primary-color);
-        outline: none;
-    }
-
-    /* Фокус для доступности */
-    :focus-visible {
-        outline: 2px solid var(--primary-color);
-        outline-offset: 2px;
-    }
-
-    /* Улучшенные медиа-запросы */
-    @media (max-width: 640px) {
-        .empty-state-actions {
-            flex-direction: column;
-            width: 100%;
-            max-width: 300px;
-            margin: 0 auto;
-        }
-
-        .empty-state-btn-primary,
-        .empty-state-btn-secondary {
-            width: 100%;
-            text-align: center;
-        }
-
-        .grid-cols-1 {
-            grid-template-columns: 1fr !important;
-        }
-    }
+}
 </style>
 {% endblock %}
-
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Мобильные фильтры
-    const mobileFiltersToggle = document.getElementById('mobileFiltersToggle');
-    const mobileFiltersPanel = document.getElementById('mobileFiltersPanel');
-    const mobileFiltersClose = document.getElementById('mobileFiltersClose');
-    const mobileFiltersOverlay = document.getElementById('mobileFiltersOverlay');
-
-    if (mobileFiltersToggle) {
-        mobileFiltersToggle.addEventListener('click', function() {
-            mobileFiltersPanel.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-            mobileFiltersToggle.setAttribute('aria-expanded', 'true');
-        });
-    }
-
-    if (mobileFiltersClose) {
-        mobileFiltersClose.addEventListener('click', closeMobileFilters);
-    }
-
-    if (mobileFiltersOverlay) {
-        mobileFiltersOverlay.addEventListener('click', closeMobileFilters);
-    }
-
-    function closeMobileFilters() {
-        mobileFiltersPanel.classList.add('hidden');
-        document.body.style.overflow = '';
-        mobileFiltersToggle.setAttribute('aria-expanded', 'false');
-    }
-
-    // Закрытие по ESC
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && !mobileFiltersPanel.classList.contains('hidden')) {
-            closeMobileFilters();
-        }
-    });
-
-    // Автоотправка формы при изменении числовых полей
-    const numberInputs = document.querySelectorAll('input[type="number"]');
-    numberInputs.forEach(input => {
-        let timeout;
-        input.addEventListener('input', function() {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                if (this.value === '' || (parseInt(this.value) >= parseInt(this.min) || this.min === '')) {
-                    this.form.submit();
-                }
-            }, 1000);
-        });
-    });
-
-    // Сохранение состояния фильтров в sessionStorage
-    const filtersForm = document.getElementById('filtersForm');
-    if (filtersForm) {
-        // Восстановление состояния
-        const savedFilters = sessionStorage.getItem('productFilters');
-        if (savedFilters) {
-            const filters = JSON.parse(savedFilters);
-            Object.keys(filters).forEach(key => {
-                const element = filtersForm.querySelector(`[name="${key}"]`);
-                if (element) {
-                    if (element.type === 'checkbox' || element.type === 'radio') {
-                        element.checked = filters[key];
-                    } else {
-                        element.value = filters[key];
-                    }
-                }
-            });
-        }
-
-        // Сохранение состояния
-        filtersForm.addEventListener('change', function() {
-            const formData = new FormData(filtersForm);
-            const filters = {};
-            for (let [key, value] of formData.entries()) {
-                filters[key] = value;
-            }
-            sessionStorage.setItem('productFilters', JSON.stringify(filters));
-        });
-    }
-
-    // Плавная прокрутка при пагинации
-    const paginationLinks = document.querySelectorAll('.pagination-item[href*="page="]');
-    paginationLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            const currentPage = new URLSearchParams(window.location.search).get('page');
-            const targetPage = new URLSearchParams(this.search).get('page');
-
-            if (currentPage !== targetPage) {
-                e.preventDefault();
-                const productsList = document.getElementById('productsList');
-                if (productsList) {
-                    productsList.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-                // Небольшая задержка для визуального эффекта
-                setTimeout(() => {
-                    window.location.href = this.href;
-                }, 300);
-            }
-        });
-    });
-
-    // Lazy loading для изображений товаров (если не реализован нативно)
-    if ('IntersectionObserver' in window) {
-        const lazyImages = document.querySelectorAll('img[data-src]');
-        const imageObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    img.src = img.dataset.src;
-                    if (img.dataset.srcset) img.srcset = img.dataset.srcset;
-                    img.removeAttribute('data-src');
-                    img.removeAttribute('data-srcset');
-                    imageObserver.unobserve(img);
-                }
-            });
-        });
-
-        lazyImages.forEach(img => imageObserver.observe(img));
-    }
+// Мобильные фильтры
+const mobileFiltersToggle = document.getElementById('mobileFiltersToggle');
+const mobileFiltersPanel = document.getElementById('mobileFiltersPanel');
+const mobileFiltersClose = document.getElementById('mobileFiltersClose');
+const mobileFiltersOverlay = document.getElementById('mobileFiltersOverlay');
+if (mobileFiltersToggle) {
+mobileFiltersToggle.addEventListener('click', function() {
+mobileFiltersPanel.classList.remove('hidden');
+document.body.style.overflow = 'hidden';
+mobileFiltersToggle.setAttribute('aria-expanded', 'true');
+});
+}
+if (mobileFiltersClose) {
+mobileFiltersClose.addEventListener('click', closeMobileFilters);
+}
+if (mobileFiltersOverlay) {
+mobileFiltersOverlay.addEventListener('click', closeMobileFilters);
+}
+function closeMobileFilters() {
+mobileFiltersPanel.classList.add('hidden');
+document.body.style.overflow = '';
+mobileFiltersToggle.setAttribute('aria-expanded', 'false');
+}
+document.addEventListener('keydown', function(e) {
+if (e.key === 'Escape' && !mobileFiltersPanel.classList.contains('hidden')) {
+closeMobileFilters();
+}
+});
+// Автоотправка формы при изменении числовых полей
+const numberInputs = document.querySelectorAll('input[type="number"]');
+numberInputs.forEach(input => {
+let timeout;
+input.addEventListener('input', function() {
+clearTimeout(timeout);
+timeout = setTimeout(() => {
+if (this.value === '' || (parseInt(this.value) >= parseInt(this.min) || this.min === '')) {
+this.form.submit();
+}
+}, 1000);
+});
+});
+// Сохранение состояния фильтров в sessionStorage
+const filtersForm = document.getElementById('filtersForm');
+if (filtersForm) {
+const savedFilters = sessionStorage.getItem('productFilters');
+if (savedFilters) {
+const filters = JSON.parse(savedFilters);
+Object.keys(filters).forEach(key => {
+const element = filtersForm.querySelector(`[name="${key}"]`);
+if (element) {
+if (element.type === 'checkbox' || element.type === 'radio') {
+element.checked = filters[key];
+} else {
+element.value = filters[key];
+}
+}
+});
+}
+filtersForm.addEventListener('change', function() {
+const formData = new FormData(filtersForm);
+const filters = {};
+for (let [key, value] of formData.entries()) {
+filters[key] = value;
+}
+sessionStorage.setItem('productFilters', JSON.stringify(filters));
+});
+}
+// Плавная прокрутка при пагинации
+const paginationLinks = document.querySelectorAll('.pagination-item[href*="page="]');
+paginationLinks.forEach(link => {
+link.addEventListener('click', function(e) {
+const currentPage = new URLSearchParams(window.location.search).get('page');
+const targetPage = new URLSearchParams(this.search).get('page');
+if (currentPage !== targetPage) {
+e.preventDefault();
+const productsList = document.getElementById('productsList');
+if (productsList) {
+productsList.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+setTimeout(() => {
+window.location.href = this.href;
+}, 300);
+}
+});
+});
+// Lazy loading для изображений
+if ('IntersectionObserver' in window) {
+const lazyImages = document.querySelectorAll('img[data-src]');
+const imageObserver = new IntersectionObserver((entries) => {
+entries.forEach(entry => {
+if (entry.isIntersecting) {
+const img = entry.target;
+img.src = img.dataset.src;
+if (img.dataset.srcset) img.srcset = img.dataset.srcset;
+img.removeAttribute('data-src');
+img.removeAttribute('data-srcset');
+imageObserver.unobserve(img);
+}
+});
+});
+lazyImages.forEach(img => imageObserver.observe(img));
+}
 });
 </script>
 {% endblock %}

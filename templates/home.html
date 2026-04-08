@@ -1,11 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Главная - {{ site_settings.site_name }}{% endblock %}
+{% load social_tags %}
+
+{% block title %}{{ site_settings.site_name|striptags }} - {{ site_settings.site_tagline|striptags }}{% endblock %}
 
 {% block meta %}
-<meta name="description" content="{{ site_settings.meta_description|default:'Добро пожаловать в наш интернет-магазин' }}">
-<meta property="og:title" content="Главная - {{ site_settings.site_name }}">
-<meta property="og:description" content="{{ site_settings.meta_description|default:'Добро пожаловать в наш интернет-магазин' }}">
+<meta name="description" content="{{ site_settings.meta_description|default:'Добро пожаловать в наш интернет-магазин'|striptags }}">
+<meta property="og:title" content="{{ site_settings.site_name|striptags }} - {{ site_settings.site_tagline|striptags }}">
+<meta property="og:description" content="{{ site_settings.meta_description|default:'Добро пожаловать в наш интернет-магазин'|striptags }}">
 <meta property="og:url" content="{{ request.build_absolute_uri }}">
 {% if site_settings.hero_image %}
 <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ site_settings.hero_image.url }}">
@@ -14,86 +16,28 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="relative overflow-hidden bg-gradient-to-br from-hero-bg to-white dark:from-gray-900 dark:to-gray-800">
+<section class="relative overflow-hidden bg-gradient-to-br from-hero-bg to-default dark:from-gray-900 dark:to-gray-800">
     <div class="container mx-auto px-4 py-12 md:py-24 relative z-10">
         <div class="max-w-4xl mx-auto text-center">
-            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
-                <span class="block">Добро пожаловать в</span>
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-default dark:text-white mb-6 leading-tight">
+                <span class="block">{{ site_settings.hero_heading_prefix|safe }}</span>
                 <span class="text-gradient">
-                    {{ site_settings.site_name|default:'MyBiz' }}
+                    {{ site_settings.site_name|safe }}
                 </span>
             </h1>
-            <p class="text-xl md:text-2xl text-gray-700 dark:text-gray-300 font-medium mb-8">
-                {{ site_settings.site_tagline|default:'Лучшие товары по доступным ценам' }}
+            <p class="text-xl md:text-2xl text-default/80 dark:text-gray-300 font-medium mb-8">
+                {{ site_settings.hero_subtitle|default:site_settings.site_tagline|safe }}
             </p>
-            <p class="text-lg text-gray-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-                {{ site_settings.welcome_text|default:'Современная витрина качественных товаров. Мы тщательно отбираем каждый продукт, чтобы предложить вам лучшее сочетание цены и качества.' }}
+            <p class="text-lg text-default/60 dark:text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+                {{ site_settings.welcome_text|safe }}
             </p>
-
-            <!-- Action buttons -->
-            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-                <a href="{% url 'mybiz_core:product_list' %}"
-                   class="btn-primary inline-flex items-center justify-center px-8 py-4 text-lg font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-                    <span>Смотреть товары</span>
-                    <svg class="w-5 h-5 ml-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                    </svg>
-                </a>
-                <a href="#contact"
-                   class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold rounded-2xl border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                    </svg>
-                    <span>Связаться с нами</span>
-                </a>
-            </div>
-
-            <!-- Stats -->
-            <div class="stats-grid flex flex-wrap justify-center items-stretch gap-2 sm:gap-4 md:gap-6 max-w-2xl mx-auto">
-                <div class="text-center px-2 flex-1 min-w-[80px] sm:min-w-[100px]">
-                    <div class="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 text-primary whitespace-nowrap counter"
-                         data-counter="{{ total_products|default:1000 }}">
-                        {{ total_products|default:1000 }}
-                    </div>
-                    <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-medium leading-tight">
-                        Товаров в каталоге
-                    </div>
-                </div>
-                <div class="text-center px-2 flex-1 min-w-[80px] sm:min-w-[100px]">
-                    <div class="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 text-primary whitespace-nowrap overflow-visible counter"
-                         data-counter="24" data-suffix="/7">
-                        24/7
-                    </div>
-                    <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-medium leading-tight break-words">
-                        Поддержка клиентов
-                    </div>
-                </div>
-                <div class="text-center px-2 flex-1 min-w-[80px] sm:min-w-[100px]">
-                    <div class="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 text-primary whitespace-nowrap counter"
-                         data-counter="30">
-                        30
-                    </div>
-                    <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-medium leading-tight">
-                        Дней гарантии
-                    </div>
-                </div>
-                <div class="text-center px-2 flex-1 min-w-[80px] sm:min-w-[100px]">
-                    <div class="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 text-primary whitespace-nowrap counter"
-                         data-counter="100" data-suffix="%">
-                        100%
-                    </div>
-                    <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-medium leading-tight">
-                        Качество
-                    </div>
-                </div>
-            </div>
 
             <!-- Hero image -->
             {% if site_settings.hero_image %}
             <div class="mt-16 max-w-5xl mx-auto relative">
                 <div class="absolute -inset-4 rounded-3xl blur-xl opacity-50 bg-gradient-to-r from-primary to-secondary"></div>
                 <img src="{{ site_settings.hero_image.url }}"
-                     alt="{{ site_settings.site_name }} - {{ site_settings.site_tagline|default:'Главный баннер' }}"
+                     alt="{{ site_settings.site_name|striptags }} - {{ site_settings.site_tagline|striptags|default:'Главный баннер' }}"
                      class="relative w-full h-auto max-h-[600px] object-cover rounded-2xl shadow-2xl"
                      loading="lazy"
                      width="1200"
@@ -106,22 +50,22 @@
 
 <!-- Promotions -->
 {% if promotions %}
-<section class="py-16 md:py-24 bg-gray-50 dark:bg-gray-900">
+<section class="py-16 md:py-24 bg-default/80 dark:bg-gray-900">
     <div class="container mx-auto px-4">
         <div class="text-center mb-12">
             <span class="inline-block px-4 py-2 bg-accent/10 text-accent rounded-full text-sm font-semibold mb-4 uppercase tracking-wide">
                 Акции и предложения
             </span>
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                Специальные предложения
+            <h2 class="text-3xl md:text-4xl font-bold text-default dark:text-white mb-4">
+                {{ site_settings.promotions_title|default:"Специальные предложения"|safe }}
             </h2>
-            <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                Не упустите возможность приобрести товары по выгодным ценам
+            <p class="text-lg text-default/60 dark:text-gray-400 max-w-2xl mx-auto">
+                {{ site_settings.promotions_subtitle|default:"Не упустите возможность приобрести товары по выгодным ценам"|safe }}
             </p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             {% for promo in promotions|slice:":3" %}
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 flex flex-col h-full">
+            <div class="bg-default dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 flex flex-col h-full border border-default">
                 {% if promo.image %}
                 <div class="relative h-48 overflow-hidden flex-shrink-0">
                     <img src="{{ promo.image.url }}"
@@ -138,16 +82,16 @@
                             Акция
                         </span>
                         {% if promo.end_date %}
-                        <span class="text-sm text-gray-500 shrink-0">
+                        <span class="text-sm text-default/60 shrink-0">
                             До {{ promo.end_date|date:"d.m.Y" }}
                         </span>
                         {% endif %}
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3 min-h-[3rem] line-clamp-2">
+                    <h3 class="text-xl font-bold text-default dark:text-white mb-3 min-h-[3rem] line-clamp-2">
                         {{ promo.title }}
                     </h3>
                     {% if promo.short_description %}
-                    <p class="text-gray-600 dark:text-gray-400 mb-4 line-clamp-3 flex-grow">
+                    <p class="text-default/60 dark:text-gray-400 mb-4 line-clamp-3 flex-grow">
                         {{ promo.short_description }}
                     </p>
                     {% endif %}
@@ -169,7 +113,7 @@
         </div>
         {% if promotions|length > 3 %}
         <div class="text-center mt-12">
-            <a href="{% url 'promotions_list' %}"
+            <a href="{% url 'content:promotions_list' %}"
                class="inline-flex items-center text-primary font-semibold hover:text-primary/80 transition-colors">
                 <span>Все акции</span>
                 <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -186,17 +130,16 @@
 <section class="py-16 md:py-24" id="featured-products">
     <div class="container mx-auto px-4">
         <div class="text-center mb-12">
-            <span class="inline-block px-4 py-2 bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 rounded-full text-sm font-semibold mb-4 uppercase tracking-wide">
+            <span class="inline-block px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-semibold mb-4 uppercase tracking-wide">
                 Популярное
             </span>
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                Популярные товары
+            <h2 class="text-3xl md:text-4xl font-bold text-default dark:text-white mb-4">
+                {{ site_settings.featured_products_title|default:"Популярные товары"|safe }}
             </h2>
-            <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                Самые востребованные товары среди наших покупателей
+            <p class="text-lg text-default/60 dark:text-gray-400 max-w-2xl mx-auto">
+                {{ site_settings.featured_products_subtitle|default:"Самые востребованные товары среди наших покупателей"|safe }}
             </p>
         </div>
-
         {% if featured_products %}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
             {% for product in featured_products|slice:":8" %}
@@ -205,194 +148,19 @@
             </div>
             {% endfor %}
         </div>
-        <div class="text-center">
-            <a href="{% url 'mybiz_core:product_list' %}"
-               class="btn-primary inline-flex items-center justify-center px-8 py-4 text-lg font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
-                <span>Смотреть все товары</span>
-                <svg class="w-5 h-5 ml-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                </svg>
-            </a>
-        </div>
         {% else %}
-        <div class="text-center py-12 bg-gray-50 dark:bg-gray-900 rounded-2xl">
-            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-100 dark:bg-gray-800 mb-6">
-                <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <div class="text-center py-12 bg-default/50 dark:bg-gray-900 rounded-2xl border border-default">
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-default/20 dark:bg-gray-800 mb-6">
+                <svg class="w-10 h-10 text-default/40" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
                 </svg>
             </div>
-            <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">Товары скоро появятся</h3>
-            <p class="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+            <h3 class="text-xl font-semibold text-default/80 dark:text-gray-300 mb-2">Товары скоро появятся</h3>
+            <p class="text-default/60 dark:text-gray-400 max-w-md mx-auto">
                 Наш каталог находится в процессе наполнения. Скоро здесь появятся интересные товары!
             </p>
         </div>
         {% endif %}
-    </div>
-</section>
-
-<!-- Features -->
-<section class="py-16 md:py-24 bg-gray-50 dark:bg-gray-900">
-    <div class="container mx-auto px-4">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                Почему выбирают нас
-            </h2>
-            <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                Мы заботимся о каждом клиенте и гарантируем качество
-            </p>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <!-- Feature 1 -->
-            <div class="text-center p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-6 bg-primary/10 text-primary">
-                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                    </svg>
-                </div>
-                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Гарантия качества</h3>
-                <p class="text-gray-600 dark:text-gray-400">Все товары проходят строгий контроль качества</p>
-            </div>
-            <!-- Feature 2 -->
-            <div class="text-center p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-6 bg-primary/10 text-primary">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
-                    </svg>
-                </div>
-                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Быстрая доставка</h3>
-                <p class="text-gray-600 dark:text-gray-400">Отправка в день заказа по всей стране</p>
-            </div>
-            <!-- Feature 3 -->
-            <div class="text-center p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-6 bg-primary/10 text-primary">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-                    </svg>
-                </div>
-                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Безопасная оплата</h3>
-                <p class="text-gray-600 dark:text-gray-400">Различные способы оплаты, защищенные транзакции</p>
-            </div>
-            <!-- Feature 4 -->
-            <div class="text-center p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-6 bg-primary/10 text-primary">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/>
-                    </svg>
-                </div>
-                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Поддержка 24/7</h3>
-                <p class="text-gray-600 dark:text-gray-400">Круглосуточная поддержка наших специалистов</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Contact Section -->
-<section id="contact" class="py-16 md:py-24">
-    <div class="container mx-auto px-4">
-        <div class="rounded-3xl p-8 md:p-12 bg-gradient-to-br from-gray-900 to-gray-950 text-white">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                <div>
-                    <h2 class="text-3xl md:text-4xl font-bold mb-6">
-                        Свяжитесь с нами
-                    </h2>
-                    <p class="text-gray-300 mb-8 text-lg">
-                        Есть вопросы? Напишите нам или позвоните. Мы всегда готовы помочь!
-                    </p>
-                    <div class="space-y-6">
-                        {% if site_settings.contact_phone %}
-                        <div class="flex items-center">
-                            <div class="w-12 h-12 rounded-xl flex items-center justify-center mr-4 bg-primary/20">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <div class="text-sm text-gray-400">Телефон</div>
-                                <a href="tel:{{ site_settings.contact_phone }}"
-                                   class="text-xl font-semibold hover:text-primary transition-colors">
-                                    {{ site_settings.contact_phone }}
-                                </a>
-                            </div>
-                        </div>
-                        {% endif %}
-
-                        {% if site_settings.contact_email %}
-                        <div class="flex items-center">
-                            <div class="w-12 h-12 rounded-xl flex items-center justify-center mr-4 bg-secondary/20">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <div class="text-sm text-gray-400">Email</div>
-                                <a href="mailto:{{ site_settings.contact_email }}"
-                                   class="text-xl font-semibold hover:text-secondary transition-colors">
-                                    {{ site_settings.contact_email }}
-                                </a>
-                            </div>
-                        </div>
-                        {% endif %}
-
-                        {% if site_settings.contact_address %}
-                        <div class="flex items-center">
-                            <div class="w-12 h-12 rounded-xl flex items-center justify-center mr-4 bg-accent/20">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <div class="text-sm text-gray-400">Адрес</div>
-                                <div class="text-xl font-semibold">{{ site_settings.contact_address }}</div>
-                            </div>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <!-- Contact form -->
-                <div class="rounded-2xl p-8 bg-white/10 backdrop-blur-sm">
-                    <h3 class="text-2xl font-bold mb-6">Напишите нам</h3>
-                    <form class="space-y-4" method="post" action="{% url 'contact_form' %}" id="contact-form">
-                        {% csrf_token %}
-                        <div>
-                            <label for="contact-name" class="block text-sm font-medium mb-2">Ваше имя</label>
-                            <input type="text"
-                                   name="name"
-                                   id="contact-name"
-                                   placeholder="Иван Иванов"
-                                   required
-                                   class="w-full px-4 py-3 rounded-xl text-white placeholder-gray-400 bg-white/5 border border-white/10 focus:outline-none focus:border-primary transition-colors"
-                                   aria-required="true">
-                        </div>
-                        <div>
-                            <label for="contact-email" class="block text-sm font-medium mb-2">Ваш email</label>
-                            <input type="email"
-                                   name="email"
-                                   id="contact-email"
-                                   placeholder="ivan@example.com"
-                                   required
-                                   class="w-full px-4 py-3 rounded-xl text-white placeholder-gray-400 bg-white/5 border border-white/10 focus:outline-none focus:border-primary transition-colors"
-                                   aria-required="true">
-                        </div>
-                        <div>
-                            <label for="contact-message" class="block text-sm font-medium mb-2">Сообщение</label>
-                            <textarea name="message"
-                                      id="contact-message"
-                                      placeholder="Ваше сообщение..."
-                                      rows="4"
-                                      required
-                                      class="w-full px-4 py-3 rounded-xl text-white placeholder-gray-400 bg-white/5 border border-white/10 focus:outline-none focus:border-primary transition-colors resize-none"
-                                      aria-required="true"></textarea>
-                        </div>
-                        <button type="submit"
-                                class="w-full px-6 py-4 text-white font-semibold rounded-xl hover:shadow-lg transition-all duration-300 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90">
-                            Отправить сообщение
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
     </div>
 </section>
 {% endblock %}
@@ -400,29 +168,10 @@
 {% block extra_css %}
 <style>
 .text-gradient {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-}
-
-.counter-animation {
-    transition: all 0.3s ease;
-}
-
-@media (max-width: 640px) {
-    .stats-grid > div {
-        min-width: 70px;
-        padding: 0.25rem;
-    }
-    .stats-grid .text-2xl {
-        font-size: 1.1rem;
-        line-height: 1.5rem;
-    }
-    .stats-grid .text-xs {
-        font-size: 0.6rem;
-        line-height: 0.8rem;
-    }
 }
 </style>
 {% endblock %}
@@ -430,72 +179,6 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Counter animation
-    const counters = document.querySelectorAll('.counter[data-counter]');
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const counter = entry.target;
-                const target = parseInt(counter.getAttribute('data-counter'));
-                const suffix = counter.getAttribute('data-suffix') || '';
-                const duration = 1500;
-                const startTime = Date.now();
-
-                const updateCounter = () => {
-                    const elapsed = Date.now() - startTime;
-                    const progress = Math.min(elapsed / duration, 1);
-                    const easeProgress = 1 - Math.pow(1 - progress, 3); // Ease out cubic
-                    const currentValue = Math.floor(easeProgress * target);
-
-                    counter.textContent = currentValue + suffix;
-
-                    if (progress < 1) {
-                        requestAnimationFrame(updateCounter);
-                    } else {
-                        counter.textContent = target + suffix;
-                    }
-                };
-
-                updateCounter();
-                observer.unobserve(counter);
-            }
-        });
-    }, { threshold: 0.5, rootMargin: '0px 0px -50px 0px' });
-
-    counters.forEach(counter => observer.observe(counter));
-
-    // Contact form validation
-    const contactForm = document.getElementById('contact-form');
-    if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
-            const email = document.getElementById('contact-email');
-            const message = document.getElementById('contact-message');
-            let valid = true;
-
-            // Simple email validation
-            if (email && !email.value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-                email.classList.add('border-red-500');
-                valid = false;
-            } else {
-                email.classList.remove('border-red-500');
-            }
-
-            // Message length validation
-            if (message && message.value.trim().length < 10) {
-                message.classList.add('border-red-500');
-                valid = false;
-            } else {
-                message.classList.remove('border-red-500');
-            }
-
-            if (!valid) {
-                e.preventDefault();
-            }
-        });
-    }
-
-    // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             const href = this.getAttribute('href');

@@ -3,9 +3,19 @@
 }
 
 html {
-    scroll-behavior: smooth;
+    scroll-behavior:  auto !important;
 }
 
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
 /* Утилитарные классы */
 .sr-only {
     position: absolute;
@@ -21,7 +31,8 @@ html {
 
 /* Хлебные крошки */
 .breadcrumb-link {
-    color: #6b7280;
+    color: var(--color-text, #1f2937);
+    opacity: 0.6;
     display: inline-flex;
     align-items: center;
     padding: 4px 8px;
@@ -31,9 +42,10 @@ html {
 .breadcrumb-link:hover {
     color: var(--color-primary);
     background: rgba(var(--color-primary-rgb, 59, 130, 246), 0.1);
+    opacity: 1;
 }
 .breadcrumb-current {
-    color: #1f2937;
+    color: var(--color-text, #1f2937);
     font-weight: 600;
 }
 
@@ -65,9 +77,11 @@ html {
 .form-input {
     width: 100%;
     padding: 12px 16px;
-    border: 2px solid #e5e7eb;
+    border: 2px solid var(--color-border, #e5e7eb);
     border-radius: 8px;
     font-size: 16px;
+    background-color: var(--color-background, #ffffff);
+    color: var(--color-text, #1f2937);
     transition: all 0.2s ease;
 }
 .form-input:focus {
@@ -79,7 +93,7 @@ html {
     display: block;
     margin-bottom: 8px;
     font-weight: 500;
-    color: #374151;
+    color: var(--color-text, #374151);
 }
 
 /* Анимации */
@@ -110,13 +124,14 @@ html {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: white;
+    background: var(--color-background, #ffffff);
     border-radius: 16px;
     padding: 24px;
     z-index: 50;
     max-width: 90%;
     max-height: 90%;
     overflow-y: auto;
+    border: 1px solid var(--color-border, #e5e7eb);
 }
 
 /* Темная тема */

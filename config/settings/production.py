@@ -2,11 +2,10 @@
 """
 Настройки для продакшена.
 Этот файл загружается, когда DJANGO_SETTINGS_MODULE указывает на config.settings.production
-
 ВАЖНО: Все чувствительные данные должны быть заданы через переменные окружения!
 """
-
 import os
+import warnings
 from pathlib import Path
 
 # Импортируем необходимые настройки из base
@@ -15,7 +14,6 @@ from .base import *
 # ==============================================================================
 # ПРОВЕРКА ОКРУЖЕНИЯ
 # ==============================================================================
-
 # Проверяем, что не запускаем в режиме разработки
 if DEBUG:
     raise ValueError("DEBUG must be False in production environment!")
@@ -28,7 +26,6 @@ required_env_vars = [
     'DB_PASSWORD',
     'ALLOWED_HOSTS',
 ]
-
 missing_vars = [var for var in required_env_vars if not os.environ.get(var)]
 if missing_vars:
     raise ValueError(
@@ -39,9 +36,12 @@ if missing_vars:
 # ==============================================================================
 # БАЗОВЫЕ НАСТРОЙКИ
 # ==============================================================================
-
-# SECURITY WARNING: secret key должен быть задан только через переменные окружения
-SECRET_KEY = os.environ['SECRET_KEY']
+# ✅ ИСПРАВЛЕНО: Валидация SECRET_KEY
+SECRET_KEY = os.environ.get('SECRET_KEY', '')
+if not SECRET_KEY or len(SECRET_KEY) < 50:
+    raise ValueError(
+        "SECRET_KEY must be set and at least 50 characters long in production!"
+    )
 
 # SECURITY WARNING: debug всегда False в продакшене
 DEBUG = False
@@ -59,11 +59,12 @@ CSRF_TRUSTED_ORIGINS = [
     for origin in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
     if origin.strip()
 ]
+if not CSRF_TRUSTED_ORIGINS and not DEBUG:
+    warnings.warn("CSRF_TRUSTED_ORIGINS is empty. Set it in production to avoid CSRF errors.")
 
 # ==============================================================================
 # БАЗА ДАННЫХ
 # ==============================================================================
-
 DATABASES = {
     'default': {
         'ENGINE': os.environ.get('DB_ENGINE', 'django.db.backends.postgresql'),
@@ -75,38 +76,34 @@ DATABASES = {
         'CONN_MAX_AGE': int(os.environ.get('DB_CONN_MAX_AGE', 600)),  # Уменьшаем нагрузку на БД
         'OPTIONS': {
             'sslmode': os.environ.get('DB_SSLMODE', 'require'),
-        }
+        },
+        # ✅ ДОБАВЛЕНО: Pool settings для production
+        'ATOMIC_REQUESTS': True,
     }
 }
 
 # ==============================================================================
 # СТАТИЧЕСКИЕ И МЕДИА ФАЙЛЫ
 # ==============================================================================
-
 STATIC_URL = '/static/'
 STATIC_ROOT = os.environ.get('STATIC_ROOT', BASE_DIR / 'staticfiles')
-
-# В продакшене STATICFILES_DIRS обычно не используется,
-# так как все файлы собираются в STATIC_ROOT
-# Если нужно, можно раскомментировать:
-# STATICFILES_DIRS = [
-#     BASE_DIR / 'static',
-# ]
-
-# Используем ManifestStaticFilesStorage для версионирования статики
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 # Медиа файлы
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.environ.get('MEDIA_ROOT', BASE_DIR / 'media')
 
+# Оптимизация статики с Whitenoise
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# ✅ ДОБАВЛЕНО: Ограничения на размер загружаемых файлов
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
+
 # ==============================================================================
 # КЭШИРОВАНИЕ И СЕССИИ
 # ==============================================================================
-
 # Настройки Redis
 REDIS_URL = os.environ.get('REDIS_URL', 'redis://127.0.0.1:6379/1')
-
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
@@ -119,6 +116,8 @@ CACHES = {
             'MAX_CONNECTIONS': int(os.environ.get('REDIS_MAX_CONNECTIONS', 100)),
         },
         'KEY_PREFIX': os.environ.get('CACHE_KEY_PREFIX', 'mybiz'),
+        # ✅ ДОБАВЛЕНО: Timeout для кэша
+        'TIMEOUT': 300,
     }
 }
 
@@ -132,12 +131,12 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 # ==============================================================================
 # НАСТРОЙКИ БЕЗОПАСНОСТИ
 # ==============================================================================
-
 # HTTPS настройки
 SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'True').lower() == 'true'
 SECURE_HSTS_SECONDS = int(os.environ.get('SECURE_HSTS_SECONDS', 31536000))  # 1 год
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
+# ✅ ИСПРАВЛЕНО: HSTS PRELOAD только если домен в preload list
+SECURE_HSTS_PRELOAD = os.environ.get('SECURE_HSTS_PRELOAD', 'False').lower() == 'true'
 
 # Дополнительные заголовки безопасности
 SECURE_BROWSER_XSS_FILTER = True
@@ -159,10 +158,12 @@ CSRF_COOKIE_SAMESITE = 'Lax'
 # ==============================================================================
 # ЛОГИРОВАНИЕ
 # ==============================================================================
-
 # Создаем директорию для логов, если её нет
 LOG_DIR = BASE_DIR / 'logs'
-LOG_DIR.mkdir(exist_ok=True)
+try:
+    LOG_DIR.mkdir(exist_ok=True)
+except (PermissionError, OSError):
+    pass  # Логирование будет работать без файла
 
 LOGGING = {
     'version': 1,
@@ -226,7 +227,6 @@ LOGGING = {
 # ==============================================================================
 # EMAIL НАСТРОЙКИ
 # ==============================================================================
-
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
@@ -242,7 +242,6 @@ EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', 30))
 # ==============================================================================
 # ПРОИЗВОДИТЕЛЬНОСТЬ И ОПТИМИЗАЦИЯ
 # ==============================================================================
-
 # Конфигурация шаблонов для продакшена
 for template in TEMPLATES:
     if template['BACKEND'] == 'django.template.backends.django.DjangoTemplates':
@@ -255,21 +254,19 @@ for template in TEMPLATES:
             ]),
         ]
 
-# Middleware оптимизации
+# ✅ ИСПРАВЛЕНО: GZipMiddleware в правильном месте
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Для обслуживания статики
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'django.middleware.gzip.GZipMiddleware',  # ← Перемещён выше
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.gzip.GZipMiddleware',  # Сжатие ответов
+    'auditlog.middleware.AuditlogMiddleware',
 ]
-
-# Оптимизация статики с Whitenoise
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Отключаем отслеживание миграций
 MIGRATION_MODULES = {}
@@ -277,7 +274,6 @@ MIGRATION_MODULES = {}
 # ==============================================================================
 # НАСТРОЙКИ ПРИЛОЖЕНИЯ
 # ==============================================================================
-
 # Отключаем debug toolbar и другие инструменты разработки
 if 'debug_toolbar' in INSTALLED_APPS:
     INSTALLED_APPS.remove('debug_toolbar')
@@ -291,15 +287,22 @@ if 'debug_toolbar.middleware.DebugToolbarMiddleware' in MIDDLEWARE:
 # ==============================================================================
 # КОНЕЧНЫЕ ПРОВЕРКИ
 # ==============================================================================
-
 # Убеждаемся, что все критические настройки верны
 if DEBUG:
     print("WARNING: DEBUG is True in production settings!")
-
 if SECRET_KEY.startswith('django-insecure-'):
     print("WARNING: Using insecure default secret key in production!")
-
 if not ALLOWED_HOSTS:
     print("WARNING: ALLOWED_HOSTS is empty in production!")
 
 print(f"Production settings loaded successfully for hosts: {ALLOWED_HOSTS}")
+# ==============================================================================
+# БЕЗОПАСНОСТЬ ПРОДАКШЕН
+# ==============================================================================
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_REFERRER_POLICY = 'same-origin'
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True

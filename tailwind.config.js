@@ -14,24 +14,31 @@ module.exports = {
         accent: 'var(--color-accent, #10b981)',
         'hero-bg': 'var(--color-hero-bg, #eff6ff)',
         'header-bg': 'var(--color-header-bg, #ffffff)',
-        'footer-bg': 'var(--color-footer-bg, #1f2937)',
+        'footer-bg': 'var(--color-footer-bg, #111827)',
+        'text-default': 'var(--color-text, #1f2937)',
+        'bg-default': 'var(--color-background, #f9fafb)',
+        'border-default': 'var(--color-border, #e5e7eb)', // если добавим потом, пока fallback
       },
       backgroundColor: {
         primary: 'var(--color-primary, #3b82f6)',
         secondary: 'var(--color-secondary, #8b5cf6)',
         accent: 'var(--color-accent, #10b981)',
         'header-bg': 'var(--color-header-bg, #ffffff)',
-        'footer-bg': 'var(--color-footer-bg, #1f2937)',
+        'footer-bg': 'var(--color-footer-bg, #111827)',
+        'hero-bg': 'var(--color-hero-bg, #eff6ff)',
+        'default': 'var(--color-background, #f9fafb)',
       },
       textColor: {
         primary: 'var(--color-primary, #3b82f6)',
         secondary: 'var(--color-secondary, #8b5cf6)',
         accent: 'var(--color-accent, #10b981)',
+        default: 'var(--color-text, #1f2937)',
       },
       borderColor: {
         primary: 'var(--color-primary, #3b82f6)',
         secondary: 'var(--color-secondary, #8b5cf6)',
         accent: 'var(--color-accent, #10b981)',
+        default: 'var(--color-border, #e5e7eb)', // если добавим позже
       },
       minHeight: {
         'text-2': '2.5rem',
@@ -58,14 +65,14 @@ module.exports = {
   ],
   safelist: [
     // Динамические классы для цветов
-    { pattern: /bg-(primary|secondary|accent)/ },
-    { pattern: /text-(primary|secondary|accent)/ },
-    { pattern: /border-(primary|secondary|accent)/ },
-    { pattern: /from-(primary|secondary|accent)/ },
-    { pattern: /to-(primary|secondary|accent)/ },
-    { pattern: /hover:bg-(primary|secondary|accent)/ },
-    { pattern: /hover:text-(primary|secondary|accent)/ },
-    { pattern: /hover:border-(primary|secondary|accent)/ },
+    { pattern: /bg-(primary|secondary|accent|header-bg|footer-bg|hero-bg|default)/ },
+    { pattern: /text-(primary|secondary|accent|default)/ },
+    { pattern: /border-(primary|secondary|accent|default)/ },
+    { pattern: /from-(primary|secondary|accent|hero-bg)/ },
+    { pattern: /to-(primary|secondary|accent|hero-bg)/ },
+    { pattern: /hover:bg-(primary|secondary|accent|header-bg|footer-bg|hero-bg|default)/ },
+    { pattern: /hover:text-(primary|secondary|accent|default)/ },
+    { pattern: /hover:border-(primary|secondary|accent|default)/ },
 
     // Темная тема
     'dark:bg-gray-800',

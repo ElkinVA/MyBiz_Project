@@ -1,4 +1,3 @@
-
 # mybiz_core/templatetags/color_filters.py
 from django import template
 import re
@@ -30,38 +29,3 @@ def hex_to_rgb(value):
     except ValueError:
         # Если ошибка преобразования, возвращаем цвет по умолчанию
         return '59, 130, 246'
-
-@register.filter
-def hex_to_rgb_dict(value):
-    """Преобразует HEX цвет в словарь RGB"""
-    if not value:
-        return {'r': 59, 'g': 130, 'b': 246}
-
-    hex_color = value.lstrip('#')
-    if len(hex_color) == 3:
-        hex_color = ''.join([c*2 for c in hex_color])
-
-    try:
-        return {
-            'r': int(hex_color[0:2], 16),
-            'g': int(hex_color[2:4], 16),
-            'b': int(hex_color[4:6], 16)
-        }
-    except (ValueError, IndexError):
-        return {'r': 59, 'g': 130, 'b': 246}
-
-@register.filter
-def multiply(value, arg):
-    """Умножает значение на аргумент"""
-    try:
-        return float(value) * float(arg)
-    except (ValueError, TypeError):
-        return 0
-
-@register.filter
-def add_class(value, arg):
-    """Добавляет CSS класс к строке"""
-    classes = value.split(' ')
-    if arg not in classes:
-        classes.append(arg)
-    return ' '.join(classes)

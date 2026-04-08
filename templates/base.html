@@ -1,20 +1,19 @@
 <!DOCTYPE html>
-<html lang="ru" x-data="app"
-      :class="{ 'dark': darkMode }">
+<html lang="ru">
 <head>
-    <!-- Ранняя инициализация темы -->
+    <!-- ===================================================================== -->
+    <!-- РАННЯЯ ИНИЦИАЛИЗАЦИЯ ТЕМЫ (до загрузки Alpine.js) -->
+    <!-- ===================================================================== -->
     <script>
-        (function() {
-            const savedTheme = localStorage.getItem('darkMode');
-            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const darkMode = savedTheme === 'true' || (!savedTheme && prefersDark);
-
-            if (darkMode) {
-                document.documentElement.classList.add('dark');
-            }
-
-            window.__initialDarkMode = darkMode;
-        })();
+    (function() {
+        const savedTheme = localStorage.getItem('darkMode');
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const darkMode = savedTheme === 'true' || (!savedTheme && prefersDark);
+        if (darkMode) {
+            document.documentElement.classList.add('dark');
+        }
+        window.__initialDarkMode = darkMode;
+    })();
     </script>
 
     <meta charset="UTF-8">
@@ -24,11 +23,16 @@
 
     {% load static %}
     {% load color_filters %}
-    {% load thumbnail %} 
+    {% load thumbnail %}
 
+    <!-- ===================================================================== -->
+    <!-- META TAGS -->
+    <!-- ===================================================================== -->
     {% block meta %}
     <meta name="description" content="{{ site_settings.meta_description|default:'Современная сайт-витрина товаров' }}">
     <meta name="keywords" content="{{ site_settings.meta_keywords|default:'товары, магазин, купить, онлайн, витрина' }}">
+
+    <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="{{ site_settings.site_name }}">
     <meta property="og:title" content="{{ site_settings.site_name }}">
@@ -39,13 +43,19 @@
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     {% endif %}
+
+    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ site_settings.site_name }}">
     <meta name="twitter:description" content="{{ site_settings.meta_description|default:'Современная сайт-витрина товаров' }}">
+
+    <!-- Canonical -->
     <link rel="canonical" href="{{ request.build_absolute_uri }}">
     {% endblock %}
 
-    <!-- Предзагрузка ресурсов -->
+    <!-- ===================================================================== -->
+    <!-- ПРЕДЗАГРУЗКА РЕСУРСОВ -->
+    <!-- ===================================================================== -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
@@ -54,11 +64,16 @@
     <link rel="preload" href="{{ site_settings.hero_image.url }}" as="image">
     {% endif %}
 
-    <!-- Google Fonts -->
+    <!-- ===================================================================== -->
+    <!-- GOOGLE FONTS -->
+    <!-- ===================================================================== -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap"
           rel="stylesheet">
 
-    <!-- Собранный Tailwind CSS (замените на свой файл после сборки) -->
+    <!-- ===================================================================== -->
+    <!-- CSS FILES -->
+    <!-- ===================================================================== -->
+    <!-- Собранный Tailwind CSS -->
     <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
 
     <!-- Стили иконок -->
@@ -70,7 +85,9 @@
     <!-- Стили для шапки -->
     <link rel="stylesheet" href="{% static 'css/header.css' %}">
 
-    <!-- Favicon -->
+    <!-- ===================================================================== -->
+    <!-- FAVICON -->
+    <!-- ===================================================================== -->
     {% if site_settings.favicon %}
     <link rel="icon" href="{{ site_settings.favicon.url }}" type="image/x-icon">
     <link rel="apple-touch-icon" href="{{ site_settings.favicon.url }}">
@@ -78,120 +95,151 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛒</text></svg>">
     {% endif %}
 
-    <!-- Тема сайта -->
+    <!-- ===================================================================== -->
+    <!-- ТЕМА САЙТА -->
+    <!-- ===================================================================== -->
     <meta name="theme-color" content="{{ site_settings.primary_color|default:'#3b82f6' }}">
     <meta name="color-scheme" content="light dark">
 
-    <!-- Динамические стили с цветами сайта -->
+    <!-- ===================================================================== -->
+    <!-- ДИНАМИЧЕСКИЕ СТИЛИ С ЦВЕТАМИ САЙТА -->
+    <!-- ===================================================================== -->
     <style id="dynamic-styles">
-        :root {
-            --color-primary: {{ site_settings.primary_color|default:'#3b82f6' }};
-            --color-secondary: {{ site_settings.secondary_color|default:'#8b5cf6' }};
-            --color-accent: {{ site_settings.accent_color|default:'#10b981' }};
-            --color-text: {{ site_settings.text_color|default:'#1f2937' }};
-            --color-background: {{ site_settings.background_color|default:'#f9fafb' }};
-            --color-header-bg: {{ site_settings.header_bg_color|default:'#ffffff' }};
-            --color-footer-bg: {{ site_settings.footer_bg_color|default:'#111827' }};
-            --color-hero-bg: {{ site_settings.hero_bg_color|default:'#eff6ff' }};
+    :root {
+        --color-primary: {{ site_settings.primary_color|default:'#3b82f6' }};
+        --color-secondary: {{ site_settings.secondary_color|default:'#8b5cf6' }};
+        --color-accent: {{ site_settings.accent_color|default:'#10b981' }};
+        --color-text: {{ site_settings.text_color|default:'#1f2937' }};
+        --color-background: {{ site_settings.background_color|default:'#f9fafb' }};
+        --color-header-bg: {{ site_settings.header_bg_color|default:'#ffffff' }};
+        --color-footer-bg: {{ site_settings.footer_bg_color|default:'#111827' }};
+        --color-hero-bg: {{ site_settings.hero_bg_color|default:'#eff6ff' }};
+        --color-border: {{ site_settings.border_color|default:'#e5e7eb' }};
 
-            /* Совместимость со старыми именами */
-            --primary-color: var(--color-primary);
-            --secondary-color: var(--color-secondary);
-            --accent-color: var(--color-accent);
+        /* Алиасы для совместимости */
+        --primary-color: var(--color-primary);
+        --secondary-color: var(--color-secondary);
+        --accent-color: var(--color-accent);
 
-            /* RGB значения */
-            --color-primary-rgb: {{ site_settings.primary_color|hex_to_rgb|default:'59, 130, 246' }};
-            --color-secondary-rgb: {{ site_settings.secondary_color|hex_to_rgb|default:'139, 92, 246' }};
-            --color-accent-rgb: {{ site_settings.accent_color|hex_to_rgb|default:'16, 185, 129' }};
-            --primary-color-rgb: var(--color-primary-rgb);
-        }
+        /* RGB версии для opacity */
+        --color-primary-rgb: {{ site_settings.primary_color|hex_to_rgb|default:'59, 130, 246' }};
+        --color-secondary-rgb: {{ site_settings.secondary_color|hex_to_rgb|default:'139, 92, 246' }};
+        --color-accent-rgb: {{ site_settings.accent_color|hex_to_rgb|default:'16, 185, 129' }};
+        --primary-color-rgb: var(--color-primary-rgb);
+    }
 
-        .dark {
-            --color-text: #f3f4f6;
-            --color-background: #111827;
-            --color-header-bg: #1f2937;
-        }
+    .dark {
+        --color-text: #f3f4f6;
+        --color-background: #111827;
+        --color-header-bg: #1f2937;
+    }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            color: var(--color-text);
-            background-color: var(--color-background);
-        }
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        color: var(--color-text);
+        background-color: var(--color-background);
+    }
 
-        h1, h2, h3, h4, h5, h6 {
-            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
 
-        .btn-primary {
-            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-            color: white;
-        }
+    .btn-primary {
+        background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+        color: white;
+    }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(var(--color-primary-rgb), 0.2);
-        }
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(var(--color-primary-rgb), 0.2);
+    }
 
-        .text-gradient {
-            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+    .text-gradient {
+        background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
     </style>
 
     {% block extra_css %}{% endblock %}
 </head>
-<body class="flex flex-col min-h-screen">
 
-    <!-- Пропуск навигации -->
-    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:p-4 bg-white">
+<body class="flex flex-col min-h-screen">
+    <!-- ===================================================================== -->
+    <!-- ПРОПУСК НАВИГАЦИИ (Accessibility) -->
+    <!-- ===================================================================== -->
+    <a href="#main-content"
+       class="sr-only focus:not-sr-only focus:absolute focus:p-4 bg-default z-50"
+       tabindex="0">
         Перейти к основному содержимому
     </a>
 
-    <!-- Кнопка переключения темы -->
+    <!-- ===================================================================== -->
+    <!-- КНОПКА ПЕРЕКЛЮЧЕНИЯ ТЕМЫ -->
+    <!-- ===================================================================== -->
     <button type="button"
             @click="darkMode = !darkMode"
-            class="theme-toggle fixed bottom-6 right-6 md:bottom-8 md:right-8 z-40 p-3 bg-white dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+            class="theme-toggle fixed bottom-6 right-6 md:bottom-8 md:right-8 z-40 p-3 bg-default dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
             aria-label="Переключить тему"
             x-cloak>
-        <svg class="w-6 h-6 text-gray-700 dark:text-gray-300" x-show="!darkMode" fill="currentColor" viewBox="0 0 20 20">
+        <!-- Иконка светлой темы -->
+        <svg class="w-6 h-6 text-default dark:text-gray-300"
+             x-show="!darkMode"
+             fill="currentColor"
+             viewBox="0 0 20 20"
+             aria-hidden="true">
             <path d="M17.293 13.293A8 8 0 0 1 6.707 2.707a8.001 8.001 0 1 0 10.586 10.586z"/>
         </svg>
-        <svg class="w-6 h-6 text-gray-700 dark:text-gray-300" x-show="darkMode" fill="currentColor" viewBox="0 0 20 20">
+        <!-- Иконка темной темы -->
+        <svg class="w-6 h-6 text-default dark:text-gray-300"
+             x-show="darkMode"
+             fill="currentColor"
+             viewBox="0 0 20 20"
+             aria-hidden="true">
             <path d="M10 2a1 1 0 0 1 1 1v1a1 1 0 1 1 -2 0V3a1 1 0 0 1 1-1zm4 8a4 4 0 1 1 -8 0 4 4 0 0 1 8 0zm-.464 4.95l.707.707a1 1 0 0 0 1.414-1.414l-.707-.707a1 1 0 0 0 -1.414 1.414zm2.12-10.607a1 1 0 0 1 0 1.414l-.706.707a1 1 0 1 1 -1.414-1.414l.707-.707a1 1 0 0 1 1.414 0zM17 11a1 1 0 1 0 0-2h-1a1 1 0 1 0 0 2h1zm-7 4a1 1 0 0 1 1 1v1a1 1 0 1 1 -2 0v-1a1 1 0 0 1 1-1zM5.05 6.464A1 1 0 1 0 6.465 5.05l-.708-.707a1 1 0 0 0 -1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 0 1 -1.414-1.414l.707-.707a1 1 0 0 1 1.414 1.414zM4 11a1 1 0 1 0 0-2H3a1 1 0 0 0 0 2h1z"/>
         </svg>
     </button>
 
-    <!-- Шапка сайта -->
+    <!-- ===================================================================== -->
+    <!-- ШАПКА САЙТА -->
+    <!-- ===================================================================== -->
     <header class="header-bg transition-colors duration-300" role="banner">
         {% include 'includes/header.html' %}
     </header>
 
-    <!-- Сообщения Django -->
+    <!-- ===================================================================== -->
+    <!-- СООБЩЕНИЯ DJANGO -->
+    <!-- ===================================================================== -->
     {% if messages %}
     <div class="container mx-auto px-4 mt-4 space-y-3" role="status" aria-live="polite">
         {% for message in messages %}
-        <div class="p-4 rounded-xl bg-blue-50 text-blue-800 border-l-4 border-blue-500">
+        <div class="p-4 rounded-xl {% if message.tags == 'success' %}bg-green-50 text-green-800 border-l-4 border-green-500{% elif message.tags == 'error' %}bg-red-50 text-red-800 border-l-4 border-red-500{% else %}bg-blue-50 text-blue-800 border-l-4 border-blue-500{% endif %}">
             {{ message }}
         </div>
         {% endfor %}
     </div>
     {% endif %}
 
-    <!-- Основное содержимое -->
+    <!-- ===================================================================== -->
+    <!-- ОСНОВНОЕ СОДЕРЖИМОЕ -->
+    <!-- ===================================================================== -->
     <main id="main-content" class="flex-grow" role="main">
         {% block content %}
         <!-- Контент будет здесь -->
         {% endblock %}
     </main>
 
-    <!-- Подвал сайта -->
+    <!-- ===================================================================== -->
+    <!-- ПОДВАЛ САЙТА -->
+    <!-- ===================================================================== -->
     <footer class="footer-bg text-white mt-auto transition-colors duration-300" role="contentinfo">
         {% include 'includes/footer.html' %}
     </footer>
 
-    <!-- Кнопка "Наверх" -->
+    <!-- ===================================================================== -->
+    <!-- КНОПКА "НАВЕРХ" -->
+    <!-- ===================================================================== -->
     <button type="button"
             x-show="scrollTopVisible"
             @click="window.scrollTo({ top: 0, behavior: 'smooth' })"
@@ -203,129 +251,77 @@
         </svg>
     </button>
 
-    <!-- Встроенный спрайт иконок (из static/icons/sprite.svg) -->
-    <div aria-hidden="true" style="display: none;">
-        <!-- Здесь будет содержимое sprite.svg -->
-    </div>
+    <!-- ===================================================================== -->
+    <!-- ALPINE.JS ТОЛЬКО ДЛЯ ФРОНТЕНДА (НЕ ДЛЯ АДМИНКИ) -->
+    <!-- ===================================================================== -->
+    {% if not request.path|slice:":7" == "/admin/" %}
 
-    <!-- Alpine.js и плагины -->
+    <!-- Alpine.js Core -->
     <script src="https://unpkg.com/alpinejs@3.13.5/dist/cdn.min.js" defer></script>
+
+    <!-- Alpine.js Plugins -->
     <script src="https://unpkg.com/@alpinejs/intersect@3.x.x/dist/cdn.min.js" defer></script>
     <script src="https://unpkg.com/@alpinejs/focus@3.x.x/dist/cdn.min.js" defer></script>
 
-    <!-- Кастомные скрипты -->
-    <script src="{% static 'js/animations.js' %}" defer></script>
+    <!-- Инициализация Alpine.js -->
+    <script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('app', () => ({
+            darkMode: window.__initialDarkMode || false,
+            scrollTopVisible: false,
+            notifications: [],
 
+            init() {
+                // Загрузка сохранённой темы
+                const savedDarkMode = localStorage.getItem('darkMode');
+                if (savedDarkMode !== null) {
+                    this.darkMode = savedDarkMode === 'true';
+                }
+
+                // Отслеживание прокрутки для кнопки "Наверх"
+                window.addEventListener('scroll', () => {
+                    this.scrollTopVisible = window.scrollY > 300;
+                });
+
+                // Сохранение темы при изменении
+                this.$watch('darkMode', (value) => {
+                    localStorage.setItem('darkMode', value);
+                });
+            },
+
+            // Показ уведомлений
+            showNotification(message, type = 'info') {
+                const id = Date.now();
+                this.notifications.push({ id, message, type });
+                setTimeout(() => {
+                    this.notifications = this.notifications.filter(n => n.id !== id);
+                }, 5000);
+            }
+        }));
+
+        // ✅ ИСПРАВЛЕНО: Показываем кнопку темы после инициализации Alpine
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.querySelector('.theme-toggle');
+            if (themeToggle) {
+                themeToggle.removeAttribute('x-cloak');
+            }
+        });
+    });
+    </script>
+    {% endif %}
+
+    <!-- ===================================================================== -->
+    <!-- ДОПОЛНИТЕЛЬНЫЙ JS -->
+    <!-- ===================================================================== -->
     {% block extra_js %}{% endblock %}
 
-    <!-- Скрипт инициализации Alpine.js -->
-    <script>
-        document.addEventListener('alpine:init', () => {
-            // Создаем общий store для UI состояния
-            Alpine.store('ui', {
-                mobileMenuOpen: false,
-                searchOpen: false,
-                categoriesDropdownOpen: false,
-                cartOpen: false
-            });
-
-            Alpine.data('app', () => ({
-                // Состояние приложения
-                darkMode: window.__initialDarkMode || false,
-                scrollTopVisible: false,
-
-                // Уведомления
-                notifications: [],
-
-                // Корзина
-                cart: {
-                    items: [],
-                    total: 0,
-                    count: 0
-                },
-
-                // Инициализация
-                init() {
-                    // Загружаем состояние из localStorage
-                    const savedDarkMode = localStorage.getItem('darkMode');
-                    if (savedDarkMode !== null) {
-                        this.darkMode = savedDarkMode === 'true';
-                    }
-
-                    // Загружаем корзину из localStorage
-                    this.loadCart();
-
-                    // Следим за скроллом для кнопки "Наверх"
-                    window.addEventListener('scroll', () => {
-                        this.scrollTopVisible = window.scrollY > 300;
-                    });
-
-                    // Сохраняем тему при изменении
-                    this.$watch('darkMode', (value) => {
-                        localStorage.setItem('darkMode', value);
-                    });
-                },
-
-                // Методы корзины
-                loadCart() {
-                    try {
-                        const savedCart = localStorage.getItem('mybiz_cart');
-                        if (savedCart) {
-                            const cartData = JSON.parse(savedCart);
-                            this.cart = cartData;
-                        }
-                    } catch (e) {
-                        console.error('Ошибка загрузки корзины:', e);
-                    }
-                },
-
-                saveCart() {
-                    localStorage.setItem('mybiz_cart', JSON.stringify(this.cart));
-                },
-
-                addToCart(product) {
-                    const existingItem = this.cart.items.find(item => item.id === product.id);
-
-                    if (existingItem) {
-                        existingItem.quantity += 1;
-                    } else {
-                        this.cart.items.push({
-                            id: product.id,
-                            name: product.name,
-                            price: product.display_price,
-                            image: product.image?.url || '',
-                            quantity: 1
-                        });
-                    }
-
-                    this.updateCartTotal();
-                    this.saveCart();
-                    this.showNotification('Товар добавлен в корзину', 'success');
-                },
-
-                updateCartTotal() {
-                    this.cart.total = this.cart.items.reduce((sum, item) => {
-                        return sum + (item.price * item.quantity);
-                    }, 0);
-                    this.cart.count = this.cart.items.reduce((sum, item) => sum + item.quantity, 0);
-                },
-
-                // Уведомления
-                showNotification(message, type = 'info') {
-                    const id = Date.now();
-                    this.notifications.push({ id, message, type });
-
-                    setTimeout(() => {
-                        this.notifications = this.notifications.filter(n => n.id !== id);
-                    }, 5000);
-                }
-            }));
-        });
-    </script>
-
-    <!-- Скрыть элементы до загрузки Alpine.js -->
+    <!-- ===================================================================== -->
+    <!-- СКРЫТЬ ЭЛЕМЕНТЫ ДО ЗАГРУЗКИ ALPINE.JS -->
+    <!-- ===================================================================== -->
     <style>
-        [x-cloak] { display: none !important; }
+    [x-cloak] {
+        display: none !important;
+    }
     </style>
 </body>
 </html>
