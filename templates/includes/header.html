@@ -67,7 +67,7 @@ loading="lazy">
 {% endif %}
 <div class="brand-text min-w-0">
 <h1 class="text-xl md:text-2xl font-bold text-default group-hover:text-primary transition-colors break-words hyphens-auto">
-{{ site_settings.site_name }}
+{{ site_settings.site_name|striptags }}
 </h1>
 {% if site_settings.site_tagline %}
 <p class="text-xs text-default/60 hidden md:block break-words hyphens-auto">
