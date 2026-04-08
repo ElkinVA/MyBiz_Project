@@ -74,28 +74,25 @@ class SiteSettings(models.Model):
     )
 
     # ===== ПОЛЯ С ВИЗУАЛЬНЫМ РЕДАКТОРОМ =====
-    site_name = CKEditor5Field(
+    site_name = models.CharField(
         max_length=200,
         default="MyBiz",
         verbose_name="Название сайта",
-        help_text="Название сайта (может содержать простое форматирование)",
-        config_name='minimal'
+        help_text="Название сайта"
     )
-    site_tagline = CKEditor5Field(
+    site_tagline = models.CharField(
         max_length=200,
         blank=True,
         default="Лучшие товары по доступным ценам",
         verbose_name="Слоган сайта",
-        help_text="Краткий слоган (может содержать простое форматирование)",
-        config_name='minimal'
+        help_text="Краткий слоган"
     )
-    hero_heading_prefix = CKEditor5Field(
+    hero_heading_prefix = models.CharField(
         max_length=100,
         blank=True,
         default="Добро пожаловать в",
         verbose_name="Префикс заголовка (hero)",
-        help_text="Текст перед названием сайта в главном баннере (может содержать простое форматирование)",
-        config_name='minimal'
+        help_text="Текст перед названием сайта в главном баннере"
     )
 
     # ===== ОСТАЛЬНЫЕ ПОЛЯ =====
@@ -186,38 +183,38 @@ class SiteSettings(models.Model):
         help_text='Основной текст под заголовком на главной (поддерживает форматирование)',
         config_name='extends'
     )
-    hero_subtitle = CKEditor5Field(
+    hero_subtitle = models.CharField(
+        max_length=200,
         blank=True,
         default='Лучшие товары по доступным ценам',
         verbose_name='Подзаголовок Hero',
-        help_text='Отображается под названием сайта на главной. Если пусто – используется site_tagline',
-        config_name='extends'
+        help_text='Отображается под названием сайта на главной. Если пусто – используется site_tagline'
     )
-    promotions_title = CKEditor5Field(
+    promotions_title = models.CharField(
+        max_length=200,
         blank=True,
         default='Специальные предложения',
         verbose_name='Заголовок блока акций',
-        help_text='Заголовок секции акций',
-        config_name='extends'
+        help_text='Заголовок секции акций'
     )
-    promotions_subtitle = CKEditor5Field(
+    promotions_subtitle = models.CharField(
+        max_length=300,
         blank=True,
         default='Не упустите возможность приобрести товары по выгодным ценам',
-        verbose_name='Подзаголовок блока акций',
-        config_name='extends'
+        verbose_name='Подзаголовок блока акций'
     )
-    featured_products_title = CKEditor5Field(
+    featured_products_title = models.CharField(
+        max_length=200,
         blank=True,
         default='Популярные товары',
         verbose_name='Заголовок блока популярных товаров',
-        help_text='Заголовок секции популярных товаров',
-        config_name='extends'
+        help_text='Заголовок секции популярных товаров'
     )
-    featured_products_subtitle = CKEditor5Field(
+    featured_products_subtitle = models.CharField(
+        max_length=300,
         blank=True,
         default='Самые востребованные товары среди наших покупателей',
-        verbose_name='Подзаголовок блока популярных товаров',
-        config_name='extends'
+        verbose_name='Подзаголовок блока популярных товаров'
     )
 
     # ===== КОНТАКТЫ =====

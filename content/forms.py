@@ -12,17 +12,19 @@ class SiteSettingsForm(forms.ModelForm):
         model = SiteSettings
         fields = '__all__'
         widgets = {
-            # CKEditor поля
-            'site_name': CKEditor5Widget(config_name='minimal'),
-            'site_tagline': CKEditor5Widget(config_name='minimal'),
-            'hero_heading_prefix': CKEditor5Widget(config_name='minimal'),
-            'hero_subtitle': CKEditor5Widget(config_name='minimal'),
+            # Обычные текстовые поля (без HTML)
+            'site_name': forms.TextInput(attrs={'class': 'vTextField'}),
+            'site_tagline': forms.TextInput(attrs={'class': 'vTextField'}),
+            'hero_heading_prefix': forms.TextInput(attrs={'class': 'vTextField'}),
+            'hero_subtitle': forms.TextInput(attrs={'class': 'vTextField'}),
+            'featured_products_title': forms.TextInput(attrs={'class': 'vTextField'}),
+            'featured_products_subtitle': forms.TextInput(attrs={'class': 'vTextField'}),
+            'promotions_title': forms.TextInput(attrs={'class': 'vTextField'}),
+            'promotions_subtitle': forms.TextInput(attrs={'class': 'vTextField'}),
+            
+            # CKEditor поле для большого текста
             'welcome_text': CKEditor5Widget(config_name='extends'),
             'description': CKEditor5Widget(config_name='extends'),
-            'featured_products_title': CKEditor5Widget(config_name='minimal'),
-            'featured_products_subtitle': CKEditor5Widget(config_name='minimal'),
-            'promotions_title': CKEditor5Widget(config_name='minimal'),
-            'promotions_subtitle': CKEditor5Widget(config_name='minimal'),
 
             # Цветовые поля
             'primary_color': ColorPickerWidget(),
