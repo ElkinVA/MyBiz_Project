@@ -26,13 +26,12 @@ class Command(BaseCommand):
             id=1,
             defaults={
                 'site_name': 'MyBiz Test Shop',
-                'site_description': 'Лучший тестовый магазин на Django',
+                'site_tagline': 'Лучший тестовый магазин на Django',
                 'contact_email': 'info@mybiz-test.ru',
                 'contact_phone': '+7 (999) 000-00-00',
-                'address': 'г. Москва, ул. Тестовая, д. 1',
+                'contact_address': 'г. Москва, ул. Тестовая, д. 1',
                 'primary_color': '#4F46E5',
                 'secondary_color': '#10B981',
-                'is_dark_mode_enabled': False,
             }
         )
         if not created:
@@ -44,10 +43,14 @@ class Command(BaseCommand):
         for i in range(num_categories):
             is_parent = random.random() > 0.7  # 30% категорий будут родительскими
             
+            name = fake.word().title() + ' ' + fake.word().title()
+            slug = slugify(name)
+            
             if is_parent or len(categories) < 3:
                 # Родительская категория
                 cat = Category.objects.create(
-                    name=fake.word().title() + ' ' + fake.word().title(),
+                    name=name,
+                    slug=slug,
                     description=fake.sentence(),
                     is_active=True,
                     parent=None
@@ -56,7 +59,8 @@ class Command(BaseCommand):
                 # Дочерняя категория (выбираем случайного родителя)
                 parent = random.choice([c for c in categories if c.parent is None])
                 cat = Category.objects.create(
-                    name=fake.word().title(),
+                    name=name,
+                    slug=slug,
                     description=fake.sentence(),
                     is_active=True,
                     parent=parent
