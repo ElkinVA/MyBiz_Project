@@ -1,46 +1,70 @@
 #!/bin/bash
 
-# Скрипт для слияния текущей ветки с main и пуша в origin
+# Скрипт для безопасного слияния ветки в main
 # Использование: ./merge_to_main.sh [имя_ветки]
-# Если имя ветки не указано, используется текущая ветка
 
-set -e  # Выход при ошибке
+set -e  # Выход при любой ошибке
 
-# Получаем имя текущей ветки
-CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+# Цвета для вывода
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
 
-# Если передан аргумент, используем его как имя ветки
+# Получаем имя ветки из аргумента или используем текущую
 if [ -n "$1" ]; then
     BRANCH_NAME="$1"
 else
-    BRANCH_NAME="$CURRENT_BRANCH"
+    BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
 fi
 
-echo "🚀 Начало процесса слияния ветки '$BRANCH_NAME' в main..."
+echo -e "${GREEN}🚀 Начало процесса слияния ветки '$BRANCH_NAME' в main...${NC}"
 
-# Проверяем, есть ли локальная ветка main
-if ! git show-ref --verify --quiet refs/heads/main; then
-    echo "❌ Локальная ветка 'main' не найдена. Создаю её из origin/main..."
-    git checkout -b main origin/main
-else
-    echo "✅ Локальная ветка 'main' найдена."
-fi
-
-# Переключаемся на main
-echo "📥 Переключение на ветку 'main'..."
-git checkout main
-
-# Fetch изменений из origin
-echo "📡 Получение изменений из origin..."
+# 1. Обновляем список удаленных веток
+echo -e "${YELLOW}📡 Получение актуального списка веток из origin...${NC}"
 git fetch origin
 
-# Merge ветки в main
-echo "🔀 Слияние ветки '$BRANCH_NAME' в 'main'..."
-git merge origin/"$BRANCH_NAME" -m "Merge branch '$BRANCH_NAME' into main"
+# 2. Проверяем, существует ли ветка на сервере
+if ! git ls-remote --exit-code --heads origin "$BRANCH_NAME" > /dev/null; then
+    echo -e "${RED}❌ Ошибка: Ветка '$BRANCH_NAME' не найдена на удаленном сервере (origin).${NC}"
+    echo "Проверьте название ветки на GitHub."
+    exit 1
+fi
 
-# Push изменений в origin/main
-echo "⬆️ Пуш изменений в origin/main..."
+# 3. Создаем или обновляем локальную ветку из удаленной
+# Это критический шаг, которого не хватало в старом скрипте
+echo -e "📥 Синхронизация локальной ветки '$BRANCH_NAME' с origin..."
+if git show-ref --verify --quiet refs/heads/"$BRANCH_NAME"; then
+    # Если ветка есть локально, просто подтягиваем изменения
+    git checkout "$BRANCH_NAME"
+    git reset --hard origin/"$BRANCH_NAME"
+else
+    # Если нет, создаем её
+    git checkout -b "$BRANCH_NAME" origin/"$BRANCH_NAME"
+fi
+
+# 4. Переключаемся на main и обновляем его
+echo -e "🔄 Переключение на ветку 'main'..."
+git checkout main
+
+echo -e "📥 Обновление local main из origin/main..."
+git reset --hard origin/main
+
+# 5. Выполняем слияние
+echo -e "🔀 Слияние '$BRANCH_NAME' в 'main'..."
+# Используем стратегию, которая лучше обрабатывает конфликты
+if ! git merge "$BRANCH_NAME" -m "Merge branch '$BRANCH_NAME' into main"; then
+    echo -e "${RED}⚠️ Возникли конфликты при слиянии!${NC}"
+    echo "Разрешите конфликты вручную, затем выполните:"
+    echo "   git add <файлы>"
+    echo "   git commit"
+    echo "   git push origin main"
+    exit 1
+fi
+
+# 6. Отправляем результат на сервер
+echo -e "⬆️ Пуш изменений в origin/main..."
 git push origin main
 
-echo "✅ Успешно! Ветка '$BRANCH_NAME' слита в main и отправлена на сервер."
-echo "🎉 Готово!"
+echo -e "${GREEN}✅ Успешно! Ветка '$BRANCH_NAME' слита в main.${NC}"
+echo -e "${GREEN}🎉 Готово!${NC}"
