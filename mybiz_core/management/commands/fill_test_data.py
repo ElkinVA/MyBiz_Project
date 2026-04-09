@@ -103,9 +103,14 @@ class Command(BaseCommand):
             if has_discount:
                 discount_percent = random.randint(5, 30)
                 discount_price = round(price * (1 - discount_percent / 100), 2)
+            
+            # Генерируем уникальное имя и slug для товара
+            product_name = fake.catch_phrase()
+            product_slug = generate_unique_slug(Product, product_name)
 
             product = Product.objects.create(
-                name=fake.catch_phrase(),
+                name=product_name,
+                slug=product_slug,
                 category=category,
                 short_description=fake.sentence(nb_words=10),
                 description=fake.paragraph(nb_sentences=5),
