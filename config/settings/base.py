@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Сторонние приложения
+    'django_filters',
     'django_ckeditor_5',
     'sorl.thumbnail',
     'auditlog',

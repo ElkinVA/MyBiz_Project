@@ -129,15 +129,21 @@ class Product(models.Model):
     is_new = models.BooleanField(default=False, verbose_name="Новинка")
     in_stock = models.BooleanField(default=True, verbose_name="В наличии")
     stock = models.IntegerField(default=0, verbose_name="Остаток на складе")
-    is_active = models.BooleanField(default=True, verbose_name="Активен")
+    is_active = models.BooleanField(default=True, verbose_name="Активен", db_index=True)
     is_featured = models.BooleanField(default=False, verbose_name="Рекомендуемый")
-    created_at = models.DateTimeField(auto_now_add=True, editable=False, verbose_name="Дата создания")
+    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Цена", db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True, editable=False, verbose_name="Дата создания", db_index=True)
     updated_at = models.DateTimeField(auto_now=True, editable=False, verbose_name="Дата обновления")
 
     class Meta:
         verbose_name = "Товар"
         verbose_name_plural = "Товары"
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['category', 'is_active']),
+            models.Index(fields=['price']),
+            models.Index(fields=['created_at']),
+        ]
 
     def __str__(self):
         return self.name

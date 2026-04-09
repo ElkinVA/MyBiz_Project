@@ -165,7 +165,7 @@
     {% block extra_css %}{% endblock %}
 </head>
 
-<body class="flex flex-col min-h-screen">
+<body x-data="app" class="flex flex-col min-h-screen" :class="{ 'dark': darkMode }">
     <!-- ===================================================================== -->
     <!-- ПРОПУСК НАВИГАЦИИ (Accessibility) -->
     <!-- ===================================================================== -->

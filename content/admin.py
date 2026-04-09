@@ -103,65 +103,38 @@ class SiteSettingsAdmin(admin.ModelAdmin):
 
 @admin.register(Promotion)
 class PromotionAdmin(admin.ModelAdmin):
-    """Админка для акций"""
     list_display = ['title', 'is_active', 'start_date', 'end_date', 'created_at']
     list_filter = ['is_active', 'start_date', 'end_date']
     search_fields = ['title', 'description']
     prepopulated_fields = {'slug': ('title',)}
     ordering = ['-start_date']
     list_per_page = 25
-
     actions = ['activate_promotions', 'deactivate_promotions']
 
     fieldsets = (
-        ('📋 Основные настройки', {
-            'fields': ('site_name', 'site_tagline', 'favicon', 'logo'),
-            'description': 'Базовая информация о сайте'
+        ('📋 Основная информация', {
+            'fields': ('title', 'slug', 'description', 'short_description')
         }),
-        ('🎨 Цветовая схема', {
-            'fields': ('color_scheme', 'primary_color', 'secondary_color',
-                       'accent_color', 'text_color', 'background_color', 'border_color'),
+        ('🔗 Кнопка и ссылка', {
+            'fields': ('button_text', 'button_url'),
+            'classes': ('collapse',)
+        }),
+        ('💰 Скидка', {
+            'fields': ('discount_type', 'discount_value'),
             'classes': ('wide',)
         }),
-        ('🖼️ Изображения главной', {
-            'fields': ('hero_image', 'hero_bg_color'),
+        ('🖼️ Изображение', {
+            'fields': ('image',)
+        }),
+        ('📅 Период действия', {
+            'fields': ('start_date', 'end_date', 'is_active'),
             'classes': ('collapse',)
         }),
-        ('📝 Тексты главной', {
-            'fields': ('hero_heading_prefix', 'hero_subtitle', 'welcome_text'),
-            'classes': ('collapse',)
-        }),
-        ('🛍️ Блок товаров', {
-            'fields': ('featured_products_title', 'featured_products_subtitle'),
-            'classes': ('collapse',)
-        }),
-        ('🏷️ Блок акций', {
-            'fields': ('promotions_title', 'promotions_subtitle'),
-            'classes': ('collapse',)
-        }),
-        ('📞 Контакты', {
-            'fields': ('contact_phone', 'contact_email', 'contact_address', 'working_hours'),
-            'classes': ('collapse',)
-        }),
-        ('🔗 Социальные сети', {
-            'fields': (
-                ('telegram_url', 'telegram_visible'),
-                ('vk_url', 'vk_visible'),
-                ('instagram_url', 'instagram_visible'),
-                ('max_url', 'max_visible'),
-            ),
-            'classes': ('collapse',)
-        }),
-        ('📊 SEO настройки', {
-            'fields': ('meta_title', 'meta_description', 'meta_keywords'),
-            'classes': ('collapse',)
-        }),
-        ('⚙️ Дополнительно', {
-            'fields': ('header_bg_color', 'footer_bg_color'),
+        ('📊 Даты', {
+            'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
     )
-
     readonly_fields = ['created_at', 'updated_at']
 
     def activate_promotions(self, request, queryset):

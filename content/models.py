@@ -46,13 +46,22 @@ class Promotion(models.Model):
         max_digits=5,
         decimal_places=2,
         default=0,
-        verbose_name="Значение скидки"
+        verbose_name="Значение скидки",
+        db_index=True
     )
+    is_active = models.BooleanField(default=True, verbose_name="Активна", db_index=True)
+    start_date = models.DateField(blank=True, null=True, verbose_name="Дата начала", db_index=True)
+    end_date = models.DateField(blank=True, null=True, verbose_name="Дата окончания", db_index=True)
 
     class Meta:
         verbose_name = "Промо-акция"
         verbose_name_plural = "Промо-акции"
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['is_active']),
+            models.Index(fields=['start_date']),
+            models.Index(fields=['end_date']),
+        ]
 
     def __str__(self):
         return self.title
@@ -490,7 +499,9 @@ class StockNotification(models.Model):
     is_notified = models.BooleanField(default=False, verbose_name="Уведомление отправлено")
 
     class Meta:
-        unique_together = ('product', 'email')
+        constraints = [
+            models.UniqueConstraint(fields=['product', 'email'], name='unique_product_email')
+        ]
         verbose_name = "Запрос о поступлении"
         verbose_name_plural = "Запросы о поступлении"
 

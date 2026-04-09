@@ -106,7 +106,6 @@ class PromotionForm(forms.ModelForm):
             'button_text': forms.TextInput(attrs={'class': 'vTextField'}),
             'button_url': forms.URLInput(attrs={'class': 'vTextField'}),
             'image': ImagePreviewWidget(),
-            'icon': ImagePreviewWidget(),
         }
 
 

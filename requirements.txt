@@ -66,6 +66,7 @@ whitenoise==6.12.0
 django-ratelimit==4.1.0
 sentry-sdk==2.34.1
 djangorestframework==3.15.2
+django-filter==25.2
 pytest==8.3.5
 pytest-django==4.11.1
 pytest-cov==6.1.1
