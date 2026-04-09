@@ -6,8 +6,30 @@ from mybiz_core.models import Category, Product
 from content.models import SiteSettings, Promotion
 from pages.models import Page
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 
 fake = Faker('ru_RU')
+
+def generate_unique_slug(model, name, original_slug=None):
+    """Генерирует уникальный slug, добавляя суффикс при коллизии."""
+    if original_slug is None:
+        slug = slugify(name)
+    else:
+        slug = original_slug
+    
+    # Если slug пустой (например, для русских слов), используем случайный суффикс
+    if not slug:
+        slug = f"category-{random.randint(1000, 9999)}"
+    
+    base_slug = slug
+    counter = 1
+    
+    # Проверяем существование такого slug
+    while model.objects.filter(slug=slug).exists():
+        slug = f"{base_slug}-{counter}"
+        counter += 1
+    
+    return slug
 
 class Command(BaseCommand):
     help = 'Заполняет базу данных тестовыми данными (категории, товары, настройки, промо)'
@@ -44,10 +66,10 @@ class Command(BaseCommand):
             is_parent = random.random() > 0.7  # 30% категорий будут родительскими
             
             name = fake.word().title() + ' ' + fake.word().title()
-            slug = slugify(name)
             
             if is_parent or len(categories) < 3:
                 # Родительская категория
+                slug = generate_unique_slug(Category, name)
                 cat = Category.objects.create(
                     name=name,
                     slug=slug,
@@ -58,6 +80,7 @@ class Command(BaseCommand):
             else:
                 # Дочерняя категория (выбираем случайного родителя)
                 parent = random.choice([c for c in categories if c.parent is None])
+                slug = generate_unique_slug(Category, name)
                 cat = Category.objects.create(
                     name=name,
                     slug=slug,
