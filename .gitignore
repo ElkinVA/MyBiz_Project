@@ -1,48 +1,42 @@
-# Shell script backup/swap files
-*.swp
-*.swo
+```
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# Log files
-*.log
-
-# Temporary files
-*.tmp
-
-# Environment files
+# Environment
 .env
 .env.local
-*.env.*
+.env.*
 
-# Editor/IDE files
+# Database
+db.sqlite3
+
+# Logs
+*.log
+
+# IDE
 .vscode/
 .idea/
 
-# Dependencies (if any Python/Ruby/Node projects)
-node_modules/
-venv/
-.venv/
-__pycache__/
-*.egg-info/
-
-# Build artifacts (if any compilation)
-*.o
-*.obj
-*.so
-*.dll
-*.exe
-build/
-dist/
-target/
-
-# Coverage reports
-coverage/
-htmlcov/
-.coverage
-
-# OS files
+# OS
 .DS_Store
 Thumbs.db
-
-# MyPy cache
-.mypy_cache/
-.pytest_cache/
+```
