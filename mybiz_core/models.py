@@ -44,6 +44,22 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        """Автоматически генерирует slug из name если slug пустой"""
+        if not self.slug:
+            base_slug = slugify(self.name, allow_unicode=True)
+            # Если после slugify пустая строка (например, только спецсимволы), используем ID
+            if not base_slug:
+                base_slug = 'category'
+            slug = base_slug
+            counter = 1
+            # Проверяем уникальность slug
+            while Category.objects.filter(slug=slug).exists():
+                slug = f'{base_slug}-{counter}'
+                counter += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
     def get_absolute_url(self):
         return reverse('mybiz_core:product_list_by_category', kwargs={'category_slug': self.slug})
 
