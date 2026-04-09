@@ -41,4 +41,4 @@ db.sqlite3-journal
 media/
 staticfiles/
 .DS_Store
-```
+```db.sqlite3
