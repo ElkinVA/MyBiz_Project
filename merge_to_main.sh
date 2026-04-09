@@ -30,13 +30,32 @@ fi
 echo "📥 Переключение на ветку 'main'..."
 git checkout main
 
+# Отменяем локальные изменения в db.sqlite3 (бинарный файл, не подлежит слиянию)
+if git diff --quiet HEAD -- db.sqlite3; then
+    echo "✅ Файл db.sqlite3 чист."
+else
+    echo "⚠️  Обнаружены локальные изменения в db.sqlite3. Отменяем их для слияния..."
+    git checkout HEAD -- db.sqlite3
+fi
+
 # Fetch изменений из origin
 echo "📡 Получение изменений из origin..."
 git fetch origin
 
-# Merge ветки в main
+# Merge ветки в main (игнорируем изменения в db.sqlite3 из ветки)
 echo "🔀 Слияние ветки '$BRANCH_NAME' в 'main'..."
-git merge origin/"$BRANCH_NAME" -m "Merge branch '$BRANCH_NAME' into main"
+git merge origin/"$BRANCH_NAME" -m "Merge branch '$BRANCH_NAME' into main" -X ours --no-commit || true
+
+# Если были конфликты в db.sqlite3, разрешаем их в пользу текущей версии
+if [ -f db.sqlite3 ] && grep -q "^<<<<<<< " db.sqlite3 2>/dev/null; then
+    echo "⚠️  Конфликт в db.sqlite3. Используем текущую версию..."
+    git checkout HEAD -- db.sqlite3
+fi
+
+# Завершаем коммит, если он был начат
+if git rev-parse --verify MERGE_HEAD >/dev/null 2>&1; then
+    git commit -m "Merge branch '$BRANCH_NAME' into main"
+fi
 
 # Push изменений в origin/main
 echo "⬆️ Пуш изменений в origin/main..."
