@@ -1,48 +1,37 @@
-# Shell script backup/swap files
-*.swp
-*.swo
+```
+# Compiled and build artifacts
+*.pyc
+__pycache__/
+*.o
+*.obj
 
-# Log files
+# Dependencies
+.venv/
+venv/
+node_modules/
+
+# Logs and temp files
 *.log
-
-# Temporary files
 *.tmp
+*.swp
 
-# Environment files
+# Environment
 .env
 .env.local
-*.env.*
+.env.*
 
-# Editor/IDE files
+# Editors
 .vscode/
 .idea/
 
-# Dependencies (if any Python/Ruby/Node projects)
-node_modules/
-venv/
-.venv/
+# Django specific
+*.pyc
 __pycache__/
-*.egg-info/
-
-# Build artifacts (if any compilation)
-*.o
-*.obj
-*.so
-*.dll
-*.exe
-build/
-dist/
-target/
-
-# Coverage reports
-coverage/
-htmlcov/
-.coverage
-
-# OS files
+*.log
+local_settings.py
+db.sqlite3
+media/
+staticfiles/
 .DS_Store
 Thumbs.db
-
-# MyPy cache
-.mypy_cache/
-.pytest_cache/
+```
