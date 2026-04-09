@@ -21,7 +21,8 @@ class TestHomeView:
     def test_home_view_template_used(self, client):
         """Проверка используемого шаблона"""
         response = client.get(reverse('mybiz_core:home'))
-        assert response.template_name == 'home.html'
+        # Проверяем, что шаблон home.html использовался для рендеринга
+        assert 'home.html' in [t.name for t in response.templates]
 
     def test_home_view_context_featured_products(self, client, product):
         """Проверка контекста с рекомендуемыми товарами"""
