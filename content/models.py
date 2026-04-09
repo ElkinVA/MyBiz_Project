@@ -14,6 +14,11 @@ logger = logging.getLogger(__name__)
 
 
 class Promotion(models.Model):
+    DISCOUNT_TYPE_CHOICES = [
+        ('percent', 'Процент (%)'),
+        ('fixed', 'Фиксированная сумма (₽)'),
+    ]
+    
     title = models.CharField(max_length=200, verbose_name="Заголовок")
     slug = models.SlugField(max_length=200, unique=True, blank=True, verbose_name="URL")
     description = CKEditor5Field(verbose_name="Описание", config_name='extends')
@@ -29,6 +34,19 @@ class Promotion(models.Model):
         upload_to='promotions/',
         verbose_name="Изображение",
         validators=[validate_image_extension, validate_image_size, validate_image_dimensions]
+    )
+    # ✅ ДОБАВЛЕНО: Тип скидки и значение
+    discount_type = models.CharField(
+        max_length=10,
+        choices=DISCOUNT_TYPE_CHOICES,
+        default='percent',
+        verbose_name="Тип скидки"
+    )
+    discount_value = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        default=0,
+        verbose_name="Значение скидки"
     )
 
     class Meta:
@@ -54,6 +72,32 @@ class Promotion(models.Model):
             if len(slug) > 200:
                 slug = slug[:200]
         return slug
+
+    def apply_discount(self, price):
+        """
+        Применяет скидку к цене.
+        
+        Args:
+            price: Исходная цена (Decimal)
+            
+        Returns:
+            Decimal: Цена со скидкой
+        """
+        from decimal import Decimal
+        
+        if not self.discount_value or self.discount_value <= 0:
+            return price
+            
+        if self.discount_type == 'percent':
+            # Процентная скидка: цена - (цена * процент / 100)
+            discount_amount = price * (self.discount_value / Decimal('100'))
+        else:
+            # Фиксированная скидка: цена - сумма
+            discount_amount = self.discount_value
+        
+        final_price = price - discount_amount
+        # Цена не может быть отрицательной
+        return max(final_price, Decimal('0'))
 
 
 class SiteSettings(models.Model):
@@ -287,18 +331,28 @@ class SiteSettings(models.Model):
 
     @classmethod
     def load(cls):
-        obj, created = cls.objects.get_or_create(
-            pk=1,
-            defaults={
-                'site_name': 'MyBiz Витрина',
-                'site_tagline': 'Лучшие товары по доступным ценам',
-                'contact_email': 'info@mybiz.ru',
-                'contact_phone': '+7 (999) 123-45-67',
-                'contact_address': 'Москва, ул. Примерная, д. 1',
-                'working_hours': 'Пн-Пт: 9:00-18:00, Сб: 10:00-16:00',
-                'color_scheme': 'wood',
-            }
-        )
+        """
+        Загружает настройки сайта.
+        ✅ ИСПРАВЛЕНО: Использует first() вместо жесткой привязки к id=1
+        """
+        cache_key = 'site_settings'
+        obj = cache.get(cache_key)
+        
+        if obj is None:
+            obj = cls.objects.first()
+            if not obj:
+                # Создаем настройки по умолчанию если их нет
+                obj = cls.objects.create(
+                    site_name='MyBiz Витрина',
+                    site_tagline='Лучшие товары по доступным ценам',
+                    contact_email='info@mybiz.ru',
+                    contact_phone='+7 (999) 123-45-67',
+                    contact_address='Москва, ул. Примерная, д. 1',
+                    working_hours='Пн-Пт: 9:00-18:00, Сб: 10:00-16:00',
+                    color_scheme='wood',
+                )
+            cache.set(cache_key, obj, 600)
+        
         return obj
 
     def get_visible_social_links(self):

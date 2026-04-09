@@ -25,7 +25,7 @@ def home(request):
 
 def product_list(request, category_slug=None):
     """Список товаров с фильтрацией по категории"""
-    # Оптимизация: prefetch_related для избежания N+1 запросов
+    # ✅ ИСПРАВЛЕНО: Оптимизация запросов для избежания N+1
     categories = Category.objects.filter(is_active=True).prefetch_related('children')
     products = Product.objects.filter(is_active=True).select_related('category')
 

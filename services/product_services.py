@@ -6,6 +6,7 @@ from django.db import transaction
 from django.core.cache import cache
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from django.db.models import Q
 from datetime import timedelta
 import logging
 
@@ -215,7 +216,7 @@ class PromotionService:
                     is_active=True,
                     start_date__lte=today
                 ).filter(
-                    models.Q(end_date__gte=today) | models.Q(end_date__isnull=True)
+                    Q(end_date__gte=today) | Q(end_date__isnull=True)
                 ).order_by('-created_at')
             )
             cache.set(cache_key, promotions, 300)

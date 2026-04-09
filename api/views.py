@@ -26,7 +26,7 @@ class StandardResultsSetPagination(PageNumberPagination):
     max_page_size = 100
 
 
-class CategoryViewSet(viewSets.ReadOnlyModelViewSet):
+class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     """
     ViewSet для категорий.
     
@@ -46,7 +46,7 @@ class CategoryViewSet(viewSets.ReadOnlyModelViewSet):
         return CategorySerializer
 
 
-class ProductViewSet(viewSets.ReadOnlyModelViewSet):
+class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     """
     ViewSet для товаров.
     
@@ -92,7 +92,7 @@ class ProductViewSet(viewSets.ReadOnlyModelViewSet):
         return queryset
 
 
-class PromotionViewSet(viewSets.ReadOnlyModelViewSet):
+class PromotionViewSet(viewsets.ReadOnlyModelViewSet):
     """
     ViewSet для промо-акций.
     

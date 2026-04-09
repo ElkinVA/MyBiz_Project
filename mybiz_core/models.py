@@ -144,13 +144,19 @@ class Product(models.Model):
 
 # Сигналы для очистки кэша
 @receiver([post_save, post_delete], sender=Category)
-def clear_categories_cache(sender, **kwargs):
+def clear_categories_cache(sender, instance, **kwargs):
     """Очищает кэш категорий при изменении"""
     cache.delete('categories')
+    # Очищаем индивидуальный кэш категории
+    if instance and instance.pk:
+        cache.delete(f'category_{instance.pk}_products_count')
 
 
 @receiver([post_save, post_delete], sender=Product)
-def clear_products_cache(sender, **kwargs):
+def clear_products_cache(sender, instance, **kwargs):
     """Очищает кэш продуктов при изменении"""
     cache.delete('featured_products')
     cache.delete('new_products')
+    # Очищаем кэш количества товаров в категории
+    if instance and instance.category_id:
+        cache.delete(f'category_{instance.category_id}_products_count')
