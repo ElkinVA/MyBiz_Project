@@ -147,19 +147,19 @@ def generate_unique_slug(model, name, original_slug=None):
         slug = slugify(name)
     else:
         slug = original_slug
-    
+
     # Если slug пустой (например, для русских слов), используем транслит
     if not slug:
         slug = f"item-{random.randint(1000, 9999)}"
-    
+
     base_slug = slug
     counter = 1
-    
+
     # Проверяем существование такого slug
     while model.objects.filter(slug=slug).exists():
         slug = f"{base_slug}-{counter}"
         counter += 1
-    
+
     return slug
 
 
@@ -202,11 +202,11 @@ class Command(BaseCommand):
 
         # 2. Создаем категории и товары
         self.stdout.write(f'📂 Создаем {len(CATEGORIES_DATA)} категорий с товарами...')
-        
+
         for category_data in CATEGORIES_DATA:
             category_name = category_data['name']
             products_list = category_data['products']
-            
+
             # Создаём категорию
             category_slug = slugify(category_name)
             category, created = Category.objects.get_or_create(
@@ -218,37 +218,37 @@ class Command(BaseCommand):
                     'parent': None,
                 }
             )
-            
+
             if created:
                 self.stdout.write(f'  ✓ Категория: {category_name}')
             else:
                 self.stdout.write(f'  ~ Категория: {category_name} (уже существует)')
-            
+
             # Создаём товары для категории
             for product_name, product_desc in products_list[:products_per_category]:
                 product_slug = slugify(product_name)
-                
+
                 # Генерируем цену от 500 до 50000 руб
                 price = round(random.uniform(500, 50000), 2)
-                
+
                 # Случайная скидка (30% товаров)
                 has_discount = random.random() > 0.7
                 discount_price = None
                 if has_discount:
                     discount_percent = random.randint(5, 30)
                     discount_price = round(price * (1 - discount_percent / 100), 2)
-                
+
                 # Случайный бренд
                 brands = ['Samsung', 'Apple', 'Sony', 'LG', 'Bosch', 'Philips', 'Xiaomi', 'Huawei', 'Nike', 'Adidas']
                 brand = random.choice(brands)
-                
+
                 product, created = Product.objects.get_or_create(
                     slug=product_slug,
                     defaults={
                         'name': product_name,
                         'category': category,
                         'short_description': product_desc,
-                        'description': f'{product_desc}. {'Высокое качество, гарантия производителя, быстрая доставка.' if not has_discount else 'Специальное предложение! Скидка ' + str(int((1 - discount_price/price)*100)) + '%.'}',
+                        'description': f"{product_desc}. {'Высокое качество, гарантия производителя, быстрая доставка.' if not has_discount else 'Специальное предложение! Скидка ' + str(int((1 - discount_price/price)*100)) + '%.'}",
                         'price': price,
                         'discount_price': discount_price,
                         'sku': f'SKU-{random.randint(10000, 99999)}',
@@ -261,7 +261,7 @@ class Command(BaseCommand):
                         'review_count': random.randint(0, 50),
                     }
                 )
-                
+
                 if created:
                     status = '✓'
                 else:
@@ -277,10 +277,10 @@ class Command(BaseCommand):
             ('Новогодняя акция', 'Подарки себе и близким со скидкой!', 25),
             ('Распродажа электроники', 'Техника по лучшим ценам!', 20),
         ]
-        
+
         from datetime import date, timedelta
         today = date.today()
-        
+
         for title, description, discount in promotions_data:
             Promotion.objects.get_or_create(
                 title=title,
@@ -303,7 +303,7 @@ class Command(BaseCommand):
             {'title': 'Политика конфиденциальности', 'slug': 'privacy', 'content': 'Мы уважаем вашу конфиденциальность и защищаем персональные данные в соответствии с законодательством.'},
             {'title': 'Возврат товара', 'slug': 'returns', 'content': 'Вы можете вернуть товар в течение 14 дней. Товар должен быть в оригинальной упаковке и не иметь следов использования.'},
         ]
-        
+
         for page_data in pages_data:
             page, created = Page.objects.get_or_create(
                 slug=page_data['slug'],
