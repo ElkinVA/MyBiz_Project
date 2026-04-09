@@ -15,6 +15,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # ✅ ВАЖНО: Подключение URL для CKEditor 5 (загрузка файлов)
     path('ckeditor5/', include('django_ckeditor_5.urls')),
+    # REST API
+    path('api/', include('api.urls', namespace='api')),
     # Основные приложения
     path('', include('mybiz_core.urls', namespace='mybiz_core')),
     path('', include('pages.urls', namespace='pages')),

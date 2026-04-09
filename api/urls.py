@@ -13,6 +13,8 @@ from .views import (
     health_check
 )
 
+app_name = 'api'
+
 router = DefaultRouter()
 router.register(r'categories', CategoryViewSet, basename='category')
 router.register(r'products', ProductViewSet, basename='product')
