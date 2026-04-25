@@ -100,23 +100,6 @@ class SiteSettings(models.Model):
         ('custom', '✏️ Пользовательская тема - Настройте цвета вручную'),
     ]
 
-    FONT_CHOICES = [
-        ('poppins', 'Poppins, sans-serif'),
-        ('inter', 'Inter, sans-serif'),
-        ('roboto', 'Roboto, sans-serif'),
-        ('georgia', 'Georgia, serif'),
-        ('courier', 'Courier New, monospace'),
-        ('custom', 'Другой шрифт...'),
-    ]
-
-    FONT_MAPPING = {
-        'poppins': 'Poppins, sans-serif',
-        'inter': 'Inter, sans-serif',
-        'roboto': 'Roboto, sans-serif',
-        'georgia': 'Georgia, serif',
-        'courier': 'Courier New, monospace',
-    }
-
     color_scheme = models.CharField(
         max_length=20,
         choices=COLOR_SCHEME_CHOICES,
@@ -180,24 +163,6 @@ class SiteSettings(models.Model):
     border_color = models.CharField(max_length=7, default='#e5e7eb', verbose_name="Цвет границ")
 
     header_text_color = models.CharField(max_length=7, default='#1f2937', verbose_name="Цвет текста в шапке")
-    header_font_choice = models.CharField(
-        max_length=50,
-        choices=FONT_CHOICES,
-        default='poppins',
-        verbose_name="Шрифт шапки"
-    )
-    header_font_family = models.CharField(
-        max_length=100,
-        blank=True,
-        default='',
-        verbose_name="Свой шрифт",
-        help_text="Введите название шрифта, если выбран «Другой шрифт…»"
-    )
-    header_font_size = models.PositiveIntegerField(
-        default=16,
-        verbose_name="Размер шрифта шапки (px)",
-        help_text="Базовый размер шрифта в пикселях"
-    )
 
     welcome_text = CKEditor5Field(
         blank=True,
@@ -253,12 +218,6 @@ class SiteSettings(models.Model):
             for field_name, color_value in colors.items():
                 if hasattr(self, field_name):
                     setattr(self, field_name, color_value)
-
-        if self.header_font_choice != 'custom':
-            self.header_font_family = self.FONT_MAPPING.get(
-                self.header_font_choice,
-                'Poppins, sans-serif'
-            )
 
         self._validate_hex_colors()
         super().save(*args, **kwargs)

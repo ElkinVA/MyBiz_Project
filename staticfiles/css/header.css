@@ -5,8 +5,6 @@ header {
     min-height: 64px;
     background-color: var(--color-header-bg);
     color: var(--color-header-text);
-    font-family: var(--header-font-family);
-    font-size: var(--header-font-size);
 }
 
 /* Логотип */
@@ -28,7 +26,6 @@ header {
 }
 
 .brand-text h1 {
-    font-family: var(--header-font-family);
     color: var(--color-header-text);
 }
 
@@ -38,7 +35,6 @@ header {
     padding: 8px 12px;
     color: var(--color-header-text);
     font-weight: 500;
-    font-size: var(--header-font-size);
     border-radius: 10px;
     transition: all 0.2s ease;
     white-space: nowrap;
@@ -86,7 +82,6 @@ header {
     padding: 12px 48px 12px 16px;
     border: 2px solid var(--color-border);
     border-radius: 12px;
-    font-size: var(--header-font-size);
     transition: all 0.2s ease;
     background: var(--color-header-bg);
     color: var(--color-header-text);
@@ -147,8 +142,6 @@ header {
     max-height: calc(100vh - 64px);
     background-color: var(--color-header-bg);
     color: var(--color-header-text);
-    font-family: var(--header-font-family);
-    font-size: var(--header-font-size);
 }
 
 .mobile-search-input {
@@ -156,7 +149,6 @@ header {
     padding: 14px 48px 14px 16px;
     border: 2px solid var(--color-border);
     border-radius: 12px;
-    font-size: var(--header-font-size);
     background: var(--color-header-bg);
     color: var(--color-header-text);
     transition: all 0.2s ease;
@@ -198,7 +190,6 @@ header {
     align-items: center;
     padding: 14px 16px;
     color: var(--color-header-text);
-    font-size: var(--header-font-size);
     font-weight: 500;
     border-radius: 12px;
     transition: all 0.2s ease;
@@ -221,7 +212,6 @@ header {
     padding: 10px 12px;
     color: var(--color-header-text);
     opacity: 0.7;
-    font-size: calc(var(--header-font-size) - 1px);
     border-radius: 8px;
     transition: all 0.2s ease;
 }

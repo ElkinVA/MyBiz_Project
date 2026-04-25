@@ -32,16 +32,6 @@ class SiteSettingsForm(forms.ModelForm):
             'hero_bg_color': ColorPickerWidget(),
             'border_color': ColorPickerWidget(),
 
-            'header_font_choice': forms.Select(
-                choices=SiteSettings.FONT_CHOICES,
-                attrs={'class': 'vTextField'}
-            ),
-            'header_font_family': forms.TextInput(attrs={
-                'placeholder': 'Например: Arial, Helvetica, sans-serif',
-                'class': 'vTextField'
-            }),
-            'header_font_size': forms.NumberInput(attrs={'class': 'vTextField', 'min': 10, 'max': 40}),
-
             'logo': ImagePreviewWidget(),
             'favicon': ImagePreviewWidget(),
             'hero_image': ImagePreviewWidget(),

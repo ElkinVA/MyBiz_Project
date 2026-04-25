@@ -47,11 +47,9 @@ class SiteSettingsAdmin(admin.ModelAdmin):
                 'logo',
                 'header_bg_color',
                 'header_text_color',
-                ('header_font_choice', 'header_font_family'),
-                'header_font_size',
             ),
             'classes': ('wide',),
-            'description': 'Название, слоган, шрифты и цвета шапки сайта'
+            'description': 'Название, слоган и цвета шапки сайта'
         }),
         ('🖼️ Изображения главной', {
             'fields': ('hero_image', 'hero_bg_color'),
@@ -107,7 +105,6 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             'admin/js/color-scheme.js',
             'admin/js/color-picker.js',
             'admin/js/image-preview.js',
-            # 'admin/js/header_font_choice.js',   # включите позже, когда убедитесь, что всё работает
         )
 
 

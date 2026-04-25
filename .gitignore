@@ -1,16 +1,34 @@
 ```
-# Python cache files
+# Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# Compiled Python files in specific directories
-api/__pycache__/
-config/__pycache__/
-content/__pycache__/
-mybiz_core/__pycache__/
-mybiz_core/templatetags/__pycache__/
-pages/__pycache__/
-services/__pycache__/
+# Database
+db.sqlite3
+
+# Static files
+staticfiles/
+
+# Environment
+.env
+.env.local
+.env.*
 ```
