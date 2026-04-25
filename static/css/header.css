@@ -3,6 +3,10 @@
 /* Общие стили для шапки */
 header {
     min-height: 64px;
+    background-color: var(--color-header-bg);
+    color: var(--color-header-text);
+    font-family: var(--header-font-family);
+    font-size: var(--header-font-size);
 }
 
 /* Логотип */
@@ -24,16 +28,17 @@ header {
 }
 
 .brand-text h1 {
-    font-family: 'Poppins', sans-serif;
+    font-family: var(--header-font-family);
+    color: var(--color-header-text);
 }
 
 /* Навигационные ссылки для десктопа */
 .nav-link {
     position: relative;
     padding: 8px 12px;
-    color: #4b5563;
+    color: var(--color-header-text);
     font-weight: 500;
-    font-size: 15px;
+    font-size: var(--header-font-size);
     border-radius: 10px;
     transition: all 0.2s ease;
     white-space: nowrap;
@@ -67,28 +72,35 @@ header {
     align-items: center;
     justify-content: center;
     border-radius: 10px;
-    color: #6b7280;
+    color: var(--color-header-text);
     transition: all 0.2s ease;
 }
 
 .search-toggle-btn:hover {
-    background: #f3f4f6;
+    background: rgba(var(--color-primary-rgb), 0.1);
     color: var(--color-primary);
 }
 
 .search-input {
     width: 100%;
     padding: 12px 48px 12px 16px;
-    border: 2px solid #e5e7eb;
+    border: 2px solid var(--color-border);
     border-radius: 12px;
-    font-size: 15px;
+    font-size: var(--header-font-size);
     transition: all 0.2s ease;
+    background: var(--color-header-bg);
+    color: var(--color-header-text);
 }
 
 .search-input:focus {
     outline: none;
     border-color: var(--color-primary);
     box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+}
+
+.search-input::placeholder {
+    color: var(--color-header-text);
+    opacity: 0.5;
 }
 
 .search-submit-btn {
@@ -119,8 +131,8 @@ header {
     align-items: center;
     justify-content: center;
     border-radius: 10px;
-    color: #6b7280;
-    background: #f9fafb;
+    color: var(--color-header-text);
+    background: rgba(var(--color-primary-rgb), 0.1);
     transition: all 0.2s ease;
 }
 
@@ -131,12 +143,22 @@ header {
 }
 
 /* Мобильная навигация */
+#mobile-navigation {
+    max-height: calc(100vh - 64px);
+    background-color: var(--color-header-bg);
+    color: var(--color-header-text);
+    font-family: var(--header-font-family);
+    font-size: var(--header-font-size);
+}
+
 .mobile-search-input {
     width: 100%;
     padding: 14px 48px 14px 16px;
-    border: 2px solid #e5e7eb;
+    border: 2px solid var(--color-border);
     border-radius: 12px;
-    font-size: 16px;
+    font-size: var(--header-font-size);
+    background: var(--color-header-bg);
+    color: var(--color-header-text);
     transition: all 0.2s ease;
 }
 
@@ -144,6 +166,11 @@ header {
     outline: none;
     border-color: var(--color-primary);
     box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+}
+
+.mobile-search-input::placeholder {
+    color: var(--color-header-text);
+    opacity: 0.5;
 }
 
 .mobile-search-submit-btn {
@@ -159,14 +186,19 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.mobile-search-submit-btn:hover {
+    background: color-mix(in srgb, var(--color-primary) 85%, black);
 }
 
 .mobile-nav-link {
     display: flex;
     align-items: center;
     padding: 14px 16px;
-    color: #374151;
-    font-size: 16px;
+    color: var(--color-header-text);
+    font-size: var(--header-font-size);
     font-weight: 500;
     border-radius: 12px;
     transition: all 0.2s ease;
@@ -187,8 +219,9 @@ header {
 
 .mobile-nav-sublink {
     padding: 10px 12px;
-    color: #6b7280;
-    font-size: 15px;
+    color: var(--color-header-text);
+    opacity: 0.7;
+    font-size: calc(var(--header-font-size) - 1px);
     border-radius: 8px;
     transition: all 0.2s ease;
 }
@@ -196,6 +229,7 @@ header {
 .mobile-nav-sublink:hover {
     color: var(--color-primary);
     background: rgba(var(--color-primary-rgb), 0.05);
+    opacity: 1;
 }
 
 .social-mobile-icon {
@@ -205,8 +239,8 @@ header {
     align-items: center;
     justify-content: center;
     border-radius: 12px;
-    background: #f3f4f6;
-    color: #4b5563;
+    background: rgba(var(--color-primary-rgb), 0.1);
+    color: var(--color-header-text);
     transition: all 0.2s ease;
 }
 
@@ -225,6 +259,9 @@ header {
     .social-mobile-icon,
     .category-mega-item {
         transition: none !important;
+    }
+    html {
+        scroll-behavior: auto !important;
     }
 }
 
@@ -250,47 +287,6 @@ header {
     }
 }
 
-/* Поддержка темной темы */
-@media (prefers-color-scheme: dark) {
-    .nav-link {
-        color: #d1d5db;
-    }
-
-    .nav-link:hover {
-        background: rgba(var(--color-primary-rgb), 0.2);
-    }
-
-    .search-input,
-    .mobile-search-input {
-        background: #374151;
-        border-color: #4b5563;
-        color: white;
-    }
-
-    .search-input:focus,
-    .mobile-search-input:focus {
-        border-color: var(--color-primary);
-    }
-
-    .mobile-nav-link {
-        color: #d1d5db;
-    }
-
-    .mobile-nav-sublink {
-        color: #9ca3af;
-    }
-
-    .social-header-icon {
-        background: #374151;
-        color: #d1d5db;
-    }
-
-    .social-mobile-icon {
-        background: #374151;
-        color: #d1d5db;
-    }
-}
-
 /* Альпин-специфичные стили */
 [x-cloak] {
     display: none !important;
@@ -311,6 +307,7 @@ header {
 .group:hover .group-hover\:scale-100 {
     transform: scale(1) !important;
 }
+
 /* Улучшенные стили для мега-меню категорий */
 .category-mega-item {
     display: block;
@@ -321,17 +318,19 @@ header {
 
 .category-mega-item:hover {
     transform: translateY(-2px);
-    background-color: #f9fafb;
+    background-color: rgba(var(--color-primary-rgb), 0.05);
 }
 
 .category-mega-item h3 {
     line-height: 1.4;
     font-size: 0.95rem;
+    color: var(--color-header-text);
 }
 
 .category-mega-item p {
     line-height: 1.5;
-    color: #6b7280;
+    color: var(--color-header-text);
+    opacity: 0.7;
 }
 
 #categories-megamenu .grid {

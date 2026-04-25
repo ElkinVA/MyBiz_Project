@@ -3,17 +3,13 @@ from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
 from django.db.models import Q
 from .models import Category, Product
+from services.product_services import ProductService
 
 
 def home(request):
     """Главная страница"""
-    # Получаем рекомендуемые товары из базы данных
-    featured_products = Product.objects.filter(
-        is_active=True,
-        is_featured=True
-    ).select_related('category')[:8]
-
-    # Получаем общее количество активных товаров
+    featured_products = ProductService.get_featured_products()
+    total_products = ProductService.get_new_products()  # или используем общий подсчёт, но оставим логику
     total_products = Product.objects.filter(is_active=True).count()
 
     context = {
@@ -25,71 +21,31 @@ def home(request):
 
 def product_list(request, category_slug=None):
     """Список товаров с фильтрацией по категории"""
-    # ✅ ИСПРАВЛЕНО: Оптимизация запросов для избежания N+1
     categories = Category.objects.filter(is_active=True).prefetch_related('children')
-    products = Product.objects.filter(is_active=True).select_related('category')
 
-    # Фильтрация по категории
-    current_category = None
+    # Сбор фильтров из GET-параметров
+    filters = {}
     if category_slug:
-        current_category = get_object_or_404(Category, slug=category_slug, is_active=True)
-        products = products.filter(category=current_category)
-
-    # Поиск по названию
+        filters['category_slug'] = category_slug
     search_query = request.GET.get('q')
-    if search_query:
-        products = products.filter(
-            Q(name__icontains=search_query) |
-            Q(description__icontains=search_query) |
-            Q(short_description__icontains=search_query)
-        )
+    filters['min_price'] = request.GET.get('min_price')
+    filters['max_price'] = request.GET.get('max_price')
+    filters['in_stock'] = request.GET.get('in_stock') == 'true'
+    filters['is_new'] = request.GET.get('is_new') == 'true'
+    filters['has_discount'] = request.GET.get('has_discount') == 'true'
 
-    # Фильтрация по цене
-    min_price = request.GET.get('min_price')
-    max_price = request.GET.get('max_price')
-    if min_price:
-        try:
-            products = products.filter(price__gte=float(min_price))
-        except (ValueError, TypeError):
-            pass
-    if max_price:
-        try:
-            products = products.filter(price__lte=float(max_price))
-        except (ValueError, TypeError):
-            pass
+    products = ProductService.search_products(search_query or '', filters)
 
-    # Фильтрация по наличию
-    in_stock = request.GET.get('in_stock')
-    if in_stock == 'true':
-        products = products.filter(in_stock=True)
-
-    # Фильтрация по новинкам
-    is_new = request.GET.get('is_new')
-    if is_new == 'true':
-        products = products.filter(is_new=True)
-
-    # Фильтрация по скидкам
-    has_discount = request.GET.get('has_discount')
-    if has_discount == 'true':
-        products = products.filter(discount_price__isnull=False)
-
-    # Сортировка
     sort_by = request.GET.get('sort', 'newest')
-    if sort_by == 'price_asc':
-        products = products.order_by('price')
-    elif sort_by == 'price_desc':
-        products = products.order_by('-price')
-    elif sort_by == 'newest':
-        products = products.order_by('-created_at')
-    elif sort_by == 'popular':
-        products = products.order_by('-rating')
-    else:
-        products = products.order_by('-created_at')
+    products = ProductService.sort_products(products, sort_by)
 
-    # Пагинация
     paginator = Paginator(products, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+
+    current_category = None
+    if category_slug:
+        current_category = get_object_or_404(Category, slug=category_slug, is_active=True)
 
     context = {
         'categories': categories,
@@ -112,11 +68,7 @@ def product_detail(request, pk, slug):
         is_active=True
     )
 
-    # Похожие товары (из той же категории)
-    related_products = Product.objects.filter(
-        category=product.category,
-        is_active=True
-    ).select_related('category').exclude(pk=product.pk)[:4]
+    related_products = ProductService.get_related_products(product)
 
     context = {
         'product': product,
@@ -127,20 +79,13 @@ def product_detail(request, pk, slug):
 
 # Обработчики ошибок
 def bad_request(request, exception=None):
-    """Ошибка 400 - Некорректный запрос"""
     return render(request, '400.html', status=400)
 
-
 def permission_denied(request, exception=None):
-    """Ошибка 403 - Доступ запрещен"""
     return render(request, '403.html', status=403)
 
-
 def page_not_found(request, exception=None):
-    """Ошибка 404 - Страница не найдена"""
     return render(request, '404.html', status=404)
 
-
 def server_error(request, exception=None):
-    """Ошибка 500 - Внутренняя ошибка сервера"""
     return render(request, '500.html', status=500)

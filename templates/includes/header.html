@@ -19,7 +19,7 @@ searchQuery: ''
 <div class="flex items-center space-x-6">
 {% if site_settings.contact_phone %}
 <a href="tel:{{ site_settings.contact_phone }}"
-class="flex items-center gap-2 text-default hover:text-primary transition-colors">
+class="flex items-center gap-2 hover:text-primary transition-colors">
 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 0 1 2-2h3.28a1 1 0 0 1 .948.684l1.498 4.493a1 1 0 0 1 -.502 1.21l-2.257 1.13a11.042 11.042 0 0 0 5.516 5.516l1.13-2.257a1 1 0 0 1 1.21-.502l4.493 1.498a1 1 0 0 1 .684.949V19a2 2 0 0 1 -2 2h-1C9.716 21 3 14.284 3 6V5z"/>
 </svg>
@@ -28,7 +28,7 @@ class="flex items-center gap-2 text-default hover:text-primary transition-colors
 {% endif %}
 {% if site_settings.contact_email %}
 <a href="mailto:{{ site_settings.contact_email }}"
-class="flex items-center gap-2 text-default hover:text-primary transition-colors">
+class="flex items-center gap-2 hover:text-primary transition-colors">
 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 0 0 2.22 0L21 8M5 19h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2z"/>
 </svg>
@@ -66,11 +66,11 @@ loading="lazy">
 </div>
 {% endif %}
 <div class="brand-text min-w-0">
-<h1 class="text-xl md:text-2xl font-bold text-default group-hover:text-primary transition-colors break-words hyphens-auto">
+<h1 class="text-xl md:text-2xl font-bold group-hover:text-primary transition-colors break-words hyphens-auto">
 {{ site_settings.site_name|striptags }}
 </h1>
 {% if site_settings.site_tagline %}
-<p class="text-xs text-default/60 hidden md:block break-words hyphens-auto">
+<p class="text-xs opacity-60 hidden md:block break-words hyphens-auto">
 {{ site_settings.site_tagline|striptags }}
 </p>
 {% endif %}
@@ -246,7 +246,6 @@ title="{{ page.title }}">
 <span class="break-words hyphens-auto whitespace-normal">{{ page.title }}</span>
 </a>
 {% endfor %}
-<!-- ========== УДАЛЕНО: Все товары ========== -->
 </nav>
 <!-- Правая часть (поиск и кнопка меню) -->
 <div class="flex items-center space-x-4">
@@ -293,10 +292,10 @@ class="md:hidden p-2 rounded-lg hover:bg-default/50 transition-colors focus:outl
 aria-label="Открыть меню"
 :aria-expanded="mobileMenuOpen"
 aria-controls="mobile-navigation">
-<svg class="w-6 h-6 text-default" x-show="!mobileMenuOpen" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+<svg class="w-6 h-6" x-show="!mobileMenuOpen" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
 </svg>
-<svg class="w-6 h-6 text-default" x-show="mobileMenuOpen" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+<svg class="w-6 h-6" x-show="mobileMenuOpen" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
 </svg>
 </button>
@@ -356,7 +355,6 @@ aria-current="{% if request.path == '/' %}page{% endif %}">
 Главная
 </a>
 </li>
-<!-- ========== УДАЛЕНО: Все товары ========== -->
 <!-- Категории в мобильном меню с поиском -->
 <li x-data="{ open: false, search: '' }">
 <button @click="open = !open"
@@ -393,7 +391,7 @@ title="{{ cat.name }}">
 {{ cat.name }}
 </span>
 {% if cat.products_count %}
-<span class="text-xs text-default/60 ml-2 shrink-0">({{ cat.products_count }})</span>
+<span class="text-xs opacity-60 ml-2 shrink-0">({{ cat.products_count }})</span>
 {% endif %}
 </a>
 </div>
@@ -417,11 +415,11 @@ title="{{ page.title }}">
 </ul>
 <!-- Контакты в мобильном меню -->
 <div class="mt-8 pt-6 border-t border-default">
-<h3 class="font-semibold text-default mb-3 truncate">Контакты</h3>
+<h3 class="font-semibold mb-3 truncate">Контакты</h3>
 <div class="space-y-3">
 {% if site_settings.contact_phone %}
 <a href="tel:{{ site_settings.contact_phone }}"
-class="flex items-center gap-3 text-default hover:text-primary transition-colors">
+class="flex items-center gap-3 hover:text-primary transition-colors">
 <svg class="w-5 h-5 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 0 1 2-2h3.28a1 1 0 0 1 .948.684l1.498 4.493a1 1 0 0 1 -.502 1.21l-2.257 1.13a11.042 11.042 0 0 0 5.516 5.516l1.13-2.257a1 1 0 0 1 1.21-.502l4.493 1.498a1 1 0 0 1 .684.949V19a2 2 0 0 1 -2 2h-1C9.716 21 3 14.284 3 6V5z"/>
 </svg>
@@ -430,7 +428,7 @@ class="flex items-center gap-3 text-default hover:text-primary transition-colors
 {% endif %}
 {% if site_settings.contact_email %}
 <a href="mailto:{{ site_settings.contact_email }}"
-class="flex items-center gap-3 text-default hover:text-primary transition-colors">
+class="flex items-center gap-3 hover:text-primary transition-colors">
 <svg class="w-5 h-5 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 0 0 2.22 0L21 8M5 19h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2z"/>
 </svg>
@@ -441,7 +439,7 @@ class="flex items-center gap-3 text-default hover:text-primary transition-colors
 <!-- Социальные сети -->
 {% if site_settings.get_visible_social_links %}
 <div class="mt-4">
-<h4 class="font-semibold text-default mb-2 truncate">Мы в соцсетях</h4>
+<h4 class="font-semibold mb-2 truncate">Мы в соцсетях</h4>
 <div class="flex gap-3 flex-wrap">
 {% for social in site_settings.get_visible_social_links %}
 <a href="{{ social.url }}"

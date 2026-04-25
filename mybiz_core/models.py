@@ -48,12 +48,10 @@ class Category(models.Model):
         """Автоматически генерирует slug из name если slug пустой"""
         if not self.slug:
             base_slug = slugify(self.name, allow_unicode=True)
-            # Если после slugify пустая строка (например, только спецсимволы), используем ID
             if not base_slug:
                 base_slug = 'category'
             slug = base_slug
             counter = 1
-            # Проверяем уникальность slug
             while Category.objects.filter(slug=slug).exists():
                 slug = f'{base_slug}-{counter}'
                 counter += 1
@@ -69,17 +67,13 @@ class Category(models.Model):
         for child in self.children.all():
             ids.append(child.pk)
             ids.extend(child.get_descendants_ids())
+            return ids
         return ids
 
     @property
     def products_count(self):
-        """
-        Количество товаров в категории (включая подкатегории)
-        ✅ ИСПРАВЛЕНО: Добавлено кэширование для избежания N+1
-        """
         cache_key = f'category_{self.pk}_products_count'
         count = cache.get(cache_key)
-
         if count is None:
             category_ids = [self.pk]
             category_ids.extend(self.get_descendants_ids())
@@ -87,12 +81,10 @@ class Category(models.Model):
                 category_id__in=category_ids,
                 is_active=True
             ).count()
-            cache.set(cache_key, count, 300)  # 5 минут
-
+            cache.set(cache_key, count, 300)
         return count
 
     def clear_cache(self):
-        """Очищает кэш категорий"""
         cache.delete('categories')
 
 
@@ -107,7 +99,8 @@ class Product(models.Model):
     )
     short_description = models.CharField(max_length=300, blank=True, verbose_name="Краткое описание")
     description = CKEditor5Field(verbose_name="Описание", config_name='default')
-    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Цена")
+    # Единственное объявление price
+    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Цена", db_index=True)
     discount_price = models.DecimalField(
         max_digits=10,
         decimal_places=2,
@@ -131,7 +124,6 @@ class Product(models.Model):
     stock = models.IntegerField(default=0, verbose_name="Остаток на складе")
     is_active = models.BooleanField(default=True, verbose_name="Активен", db_index=True)
     is_featured = models.BooleanField(default=False, verbose_name="Рекомендуемый")
-    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Цена", db_index=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False, verbose_name="Дата создания", db_index=True)
     updated_at = models.DateTimeField(auto_now=True, editable=False, verbose_name="Дата обновления")
 
@@ -152,7 +144,6 @@ class Product(models.Model):
         return reverse('mybiz_core:product_detail', kwargs={'pk': self.pk, 'slug': self.slug})
 
     def get_discount_percentage(self):
-        """Возвращает процент скидки"""
         if self.discount_price and self.price > 0:
             discount = ((self.price - self.discount_price) / self.price) * 100
             return int(discount)
@@ -160,25 +151,20 @@ class Product(models.Model):
 
     @property
     def display_price(self):
-        """Возвращает отображаемую цену (со скидкой если есть)"""
         return self.discount_price if self.discount_price else self.price
 
 
 # Сигналы для очистки кэша
 @receiver([post_save, post_delete], sender=Category)
 def clear_categories_cache(sender, instance, **kwargs):
-    """Очищает кэш категорий при изменении"""
     cache.delete('categories')
-    # Очищаем индивидуальный кэш категории
     if instance and instance.pk:
         cache.delete(f'category_{instance.pk}_products_count')
 
 
 @receiver([post_save, post_delete], sender=Product)
 def clear_products_cache(sender, instance, **kwargs):
-    """Очищает кэш продуктов при изменении"""
     cache.delete('featured_products')
     cache.delete('new_products')
-    # Очищаем кэш количества товаров в категории
     if instance and instance.category_id:
         cache.delete(f'category_{instance.category_id}_products_count')

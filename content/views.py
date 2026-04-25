@@ -3,9 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
-from django.db.models.signals import post_save, post_delete
 from django.core.cache import cache
-from django.dispatch import receiver
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.views.generic import ListView
@@ -18,42 +16,30 @@ logger = logging.getLogger(__name__)
 
 
 def get_safe_redirect_url(request, default='/'):
-    """
-    Получает безопасный URL для редиректа.
-    ИСПРАВЛЕНО: Валидирует HTTP_REFERER для предотвращения Open Redirect.
-    """
     redirect_to = request.META.get('HTTP_REFERER', default)
-
-    # Валидируем URL - разрешаем только текущий хост
     if not url_has_allowed_host_and_scheme(
         url=redirect_to,
         allowed_hosts={request.get_host()},
         require_https=request.is_secure()
     ):
         redirect_to = default
-
     return redirect_to
 
 
 def newsletter_subscribe(request):
-    """Обработка подписки на новости с валидацией email"""
     if request.method == 'POST':
         email = request.POST.get('email', '').strip()
-
         if email:
             try:
-                # Валидация формата email
                 validate_email(email)
             except ValidationError:
                 messages.error(request, 'Введите корректный email адрес.')
                 return redirect(get_safe_redirect_url(request))
-
             try:
                 sub, created = NewsletterSubscriber.objects.get_or_create(
                     email=email,
                     defaults={'is_active': True}
                 )
-
                 if created:
                     messages.success(request, 'Вы успешно подписались на рассылку!')
                 else:
@@ -68,36 +54,27 @@ def newsletter_subscribe(request):
                 messages.error(request, 'Произошла ошибка. Попробуйте позже.')
         else:
             messages.error(request, 'Введите корректный email.')
-
         return redirect(get_safe_redirect_url(request))
-
     return redirect(get_safe_redirect_url(request))
 
 
 def contact_form(request):
-    """Обработка формы обратной связи – отправка письма администратору"""
     if request.method == 'POST':
         name = request.POST.get('name', '').strip()
         email = request.POST.get('email', '').strip()
         message = request.POST.get('message', '').strip()
-
         if not all([name, email, message]):
             messages.error(request, 'Пожалуйста, заполните все поля.')
             return redirect(get_safe_redirect_url(request))
-
-        # Валидация email
         try:
             validate_email(email)
         except ValidationError:
             messages.error(request, 'Введите корректный email адрес.')
             return redirect(get_safe_redirect_url(request))
-
-        # Получаем настройки сайта
         settings_obj = SiteSettings.load()
         to_email = settings_obj.contact_email or settings.DEFAULT_FROM_EMAIL or 'admin@localhost'
         subject = f'Сообщение от {name} с сайта {settings_obj.site_name}'
         body = f"Имя: {name}\nEmail: {email}\nСообщение:\n{message}"
-
         try:
             send_mail(
                 subject,
@@ -110,32 +87,26 @@ def contact_form(request):
         except Exception as e:
             logger.error(f"Ошибка отправки письма: {e}")
             messages.error(request, 'Не удалось отправить сообщение. Попробуйте позже.')
-
         return redirect(get_safe_redirect_url(request))
-
     return redirect(get_safe_redirect_url(request))
 
 
 def stock_notify(request, product_id):
-    """Обработка запроса о поступлении товара"""
     if request.method == 'POST':
         product = get_object_or_404(Product, pk=product_id, is_active=True)
         email = request.POST.get('email', '').strip()
-
         if email:
             try:
                 validate_email(email)
             except ValidationError:
                 messages.error(request, 'Введите корректный email адрес.')
                 return redirect(get_safe_redirect_url(request))
-
             try:
                 notification, created = StockNotification.objects.get_or_create(
                     product=product,
                     email=email,
                     defaults={'is_notified': False}
                 )
-
                 if created:
                     messages.success(
                         request,
@@ -151,14 +122,11 @@ def stock_notify(request, product_id):
                 messages.error(request, 'Произошла ошибка. Попробуйте позже.')
         else:
             messages.error(request, 'Введите корректный email.')
-
         return redirect(get_safe_redirect_url(request))
-
     return redirect(get_safe_redirect_url(request))
 
 
 class PromotionListView(ListView):
-    """Список всех промо-акций"""
     model = Promotion
     template_name = 'promotions/promotion_list.html'
     context_object_name = 'promotions'
@@ -171,10 +139,3 @@ class PromotionListView(ListView):
         context = super().get_context_data(**kwargs)
         context['page_title'] = 'Акции и предложения'
         return context
-
-
-# Сигналы для очистки кэша
-@receiver([post_save, post_delete], sender=Promotion)
-def clear_promotions_cache(sender, **kwargs):
-    """Очищает кэш промо-акций"""
-    cache.delete('active_promotions')

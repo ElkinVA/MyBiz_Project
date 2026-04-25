@@ -98,6 +98,7 @@ TEMPLATES = [
                 'content.context_processors.site_settings',
                 'content.context_processors.promotions',
                 'content.context_processors.header_pages',
+                'content.context_processors.footer_pages',
                 'mybiz_core.context_processors.categories',
                 # Контекст-процессоры админки
                 'mybiz_core.context_processors.admin_dashboard_stats',

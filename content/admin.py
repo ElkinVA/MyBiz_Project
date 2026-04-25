@@ -9,11 +9,9 @@ from .forms import SiteSettingsForm
 
 @admin.register(SiteSettings)
 class SiteSettingsAdmin(admin.ModelAdmin):
-    """Админка для настроек сайта"""
     form = SiteSettingsForm
     save_on_top = True
 
-    # Запрет создания дубликатов
     def has_add_permission(self, request):
         return not SiteSettings.objects.exists()
 
@@ -21,29 +19,39 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         return False
 
     def get_actions(self, request):
-        """Удалить действие массового удаления"""
         actions = super().get_actions(request)
         if 'delete_selected' in actions:
             del actions['delete_selected']
         return actions
 
     def changelist_view(self, request, extra_context=None):
-        """Перенаправление на редактирование единственного объекта"""
         obj = SiteSettings.load()
         return HttpResponseRedirect(
             reverse('admin:content_sitesettings_change', args=[obj.id])
         )
 
-    # ✅ ИСПРАВЛЕНО: Поля соответствуют реальной модели SiteSettings
     fieldsets = (
         ('📋 Основные настройки', {
-            'fields': ('site_name', 'site_tagline', 'favicon', 'logo'),
+            'fields': ('favicon',),
             'description': 'Базовая информация о сайте'
         }),
         ('🎨 Цветовая схема', {
             'fields': ('color_scheme', 'primary_color', 'secondary_color',
                       'accent_color', 'text_color', 'background_color'),
             'classes': ('wide',)
+        }),
+        ('🖥️ Шапка сайта', {
+            'fields': (
+                'site_name',
+                'site_tagline',
+                'logo',
+                'header_bg_color',
+                'header_text_color',
+                ('header_font_choice', 'header_font_family'),
+                'header_font_size',
+            ),
+            'classes': ('wide',),
+            'description': 'Название, слоган, шрифты и цвета шапки сайта'
         }),
         ('🖼️ Изображения главной', {
             'fields': ('hero_image', 'hero_bg_color'),
@@ -79,7 +87,7 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
         ('⚙️ Дополнительно', {
-            'fields': ('header_bg_color', 'footer_bg_color'),
+            'fields': ('footer_bg_color', 'border_color'),
             'classes': ('collapse',)
         }),
     )
@@ -98,6 +106,8 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         js = (
             'admin/js/color-scheme.js',
             'admin/js/color-picker.js',
+            'admin/js/image-preview.js',
+            # 'admin/js/header_font_choice.js',   # включите позже, когда убедитесь, что всё работает
         )
 
 
@@ -138,29 +148,18 @@ class PromotionAdmin(admin.ModelAdmin):
     readonly_fields = ['created_at', 'updated_at']
 
     def activate_promotions(self, request, queryset):
-        """Активировать акции"""
         queryset.update(is_active=True)
-        self.message_user(
-            request,
-            f'{queryset.count()} акций активированы',
-            level='success'
-        )
+        self.message_user(request, f'{queryset.count()} акций активированы', level='success')
     activate_promotions.short_description = '✅ Активировать'
 
     def deactivate_promotions(self, request, queryset):
-        """Деактивировать акции"""
         queryset.update(is_active=False)
-        self.message_user(
-            request,
-            f'{queryset.count()} акций деактивированы',
-            level='warning'
-        )
+        self.message_user(request, f'{queryset.count()} акций деактивированы', level='warning')
     deactivate_promotions.short_description = '❌ Деактивировать'
 
 
 @admin.register(StockNotification)
 class StockNotificationAdmin(admin.ModelAdmin):
-    """Админка для уведомлений о поступлении"""
     list_display = ['email', 'product', 'is_notified', 'created_at']
     list_filter = ['is_notified', 'created_at', 'product']
     search_fields = ['email']
@@ -171,7 +170,6 @@ class StockNotificationAdmin(admin.ModelAdmin):
     actions = ['send_notification', 'mark_as_notified']
 
     def send_notification(self, request, queryset):
-        """Отправить уведомления"""
         from django.core.mail import send_mail
         from django.conf import settings
 
@@ -193,27 +191,17 @@ class StockNotificationAdmin(admin.ModelAdmin):
                     self.message_user(request, f'Ошибка отправки: {e}', level='error')
 
         if count > 0:
-            self.message_user(
-                request,
-                f'{count} уведомлений отправлено',
-                level='success'
-            )
+            self.message_user(request, f'{count} уведомлений отправлено', level='success')
     send_notification.short_description = '📧 Отправить уведомления'
 
     def mark_as_notified(self, request, queryset):
-        """Отметить как уведомлённые"""
         queryset.update(is_notified=True)
-        self.message_user(
-            request,
-            f'{queryset.count()} записей отмечены как уведомлённые',
-            level='info'
-        )
+        self.message_user(request, f'{queryset.count()} записей отмечены как уведомлённые', level='info')
     mark_as_notified.short_description = '✅ Отметить как уведомлённые'
 
 
 @admin.register(NewsletterSubscriber)
 class NewsletterSubscriberAdmin(admin.ModelAdmin):
-    """Админка для подписчиков рассылки"""
     list_display = ['email', 'is_active', 'created_at']
     list_filter = ['is_active', 'created_at']
     search_fields = ['email']
@@ -224,27 +212,16 @@ class NewsletterSubscriberAdmin(admin.ModelAdmin):
     actions = ['activate_subscribers', 'deactivate_subscribers', 'export_subscribers']
 
     def activate_subscribers(self, request, queryset):
-        """Активировать подписчиков"""
         queryset.update(is_active=True)
-        self.message_user(
-            request,
-            f'{queryset.count()} подписчиков активированы',
-            level='success'
-        )
+        self.message_user(request, f'{queryset.count()} подписчиков активированы', level='success')
     activate_subscribers.short_description = '✅ Активировать'
 
     def deactivate_subscribers(self, request, queryset):
-        """Деактивировать подписчиков"""
         queryset.update(is_active=False)
-        self.message_user(
-            request,
-            f'{queryset.count()} подписчиков деактивированы',
-            level='warning'
-        )
+        self.message_user(request, f'{queryset.count()} подписчиков деактивированы', level='warning')
     deactivate_subscribers.short_description = '❌ Деактивировать'
 
     def export_subscribers(self, request, queryset):
-        """Экспорт подписчиков в CSV"""
         import csv
         from django.http import HttpResponse
 
@@ -256,11 +233,7 @@ class NewsletterSubscriberAdmin(admin.ModelAdmin):
         writer.writerow(['Email', 'Активен', 'Дата подписки'])
 
         for obj in queryset:
-            writer.writerow([
-                obj.email,
-                'Да' if obj.is_active else 'Нет',
-                obj.created_at.strftime('%d.%m.%Y %H:%M')
-            ])
+            writer.writerow([obj.email, 'Да' if obj.is_active else 'Нет', obj.created_at.strftime('%d.%m.%Y %H:%M')])
 
         return response
     export_subscribers.short_description = '📥 Экспорт в CSV'

@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <!-- ===================================================================== -->
-    <!-- РАННЯЯ ИНИЦИАЛИЗАЦИЯ ТЕМЫ (до загрузки Alpine.js) -->
-    <!-- ===================================================================== -->
     <script>
     (function() {
         const savedTheme = localStorage.getItem('darkMode');
@@ -25,14 +22,9 @@
     {% load color_filters %}
     {% load thumbnail %}
 
-    <!-- ===================================================================== -->
-    <!-- META TAGS -->
-    <!-- ===================================================================== -->
     {% block meta %}
     <meta name="description" content="{{ site_settings.meta_description|default:'Современная сайт-витрина товаров' }}">
     <meta name="keywords" content="{{ site_settings.meta_keywords|default:'товары, магазин, купить, онлайн, витрина' }}">
-
-    <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="{{ site_settings.site_name }}">
     <meta property="og:title" content="{{ site_settings.site_name }}">
@@ -43,19 +35,12 @@
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     {% endif %}
-
-    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ site_settings.site_name }}">
     <meta name="twitter:description" content="{{ site_settings.meta_description|default:'Современная сайт-витрина товаров' }}">
-
-    <!-- Canonical -->
     <link rel="canonical" href="{{ request.build_absolute_uri }}">
     {% endblock %}
 
-    <!-- ===================================================================== -->
-    <!-- ПРЕДЗАГРУЗКА РЕСУРСОВ -->
-    <!-- ===================================================================== -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
@@ -64,30 +49,13 @@
     <link rel="preload" href="{{ site_settings.hero_image.url }}" as="image">
     {% endif %}
 
-    <!-- ===================================================================== -->
-    <!-- GOOGLE FONTS -->
-    <!-- ===================================================================== -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap"
-          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- ===================================================================== -->
-    <!-- CSS FILES -->
-    <!-- ===================================================================== -->
-    <!-- Собранный Tailwind CSS -->
     <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
-
-    <!-- Стили иконок -->
     <link rel="stylesheet" href="{% static 'social/social.css' %}">
-
-    <!-- Кастомные CSS -->
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
-
-    <!-- Стили для шапки -->
     <link rel="stylesheet" href="{% static 'css/header.css' %}">
 
-    <!-- ===================================================================== -->
-    <!-- FAVICON -->
-    <!-- ===================================================================== -->
     {% if site_settings.favicon %}
     <link rel="icon" href="{{ site_settings.favicon.url }}" type="image/x-icon">
     <link rel="apple-touch-icon" href="{{ site_settings.favicon.url }}">
@@ -95,15 +63,9 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛒</text></svg>">
     {% endif %}
 
-    <!-- ===================================================================== -->
-    <!-- ТЕМА САЙТА -->
-    <!-- ===================================================================== -->
     <meta name="theme-color" content="{{ site_settings.primary_color|default:'#3b82f6' }}">
     <meta name="color-scheme" content="light dark">
 
-    <!-- ===================================================================== -->
-    <!-- ДИНАМИЧЕСКИЕ СТИЛИ С ЦВЕТАМИ САЙТА -->
-    <!-- ===================================================================== -->
     <style id="dynamic-styles">
     :root {
         --color-primary: {{ site_settings.primary_color|default:'#3b82f6' }};
@@ -112,16 +74,17 @@
         --color-text: {{ site_settings.text_color|default:'#1f2937' }};
         --color-background: {{ site_settings.background_color|default:'#f9fafb' }};
         --color-header-bg: {{ site_settings.header_bg_color|default:'#ffffff' }};
+        --color-header-text: {{ site_settings.header_text_color|default:'#1f2937' }};
+        --header-font-family: {{ site_settings.header_font_family|default:'Poppins, sans-serif' }};
+        --header-font-size: {{ site_settings.header_font_size|default:16 }}px;
         --color-footer-bg: {{ site_settings.footer_bg_color|default:'#111827' }};
         --color-hero-bg: {{ site_settings.hero_bg_color|default:'#eff6ff' }};
         --color-border: {{ site_settings.border_color|default:'#e5e7eb' }};
 
-        /* Алиасы для совместимости */
         --primary-color: var(--color-primary);
         --secondary-color: var(--color-secondary);
         --accent-color: var(--color-accent);
 
-        /* RGB версии для opacity */
         --color-primary-rgb: {{ site_settings.primary_color|hex_to_rgb|default:'59, 130, 246' }};
         --color-secondary-rgb: {{ site_settings.secondary_color|hex_to_rgb|default:'139, 92, 246' }};
         --color-accent-rgb: {{ site_settings.accent_color|hex_to_rgb|default:'16, 185, 129' }};
@@ -132,6 +95,7 @@
         --color-text: #f3f4f6;
         --color-background: #111827;
         --color-header-bg: #1f2937;
+        --color-header-text: #f3f4f6;
     }
 
     body {
@@ -142,6 +106,13 @@
 
     h1, h2, h3, h4, h5, h6 {
         font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .header-bg {
+        background-color: var(--color-header-bg);
+        color: var(--color-header-text);
+        font-family: var(--header-font-family);
+        font-size: var(--header-font-size);
     }
 
     .btn-primary {
@@ -166,51 +137,21 @@
 </head>
 
 <body x-data="app" class="flex flex-col min-h-screen" :class="{ 'dark': darkMode }">
-    <!-- ===================================================================== -->
-    <!-- ПРОПУСК НАВИГАЦИИ (Accessibility) -->
-    <!-- ===================================================================== -->
-    <a href="#main-content"
-       class="sr-only focus:not-sr-only focus:absolute focus:p-4 bg-default z-50"
-       tabindex="0">
-        Перейти к основному содержимому
-    </a>
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:p-4 bg-default z-50" tabindex="0">Перейти к основному содержимому</a>
 
-    <!-- ===================================================================== -->
-    <!-- КНОПКА ПЕРЕКЛЮЧЕНИЯ ТЕМЫ -->
-    <!-- ===================================================================== -->
-    <button type="button"
-            @click="darkMode = !darkMode"
-            class="theme-toggle fixed bottom-6 right-6 md:bottom-8 md:right-8 z-40 p-3 bg-default dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
-            aria-label="Переключить тему"
-            x-cloak>
-        <!-- Иконка светлой темы -->
-        <svg class="w-6 h-6 text-default dark:text-gray-300"
-             x-show="!darkMode"
-             fill="currentColor"
-             viewBox="0 0 20 20"
-             aria-hidden="true">
+    <button type="button" @click="darkMode = !darkMode" class="theme-toggle fixed bottom-6 right-6 md:bottom-8 md:right-8 z-40 p-3 bg-default dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl transition-all duration-300" aria-label="Переключить тему" x-cloak>
+        <svg class="w-6 h-6 text-default dark:text-gray-300" x-show="!darkMode" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
             <path d="M17.293 13.293A8 8 0 0 1 6.707 2.707a8.001 8.001 0 1 0 10.586 10.586z"/>
         </svg>
-        <!-- Иконка темной темы -->
-        <svg class="w-6 h-6 text-default dark:text-gray-300"
-             x-show="darkMode"
-             fill="currentColor"
-             viewBox="0 0 20 20"
-             aria-hidden="true">
+        <svg class="w-6 h-6 text-default dark:text-gray-300" x-show="darkMode" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
             <path d="M10 2a1 1 0 0 1 1 1v1a1 1 0 1 1 -2 0V3a1 1 0 0 1 1-1zm4 8a4 4 0 1 1 -8 0 4 4 0 0 1 8 0zm-.464 4.95l.707.707a1 1 0 0 0 1.414-1.414l-.707-.707a1 1 0 0 0 -1.414 1.414zm2.12-10.607a1 1 0 0 1 0 1.414l-.706.707a1 1 0 1 1 -1.414-1.414l.707-.707a1 1 0 0 1 1.414 0zM17 11a1 1 0 1 0 0-2h-1a1 1 0 1 0 0 2h1zm-7 4a1 1 0 0 1 1 1v1a1 1 0 1 1 -2 0v-1a1 1 0 0 1 1-1zM5.05 6.464A1 1 0 1 0 6.465 5.05l-.708-.707a1 1 0 0 0 -1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 0 1 -1.414-1.414l.707-.707a1 1 0 0 1 1.414 1.414zM4 11a1 1 0 1 0 0-2H3a1 1 0 0 0 0 2h1z"/>
         </svg>
     </button>
 
-    <!-- ===================================================================== -->
-    <!-- ШАПКА САЙТА -->
-    <!-- ===================================================================== -->
     <header class="header-bg transition-colors duration-300" role="banner">
         {% include 'includes/header.html' %}
     </header>
 
-    <!-- ===================================================================== -->
-    <!-- СООБЩЕНИЯ DJANGO -->
-    <!-- ===================================================================== -->
     {% if messages %}
     <div class="container mx-auto px-4 mt-4 space-y-3" role="status" aria-live="polite">
         {% for message in messages %}
@@ -221,75 +162,43 @@
     </div>
     {% endif %}
 
-    <!-- ===================================================================== -->
-    <!-- ОСНОВНОЕ СОДЕРЖИМОЕ -->
-    <!-- ===================================================================== -->
     <main id="main-content" class="flex-grow" role="main">
         {% block content %}
-        <!-- Контент будет здесь -->
         {% endblock %}
     </main>
 
-    <!-- ===================================================================== -->
-    <!-- ПОДВАЛ САЙТА -->
-    <!-- ===================================================================== -->
     <footer class="footer-bg text-white mt-auto transition-colors duration-300" role="contentinfo">
         {% include 'includes/footer.html' %}
     </footer>
 
-    <!-- ===================================================================== -->
-    <!-- КНОПКА "НАВЕРХ" -->
-    <!-- ===================================================================== -->
-    <button type="button"
-            x-show="scrollTopVisible"
-            @click="window.scrollTo({ top: 0, behavior: 'smooth' })"
-            class="scroll-top-btn fixed bottom-24 right-6 md:bottom-32 md:right-8 z-40 p-3 bg-primary text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
-            aria-label="Прокрутить наверх"
-            x-cloak>
+    <button type="button" x-show="scrollTopVisible" @click="window.scrollTo({ top: 0, behavior: 'smooth' })" class="scroll-top-btn fixed bottom-24 right-6 md:bottom-32 md:right-8 z-40 p-3 bg-primary text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300" aria-label="Прокрутить наверх" x-cloak>
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
         </svg>
     </button>
 
-    <!-- ===================================================================== -->
-    <!-- ALPINE.JS ТОЛЬКО ДЛЯ ФРОНТЕНДА (НЕ ДЛЯ АДМИНКИ) -->
-    <!-- ===================================================================== -->
     {% if not request.path|slice:":7" == "/admin/" %}
-
-    <!-- Alpine.js Core -->
     <script src="https://unpkg.com/alpinejs@3.13.5/dist/cdn.min.js" defer></script>
-
-    <!-- Alpine.js Plugins -->
     <script src="https://unpkg.com/@alpinejs/intersect@3.x.x/dist/cdn.min.js" defer></script>
     <script src="https://unpkg.com/@alpinejs/focus@3.x.x/dist/cdn.min.js" defer></script>
-
-    <!-- Инициализация Alpine.js -->
     <script>
     document.addEventListener('alpine:init', () => {
         Alpine.data('app', () => ({
             darkMode: window.__initialDarkMode || false,
             scrollTopVisible: false,
             notifications: [],
-
             init() {
-                // Загрузка сохранённой темы
                 const savedDarkMode = localStorage.getItem('darkMode');
                 if (savedDarkMode !== null) {
                     this.darkMode = savedDarkMode === 'true';
                 }
-
-                // Отслеживание прокрутки для кнопки "Наверх"
                 window.addEventListener('scroll', () => {
                     this.scrollTopVisible = window.scrollY > 300;
                 });
-
-                // Сохранение темы при изменении
                 this.$watch('darkMode', (value) => {
                     localStorage.setItem('darkMode', value);
                 });
             },
-
-            // Показ уведомлений
             showNotification(message, type = 'info') {
                 const id = Date.now();
                 this.notifications.push({ id, message, type });
@@ -298,8 +207,6 @@
                 }, 5000);
             }
         }));
-
-        // ✅ ИСПРАВЛЕНО: Показываем кнопку темы после инициализации Alpine
         document.addEventListener('DOMContentLoaded', () => {
             const themeToggle = document.querySelector('.theme-toggle');
             if (themeToggle) {
@@ -310,18 +217,10 @@
     </script>
     {% endif %}
 
-    <!-- ===================================================================== -->
-    <!-- ДОПОЛНИТЕЛЬНЫЙ JS -->
-    <!-- ===================================================================== -->
     {% block extra_js %}{% endblock %}
 
-    <!-- ===================================================================== -->
-    <!-- СКРЫТЬ ЭЛЕМЕНТЫ ДО ЗАГРУЗКИ ALPINE.JS -->
-    <!-- ===================================================================== -->
     <style>
-    [x-cloak] {
-        display: none !important;
-    }
+    [x-cloak] { display: none !important; }
     </style>
 </body>
 </html>

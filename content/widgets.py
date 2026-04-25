@@ -10,10 +10,10 @@ import os
 
 class ColorPickerWidget(forms.TextInput):
     """
-    Виджет для выбора цвета с превью
-    Отображает input type="color" и текстовое поле для HEX кода
+    Виджет для выбора цвета с палитрой (input type="color") и текстовым полем HEX + превью.
+    Структура: .color-picker-widget > .color-picker-container > input[type=color] + input.color-hex-input + .color-preview
     """
-    template_name = 'admin/widgets/color_picker.html'
+    template_name = 'admin/widgets/color_picker.html'  # оставлено для совместимости, но не используется
 
     class Media:
         css = {
@@ -35,25 +35,28 @@ class ColorPickerWidget(forms.TextInput):
         super().__init__(default_attrs)
 
     def render(self, name, value, attrs=None, renderer=None):
-        """Рендеринг виджета"""
         if value is None:
             value = '#000000'
 
-        # ✅ ИСПРАВЛЕНО: Правильный способ установки атрибутов для Django 5.2+
+        # Атрибуты для скрытого поля, которое будет отправлять значение
         final_attrs = self.build_attrs(self.attrs, attrs)
         final_attrs.update({
-            'type': 'text',
+            'type': 'text',    # текстовое поле для хранения HEX (синхронизируется с color input)
             'name': name,
             'value': value,
+            'class': 'color-hex-input',  # класс для JS
         })
 
         attrs_string = ' '.join(f'{key}="{val}"' for key, val in final_attrs.items())
 
+        # Генерируем input type="color" и текстовое поле HEX
         html = f'''
-        <div class="color-picker-wrapper" data-widget="color-picker">
-            <div class="color-preview" style="background-color: {value};"></div>
-            <input {attrs_string}>
-            <span class="color-hex-label">HEX</span>
+        <div class="color-picker-widget" data-widget="color-picker">
+            <div class="color-picker-container">
+                <input type="color" value="{value}">
+                <input {attrs_string} placeholder="#000000">
+                <div class="color-preview" style="background-color: {value};"></div>
+            </div>
         </div>
         '''
         return mark_safe(html)
@@ -61,8 +64,7 @@ class ColorPickerWidget(forms.TextInput):
 
 class ImagePreviewWidget(forms.ClearableFileInput):
     """
-    Виджет для загрузки изображений с превью
-    Отображает текущее изображение и предпросмотр нового
+    Виджет для загрузки изображений с превью.
     """
     template_name = 'admin/widgets/image_preview.html'
 
@@ -82,7 +84,6 @@ class ImagePreviewWidget(forms.ClearableFileInput):
         super().__init__(default_attrs)
 
     def get_context(self, name, value, attrs):
-        """Добавление URL изображения в контекст"""
         context = super().get_context(name, value, attrs)
         if value and hasattr(value, 'url'):
             context['image_url'] = value.url
@@ -93,22 +94,15 @@ class ImagePreviewWidget(forms.ClearableFileInput):
         return context
 
     def render(self, name, value, attrs=None, renderer=None):
-        """Рендеринг виджета с превью"""
         context = self.get_context(name, value, attrs)
 
-        # ✅ ИСПРАВЛЕНО: Правильный способ установки атрибутов для Django 5.2+
         final_attrs = self.build_attrs(self.attrs, attrs)
-        final_attrs.update({
-            'name': name,
-        })
-
+        final_attrs.update({'name': name, 'type': 'file'})
         attrs_string = ' '.join(f'{key}="{val}"' for key, val in final_attrs.items())
 
         html = f'''
         <div class="image-preview-wrapper" data-widget="image-preview">
         '''
-
-        # Текущее изображение
         if context['image_url']:
             html += f'''
             <div class="current-image">
@@ -118,8 +112,6 @@ class ImagePreviewWidget(forms.ClearableFileInput):
                 <p class="image-name">{context['image_name']}</p>
             </div>
             '''
-
-        # Поле загрузки
         html += f'''
             <div class="new-image-upload">
                 <p class="image-label">Новое изображение:</p>
@@ -131,21 +123,14 @@ class ImagePreviewWidget(forms.ClearableFileInput):
             </div>
         </div>
         '''
-
         return mark_safe(html)
 
 
 class CKEditor5PreviewWidget(forms.Textarea):
-    """
-    Виджет для предпросмотра CKEditor контента
-    """
     class Media:
-        css = {
-            'all': ('admin/css/ckeditor-preview.css',)
-        }
+        css = {'all': ('admin/css/ckeditor-preview.css',)}
 
     def render(self, name, value, attrs=None, renderer=None):
-        """Рендеринг с предпросмотром"""
         html = super().render(name, value, attrs, renderer)
         if value:
             html += f'''
