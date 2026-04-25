@@ -1,46 +1,16 @@
 ```
-# Python
+# Python cache files
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
+*.pyc
+*.pyo
+*.pyd
 
-# Django
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-
-# Coverage
-.coverage
-htmlcov/
-.coverage.*
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*.tmp
-
-# Environment
-.env
-.env.local
-*.env.*
+# Compiled Python files in specific directories
+api/__pycache__/
+config/__pycache__/
+content/__pycache__/
+mybiz_core/__pycache__/
+mybiz_core/templatetags/__pycache__/
+pages/__pycache__/
+services/__pycache__/
 ```
