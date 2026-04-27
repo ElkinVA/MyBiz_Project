@@ -41,10 +41,10 @@ function initializeColorPickers() {
         function updateFromColorInput() {
             const colorValue = colorInput.value;
             hexInput.value = colorValue;
-            // Обновляем отображение HEX-кода
-            const hexDisplay = pickerContainer.querySelector('.color-hex-display');
-            if (hexDisplay) {
-                hexDisplay.textContent = colorValue.toUpperCase();
+            // Обновляем превью цвета
+            const colorPreview = pickerContainer.querySelector('.color-preview');
+            if (colorPreview) {
+                colorPreview.style.backgroundColor = colorValue;
             }
             // Небольшое изменение границы для визуального отклика
             colorInput.style.borderColor = adjustBrightness(colorValue, -0.3);
@@ -68,10 +68,10 @@ function initializeColorPickers() {
                     hexInput.value = value;
                 }
                 colorInput.value = value;
-                // Обновляем отображение HEX-кода
-                const hexDisplay = pickerContainer.querySelector('.color-hex-display');
-                if (hexDisplay) {
-                    hexDisplay.textContent = value.toUpperCase();
+                // Обновляем превью цвета
+                const colorPreview = pickerContainer.querySelector('.color-preview');
+                if (colorPreview) {
+                    colorPreview.style.backgroundColor = value;
                 }
                 colorInput.style.borderColor = adjustBrightness(value, -0.3);
             }

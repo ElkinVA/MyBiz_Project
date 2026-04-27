@@ -63,7 +63,7 @@
     margin: 0 !important;
 }
 
-/* Горизонтальное расположение: квадрат слева, HEX справа */
+/* Горизонтальное расположение: квадрат слева, HEX-поле справа */
 .color-picker-container {
     display: flex !important;
     flex-direction: row !important;
@@ -75,32 +75,40 @@
     width: 40px !important;
     height: 40px !important;
     flex-shrink: 0 !important;
+    cursor: pointer !important;
 }
 
-/* Отображение HEX-кода рядом с цветовым квадратом */
-.color-hex-display {
+/* Поле ввода HEX-кода */
+.color-picker-container input.color-hex-input {
+    flex: 0 1 auto !important;
+    width: 110px !important;
+    min-width: 90px !important;
+    max-width: 130px !important;
     font-family: 'Courier New', monospace !important;
     font-size: 13px !important;
     font-weight: 600 !important;
     color: #374151 !important;
-    background-color: #f3f4f6 !important;
+    background-color: #fff !important;
     padding: 6px 10px !important;
     border-radius: 4px !important;
     border: 1px solid #e5e7eb !important;
-    min-width: 75px !important;
     text-align: center !important;
     letter-spacing: 0.5px !important;
 }
 
-.color-picker-text {
-    flex: 0 1 auto !important;
+.color-picker-container input.color-hex-input:focus {
+    border-color: #3b82f6 !important;
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
 }
 
-/* Уменьшаем ширину поля ввода HEX */
-.color-picker-text input.color-hex-input {
-    width: 100px !important;
-    min-width: 80px !important;
-    max-width: 120px !important;
+/* Превью цвета */
+.color-picker-container .color-preview {
+    width: 24px !important;
+    height: 24px !important;
+    border-radius: 4px !important;
+    border: 1px solid #e5e7eb !important;
+    flex-shrink: 0 !important;
 }
 
 /* Скрываем пустые блоки help-block */
