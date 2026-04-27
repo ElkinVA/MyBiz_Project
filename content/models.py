@@ -205,6 +205,16 @@ class SiteSettings(models.Model):
         return strip_tags(self.site_name)
 
     def save(self, *args, **kwargs):
+        # Определяем, менялась ли схема
+        if self.pk:
+            try:
+                old_instance = SiteSettings.objects.get(pk=self.pk)
+                old_scheme = old_instance.color_scheme
+            except SiteSettings.DoesNotExist:
+                old_scheme = None
+        else:
+            old_scheme = None
+        
         if not self.pk and SiteSettings.objects.exists():
             existing = SiteSettings.objects.first()
             if existing:
@@ -214,13 +224,14 @@ class SiteSettings(models.Model):
         else:
             self.pk = 1
 
-        # Если выбрана пользовательская схема, не перезаписываем цвета
-        # Если выбрана готовая схема - применяем её цвета
+        # Если выбрана готовая схема (не custom) - применяем её цвета
         if self.color_scheme != 'custom':
             colors = SiteSettings.get_scheme_colors_by_name(self.color_scheme)
             for field_name, color_value in colors.items():
                 if hasattr(self, field_name):
                     setattr(self, field_name, color_value)
+        # Если была смена с готовой схемы на custom - сохраняем текущие цвета как есть
+        # (ничего не делаем, просто не перезаписываем)
 
         self._validate_hex_colors()
         super().save(*args, **kwargs)

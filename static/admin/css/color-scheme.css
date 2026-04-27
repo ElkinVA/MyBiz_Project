@@ -43,12 +43,13 @@
 /* Цветовые полосы */
 .color-scheme-colors {
     display: flex;
-    height: 60px;
+    height: 70px;
 }
 
 .color-scheme-color {
     flex: 1;
     transition: all 0.3s ease;
+    min-width: 20px;
 }
 
 .color-scheme-option:hover .color-scheme-color {
@@ -230,4 +231,147 @@
     font-size: 14px;
     font-weight: bold;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* ==========================================================================
+   ИНДИКАТОРЫ КОНТРАСТНОСТИ ЦВЕТОВ
+   ========================================================================== */
+
+.contrast-indicator {
+    margin: 15px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #ccc;
+    transition: all 0.3s ease;
+}
+
+.contrast-indicator.excellent {
+    border-left-color: #28a745;
+    background: #d4edda;
+}
+
+.contrast-indicator.good {
+    border-left-color: #17a2b8;
+    background: #d1ecf1;
+}
+
+.contrast-indicator.warning {
+    border-left-color: #ffc107;
+    background: #fff3cd;
+}
+
+.contrast-indicator.error {
+    border-left-color: #dc3545;
+    background: #f8d7da;
+}
+
+.contrast-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.contrast-ratio {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.ratio-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+}
+
+.ratio-status {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.ratio-status.excellent {
+    background: #28a745;
+    color: white;
+}
+
+.ratio-status.good {
+    background: #17a2b8;
+    color: white;
+}
+
+.ratio-status.warning {
+    background: #ffc107;
+    color: #333;
+}
+
+.ratio-status.error {
+    background: #dc3545;
+    color: white;
+}
+
+.contrast-preview {
+    margin: 10px 0;
+}
+
+.preview-box {
+    width: 100%;
+    max-width: 300px;
+    height: 60px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.preview-text {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.contrast-message {
+    font-size: 13px;
+    margin-top: 10px;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.contrast-message.excellent {
+    color: #155724;
+}
+
+.contrast-message.good {
+    color: #0c5460;
+}
+
+.contrast-message.warning {
+    color: #856404;
+}
+
+.contrast-message.error {
+    color: #721c24;
+}
+
+/* Адаптивность для индикаторов контрастности */
+@media (max-width: 768px) {
+    .contrast-indicator {
+        padding: 12px;
+    }
+    
+    .ratio-value {
+        font-size: 16px;
+    }
+    
+    .preview-box {
+        height: 50px;
+    }
+    
+    .preview-text {
+        font-size: 24px;
+    }
 }

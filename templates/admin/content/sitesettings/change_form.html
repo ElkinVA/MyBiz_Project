@@ -153,7 +153,12 @@
 (function() {
     'use strict';
 
-    // Показ уведомления при успешном сохранении
+    // Флаг для отслеживания изменений
+    let hasUnsavedChanges = false;
+    const DEBOUNCE_DELAY = 2000; // 2 секунды перед авто-сохранением
+    let saveTimeout = null;
+
+    // Показ уведомления при успешном сохранении через URL параметр
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('_saved')) {
         const notification = document.getElementById('settings-saved-notification');
@@ -163,6 +168,10 @@
                 notification.classList.remove('show');
             }, 3000);
         }
+        // Очищаем параметр URL без перезагрузки
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.delete('_saved');
+        window.history.replaceState({}, '', newUrl);
     }
 
     // Обновление превью цветов
@@ -172,6 +181,7 @@
             if (preview) {
                 preview.style.backgroundColor = this.value;
             }
+            markAsChanged();
         });
     });
 
@@ -191,51 +201,150 @@
                 };
                 reader.readAsDataURL(file);
             }
+            markAsChanged();
         });
     });
 
-    // Авто-сохранение в localStorage
+    // Отслеживание изменений во всех полях формы
     const form = document.querySelector('#content-main form');
     if (form) {
-        const formInputs = form.querySelectorAll('input, textarea, select');
-        const formId = 'sitesettings_form';
-
-        // Загрузка сохранённых данных
+        const formInputs = form.querySelectorAll('input:not([type="hidden"]):not([type="submit"]), textarea, select');
+        
+        // Добавляем обработчики изменений
         formInputs.forEach(function(input) {
-            const inputName = input.name;
-            if (inputName) {
-                const savedValue = localStorage.getItem('autosave_' + formId + '_' + inputName);
-                if (savedValue && input.type !== 'hidden' && input.type !== 'file') {
-                    if (input.type === 'checkbox') {
-                        input.checked = savedValue === 'true';
-                    } else {
-                        input.value = savedValue;
+            input.addEventListener('change', function() {
+                markAsChanged();
+            });
+            input.addEventListener('input', function() {
+                markAsChanged();
+            });
+        });
+
+        // Функция отметки изменений
+        function markAsChanged() {
+            hasUnsavedChanges = true;
+            
+            // Очищаем предыдущий таймер
+            if (saveTimeout) {
+                clearTimeout(saveTimeout);
+            }
+            
+            // Показываем уведомление о том, что есть несохранённые изменения
+            showUnsavedNotification();
+            
+            // Устанавливаем таймер для авто-сохранения
+            saveTimeout = setTimeout(function() {
+                autoSaveForm();
+            }, DEBOUNCE_DELAY);
+        }
+
+        // Уведомление о несохранённых изменениях
+        function showUnsavedNotification() {
+            let notification = document.getElementById('unsaved-changes-notification');
+            if (!notification) {
+                notification = document.createElement('div');
+                notification.id = 'unsaved-changes-notification';
+                notification.className = 'settings-saved-notification unsaved';
+                notification.innerHTML = '⏳ Есть несохранённые изменения. Сохранение через 2 секунды...<button class="notification-close" type="button">&times;</button>';
+                notification.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
+                document.body.appendChild(notification);
+                
+                notification.querySelector('.notification-close').onclick = function() {
+                    if (saveTimeout) {
+                        clearTimeout(saveTimeout);
+                        saveTimeout = null;
                     }
+                    notification.classList.remove('show');
+                    setTimeout(() => notification.remove(), 300);
+                };
+            }
+            notification.classList.add('show');
+        }
+
+        // Авто-сохранение формы
+        function autoSaveForm() {
+            if (!hasUnsavedChanges) return;
+            
+            // Скрываем уведомление о несохранённых изменениях
+            const unsavedNotification = document.getElementById('unsaved-changes-notification');
+            if (unsavedNotification) {
+                unsavedNotification.classList.remove('show');
+                setTimeout(() => unsavedNotification.remove(), 300);
+            }
+            
+            // Находим кнопку "_save" и кликаем её
+            const saveButtons = form.querySelectorAll('input[type="submit"], button[type="submit"]');
+            let saveButton = null;
+            
+            for (let btn of saveButtons) {
+                if (btn.name === '_save' || btn.value.includes('Сохранить')) {
+                    saveButton = btn;
+                    break;
                 }
+            }
+            
+            if (!saveButton) {
+                // Если не нашли кнопку _save, берём первую кнопку сохранения
+                saveButton = saveButtons[0];
+            }
+            
+            if (saveButton) {
+                // Показываем уведомление о сохранении
+                showSavingNotification();
+                
+                // Добавляем скрытый input для указания действия сохранения
+                const actionInput = document.createElement('input');
+                actionInput.type = 'hidden';
+                actionInput.name = '_save';
+                actionInput.value = '1';
+                form.appendChild(actionInput);
+                
+                // Отправляем форму
+                form.submit();
+            }
+        }
+
+        // Уведомление о процессе сохранения
+        function showSavingNotification() {
+            let notification = document.getElementById('saving-notification');
+            if (!notification) {
+                notification = document.createElement('div');
+                notification.id = 'saving-notification';
+                notification.className = 'settings-saved-notification saving';
+                notification.innerHTML = '💾 Сохранение настроек...';
+                notification.style.background = 'linear-gradient(135deg, #3b82f6, #2563eb)';
+                document.body.appendChild(notification);
+                notification.classList.add('show');
+            }
+        }
+
+        // Предупреждение при попытке уйти с страницы с несохранёнными изменениями
+        window.addEventListener('beforeunload', function(e) {
+            if (hasUnsavedChanges) {
+                e.preventDefault();
+                e.returnValue = '';
+                return '';
             }
         });
 
-        // Сохранение при изменении
-        formInputs.forEach(function(input) {
-            input.addEventListener('change', function() {
-                const inputName = input.name;
-                if (inputName) {
-                    const value = input.type === 'checkbox' ? input.checked : input.value;
-                    localStorage.setItem('autosave_' + formId + '_' + inputName, value);
-                }
-            });
-        });
-
-        // Очистка при отправке
+        // После успешной отправки формы сбрасываем флаг
         form.addEventListener('submit', function() {
-            formInputs.forEach(function(input) {
-                const inputName = input.name;
-                if (inputName) {
-                    localStorage.removeItem('autosave_' + formId + '_' + inputName);
-                }
-            });
+            hasUnsavedChanges = false;
+            if (saveTimeout) {
+                clearTimeout(saveTimeout);
+                saveTimeout = null;
+            }
         });
     }
+
+    // Обработчик для уведомления об успешном сохранении (после перезагрузки)
+    document.addEventListener('DOMContentLoaded', function() {
+        const notification = document.getElementById('settings-saved-notification');
+        if (notification && !urlParams.has('_saved')) {
+            // Показываем только если есть параметр _saved
+            notification.classList.remove('show');
+        }
+    });
 })();
 </script>
 {% endblock %}

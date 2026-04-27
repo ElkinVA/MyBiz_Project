@@ -36,27 +36,38 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             'description': 'Базовая информация о сайте'
         }),
         ('🎨 Цветовая схема', {
-            'fields': ('color_scheme', 'primary_color', 'secondary_color',
-                      'accent_color', 'text_color', 'background_color'),
-            'classes': ('wide',)
+            'fields': ('color_scheme',),
+            'classes': ('wide',),
+            'description': 'Выберите готовую схему или настройте цвета вручную'
         }),
-        ('🖥️ Шапка сайта', {
+        ('🖌️ Палитра бренда', {
+            'fields': (
+                ('primary_color', 'secondary_color', 'accent_color'),
+                ('text_color', 'background_color', 'border_color'),
+            ),
+            'classes': ('wide', 'collapse'),
+            'description': 'Основные цвета бренда и текста. Изменение переключает на пользовательскую схему.'
+        }),
+        ('🖥️ Шапка сайта (Header)', {
             'fields': (
                 'site_name',
                 'site_tagline',
                 'logo',
-                'header_bg_color',
-                'header_text_color',
+                ('header_bg_color', 'header_text_color'),
             ),
             'classes': ('wide',),
-            'description': 'Название, слоган и цвета шапки сайта'
+            'description': 'Название, слоган, логотип и цвета шапки. Цвета участвуют в предустановленных схемах.'
         }),
-        ('🖼️ Изображения главной', {
-            'fields': ('hero_image', 'hero_bg_color'),
-            'classes': ('collapse',)
+        ('🖼️ Hero-секция', {
+            'fields': (
+                ('hero_image', 'hero_bg_color'),
+                ('hero_heading_prefix', 'hero_subtitle'),
+            ),
+            'classes': ('collapse',),
+            'description': 'Главный баннер и его фон'
         }),
-        ('📝 Тексты главной', {
-            'fields': ('hero_heading_prefix', 'hero_subtitle', 'welcome_text'),
+        ('📝 Тексты главной страницы', {
+            'fields': ('welcome_text',),
             'classes': ('collapse',)
         }),
         ('🛍️ Блок товаров', {
@@ -80,14 +91,16 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             ),
             'classes': ('collapse',)
         }),
+        ('🦶 Подвал сайта (Footer)', {
+            'fields': (
+                ('footer_bg_color', 'footer_text_color'),
+            ),
+            'classes': ('collapse',),
+            'description': 'Цвета подвала участвуют в предустановленных схемах'
+        }),
         ('📊 SEO настройки', {
             'fields': ('meta_title', 'meta_description', 'meta_keywords'),
             'classes': ('collapse',)
-        }),
-        ('⚙️ Дополнительно', {
-            'fields': ('footer_bg_color', 'footer_text_color', 'border_color'),
-            'classes': ('collapse',),
-            'description': 'Настройки подвала и границ'
         }),
     )
 
@@ -106,6 +119,7 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             'admin/js/color-scheme.js',
             'admin/js/color-picker.js',
             'admin/js/image-preview.js',
+            'admin/js/contrast-checker.js',
         )
 
 

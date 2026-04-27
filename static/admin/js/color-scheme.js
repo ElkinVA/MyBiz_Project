@@ -203,15 +203,19 @@ function initializeColorScheme() {
                 <div class="color-scheme-color" style="background: linear-gradient(135deg, #4facfe, #00f2fe);" title="Header BG"></div>
                 <div class="color-scheme-color" style="background: linear-gradient(135deg, #f5af19, #f12711);" title="Footer BG"></div>
                 <div class="color-scheme-color" style="background: linear-gradient(135deg, #11998e, #38ef7d);" title="Footer Text"></div>
+                <div class="color-scheme-color" style="background: linear-gradient(135deg, #a8edea, #fed6e3);" title="Hero BG"></div>
+                <div class="color-scheme-color" style="background: linear-gradient(135deg, #d299c2, #fef9d7);" title="Header Text"></div>
             `;
         } else if (colors) {
             colorsHtml = `
                 <div class="color-scheme-color" style="background: ${colors.primary_color};" title="Primary"></div>
                 <div class="color-scheme-color" style="background: ${colors.secondary_color};" title="Secondary"></div>
                 <div class="color-scheme-color" style="background: ${colors.accent_color};" title="Accent"></div>
-                <div class="color-scheme-color" style="background: ${colors.header_bg_color};" title="Header BG"></div>
+                <div class="color-scheme-color" style="background: ${colors.header_bg_color}; border: 1px solid #ddd;" title="Header BG"></div>
                 <div class="color-scheme-color" style="background: ${colors.footer_bg_color};" title="Footer BG"></div>
                 <div class="color-scheme-color" style="background: ${colors.footer_text_color};" title="Footer Text"></div>
+                <div class="color-scheme-color" style="background: ${colors.hero_bg_color};" title="Hero BG"></div>
+                <div class="color-scheme-color" style="background: ${colors.header_text_color};" title="Header Text"></div>
             `;
         }
 
