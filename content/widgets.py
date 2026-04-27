@@ -49,11 +49,11 @@ class ColorPickerWidget(forms.TextInput):
 
         # Базовые атрибуты для скрытого поля, которое будет отправлять значение
         final_attrs = self.build_attrs(self.attrs, attrs)
-        
+
         # Объединяем классы корректно
         base_classes = final_attrs.get('class', '')
         all_classes = f"{base_classes} color-hex-input".strip()
-        
+
         final_attrs.update({
             'type': 'text',
             'name': name,

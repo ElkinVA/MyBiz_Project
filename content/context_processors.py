@@ -2,6 +2,7 @@
 from django.core.cache import cache
 from .models import SiteSettings
 from pages.models import Page
+from services.product_services import PromotionService
 import logging
 
 logger = logging.getLogger(__name__)
@@ -44,13 +45,8 @@ def site_settings(request):
 def promotions(request):
     if _is_admin_request(request):
         return {'promotions': []}
-    from .models import Promotion
-    cache_key = 'active_promotions'
-    promotions_list = cache.get(cache_key)
-    if not promotions_list:
-        promotions_list = Promotion.objects.filter(is_active=True).order_by('-created_at')[:3]
-        cache.set(cache_key, promotions_list, 300)
-    return {'promotions': promotions_list}
+    # Используем единый сервис с проверкой дат
+    return {'promotions': PromotionService.get_active_promotions()}
 
 
 def header_pages(request):

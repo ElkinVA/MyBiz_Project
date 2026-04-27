@@ -9,7 +9,6 @@ from services.product_services import ProductService
 def home(request):
     """Главная страница"""
     featured_products = ProductService.get_featured_products()
-    total_products = ProductService.get_new_products()  # или используем общий подсчёт, но оставим логику
     total_products = Product.objects.filter(is_active=True).count()
 
     context = {
@@ -20,10 +19,13 @@ def home(request):
 
 
 def product_list(request, category_slug=None):
-    """Список товаров с фильтрацией по категории"""
+    """Список товаров с фильтрацией по категории (из URL или GET-параметра)"""
     categories = Category.objects.filter(is_active=True).prefetch_related('children')
 
-    # Сбор фильтров из GET-параметров
+    # Поддержка выбора категории через GET-параметр 'category'
+    if not category_slug:
+        category_slug = request.GET.get('category')
+
     filters = {}
     if category_slug:
         filters['category_slug'] = category_slug

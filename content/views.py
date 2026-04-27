@@ -10,6 +10,7 @@ from django.views.generic import ListView
 from django.utils.http import url_has_allowed_host_and_scheme
 from .models import NewsletterSubscriber, SiteSettings, StockNotification, Promotion
 from mybiz_core.models import Product
+from services.product_services import PromotionService
 import logging
 
 logger = logging.getLogger(__name__)
@@ -133,7 +134,8 @@ class PromotionListView(ListView):
     paginate_by = 9
 
     def get_queryset(self):
-        return Promotion.objects.filter(is_active=True).order_by('-created_at')
+        # Используем сервис для учёта дат
+        return PromotionService.get_active_promotions()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

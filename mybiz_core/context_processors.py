@@ -4,6 +4,7 @@
 """
 from django.core.cache import cache
 from .models import Category, Product
+from pages.models import Page
 
 
 def categories(request):
@@ -40,6 +41,7 @@ def admin_dashboard_stats(request):
             'inactive_products': Product.objects.filter(is_active=False).count(),
             'featured_products': Product.objects.filter(is_featured=True).count(),
             'total_categories': Category.objects.filter(is_active=True).count(),
+            'total_pages': Page.objects.filter(is_active=True).count(),  # ← добавлено
         }
 
         # Кэширование на 5 минут

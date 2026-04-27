@@ -1,6 +1,13 @@
 #!/bin/bash
 # =========================================================================
-# collect_source_for_ai.sh – сбор значимых исходников для анализа AI
+# collect_all_files.sh – сбор значимых исходников для анализа AI
+# =========================================================================
+# Исправленная версия:
+# – надёжное исключение служебных директорий из дерева и из файлов
+# – исключение самого выходного файла и лога
+# – исключение минифицированных/сгенерированных ресурсов (tailwind.css)
+# – один проход find для списка файлов
+# – корректный вывод дерева только нужных папок
 # =========================================================================
 
 OUTPUT_FILE="project_sources.txt"
@@ -49,6 +56,14 @@ EXCLUDE_NAMES=(
     "*.pyd"
     "*.db"
     "*.log"
+    # Сам выходной файл и лог
+    "$OUTPUT_FILE"
+    "$LOG_FILE"
+    # Минифицированный CSS/JS, не несущий смысловой нагрузки
+    "tailwind.css"            # скомпилированный Tailwind
+    "tailwind.min.css"
+    "bootstrap.min.css"
+    "bootstrap.min.js"
 )
 
 # -------------------------------------------------------------------------
@@ -73,11 +88,15 @@ INCLUDE_EXT=(
 
 # Исключения из включаемых расширений (полные имена файлов)
 EXCLUDE_PATTERNS=(
-    "package-lock.json"   # уже есть в EXCLUDE_NAMES, но на всякий случай
+    "package-lock.json"
     "composer.lock"
     ".prettierrc"
     ".eslintrc"
     ".babelrc"
+    # Дополнительно явно укажем скомпилированные файлы Tailwind,
+    # даже если они попали бы по расширению css
+    "tailwind.css"
+    "tailwind.min.css"
 )
 
 # -------------------------------------------------------------------------
@@ -87,6 +106,11 @@ should_include() {
     local filepath="$1"
     local filename=$(basename "$filepath")
 
+    # Исключаем выходной файл и лог (уже есть в EXCLUDE_NAMES, но доп. проверка)
+    if [[ "$filename" == "$OUTPUT_FILE" || "$filename" == "$LOG_FILE" ]]; then
+        return 1
+    fi
+
     # Исключаем файлы по точному имени
     for pattern in "${EXCLUDE_NAMES[@]}"; do
         if [[ "$filename" == $pattern ]]; then
@@ -94,17 +118,17 @@ should_include() {
         fi
     done
 
-    # Исключаем файлы внутри директорий migrations
-    if [[ "$filepath" == */migrations/* ]]; then
-        return 1
-    fi
-
-    # Исключаем конкретные нежелательные файлы
+    # Исключаем конкретные нежелательные файлы (по полному имени)
     for pattern in "${EXCLUDE_PATTERNS[@]}"; do
         if [[ "$filename" == "$pattern" ]]; then
             return 1
         fi
     done
+
+    # Исключаем файлы внутри директорий migrations (код миграций Django)
+    if [[ "$filepath" == */migrations/* ]]; then
+        return 1
+    fi
 
     # Проверяем, что файл имеет нужное расширение
     local ext_match=false
@@ -120,8 +144,9 @@ should_include() {
         return 1
     fi
 
-    # Дополнительно убеждаемся, что файл текстовый
-    if file "$filepath" | grep -q "text"; then
+    # Дополнительно убеждаемся, что файл текстовый (MIME-тип)
+    local mime=$(file --mime-type -b "$filepath" 2>/dev/null)
+    if [[ "$mime" == text/* ]]; then
         return 0
     else
         return 1
@@ -151,44 +176,52 @@ add_file() {
 }
 
 # -------------------------------------------------------------------------
-# Построение списка исключаемых директорий для find
+# Построение безопасного выражения prune для find
 # -------------------------------------------------------------------------
-prune_args=""
+prune_expr=""
 for dir in "${EXCLUDE_DIRS[@]}"; do
-    prune_args="$prune_args -name \"$dir\" -prune -o"
+    prune_expr+=" -path './$dir' -prune -o"
 done
 
 # -------------------------------------------------------------------------
-# Основной проход: находим все файлы, фильтруем и пишем отчёт
+# Основной проход: находим все подходящие файлы за один проход
 # -------------------------------------------------------------------------
-count=0
-total=0
+# Временный файл для списка файлов
+file_list=$(mktemp)
 
-# Сначала считаем общее количество подходящих файлов (для прогресса)
+# Собираем все файлы (исключая директории через prune)
+eval "find . \( $prune_expr -type f -print \) 2>/dev/null" | sort > "$file_list"
+
+total=0
 while IFS= read -r file; do
     if should_include "$file"; then
         total=$((total + 1))
     fi
-done < <(eval "find . $prune_args -type f -print 2>/dev/null")
+done < "$file_list"
 
 echo "Найдено релевантных файлов: $total" >> "$LOG_FILE"
 echo "Начинаем сбор..." >> "$LOG_FILE"
 
-# Теперь собираем содержимое
+count=0
 while IFS= read -r file; do
     if should_include "$file"; then
         count=$((count + 1))
         add_file "$file" "$count"
         echo "Обработан [$count/$total]: $file"
     fi
-done < <(eval "find . $prune_args -type f -print 2>/dev/null")
+done < "$file_list"
+
+# Удаляем временный файл
+rm -f "$file_list"
 
 # -------------------------------------------------------------------------
-# Добавляем дерево директорий (только для включённых файлов)
+# Добавляем дерево директорий (только для включённых папок)
 # -------------------------------------------------------------------------
 echo "=== ДЕРЕВО ДИРЕКТОРИЙ ===" >> "$OUTPUT_FILE"
 echo "" >> "$OUTPUT_FILE"
-find . $prune_args -type d | sort | sed 's|[^/]*/|- |g' >> "$OUTPUT_FILE" 2>/dev/null
+# Используем то же prune-выражение, но выводим только директории
+eval "find . \( $prune_expr -type d -print \) 2>/dev/null" | sort | \
+    sed 's|[^/]*/| |- |g' >> "$OUTPUT_FILE"
 
 # -------------------------------------------------------------------------
 # Сводная информация

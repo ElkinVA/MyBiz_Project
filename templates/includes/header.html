@@ -59,10 +59,12 @@ aria-label="{{ social.title }}">
 <a href="{% url 'mybiz_core:home' %}" class="flex items-center space-x-3 group">
 {% if site_settings.logo %}
 <div class="logo-container">
-<img src="{{ site_settings.logo.url }}"
-alt="{{ site_settings.site_name }}"
-class="logo-img"
-loading="lazy">
+    <img src="{{ site_settings.logo.url }}"
+         alt="{{ site_settings.site_name|striptags }}"
+         class="logo-img"
+         loading="lazy"
+         width="40"
+         height="40">
 </div>
 {% endif %}
 <div class="brand-text min-w-0">

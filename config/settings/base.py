@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Сторонние приложения
+    'rest_framework',        # ← добавлен DRF
     'django_filters',
     'django_ckeditor_5',
     'sorl.thumbnail',
@@ -323,4 +324,18 @@ LOGGING = {
             'propagate': False,
         },
     },
+}
+
+# ==============================================================================
+# DRF настройки (троттлинг)
+# ==============================================================================
+REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/day',
+        'user': '1000/day'
+    }
 }

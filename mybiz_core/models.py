@@ -67,8 +67,7 @@ class Category(models.Model):
         for child in self.children.all():
             ids.append(child.pk)
             ids.extend(child.get_descendants_ids())
-            return ids
-        return ids
+        return ids   # ← больше нет return внутри цикла
 
     @property
     def products_count(self):
