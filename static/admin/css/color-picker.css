@@ -80,10 +80,10 @@
 
 /* Поле ввода HEX-кода */
 .color-picker-container input.color-hex-input {
-    flex: 0 1 auto !important;
-    width: 110px !important;
-    min-width: 90px !important;
-    max-width: 130px !important;
+    flex: 1 1 auto !important;
+    width: 160px !important;
+    min-width: 140px !important;
+    max-width: 200px !important;
     font-family: 'Courier New', monospace !important;
     font-size: 13px !important;
     font-weight: 600 !important;
