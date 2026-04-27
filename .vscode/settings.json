@@ -14,5 +14,6 @@
     "**/__pycache__": true,
     "**/.pytest_cache": true,
     "**/*.pyc": true
-  }
+  },
+  "git.ignoreLimitWarning": true
 }
