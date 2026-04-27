@@ -4,47 +4,26 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-
-# Compiled and build artifacts
-*.o
-*.obj
-*.out
-*.so
-*.dll
-*.exe
-
-# Dependencies
-.venv/
+.Python
+env/
 venv/
-node_modules/
-
-# Build directories
-build/
-dist/
-target/
-
-# Logs and temp files
-*.log
-*.tmp
-*.swp
-
-# Environment
+.venv/
+.ENV
+.ENV.local
 .env
 .env.local
-*.env.*
+.env.*
 
-# Editors
-.vscode/
-.idea/
-
-# OS specific
-.DS_Store
-Thumbs.db
-
-# Testing and coverage
+# Coverage
 .coverage
 coverage/
-htmlcov/
-.pytest_cache/
-.mypy_cache/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Media files (if not intended for version control)
+media/
 ```

@@ -2,129 +2,48 @@
 // Синхронизация цветовых пикеров
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Инициализация всех пикеров на странице
-    initializeColorPickers();
+    initPickers();
 
-    // Наблюдатель за динамическими элементами
-    const observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-            if (mutation.addedNodes.length) {
-                initializeColorPickers();
-            }
-        });
+    // Наблюдатель за динамическими элементами (например, inline formsets)
+    const observer = new MutationObserver(mutations => {
+        mutations.forEach(m => m.addedNodes.forEach(n => {
+            if (n.nodeType === 1) initPickers(n);
+        }));
     });
-
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true
-    });
-
-    // Отключаем observer при выгрузке страницы
-    window.addEventListener('beforeunload', function() {
-        observer.disconnect();
-    });
+    observer.observe(document.body, { childList: true, subtree: true });
 });
 
-function initializeColorPickers() {
-    const colorPickers = document.querySelectorAll('.color-picker-widget');
+function initPickers(container = document) {
+    container.querySelectorAll('.color-picker-widget').forEach(widget => {
+        if (widget.dataset.initialized === 'true') return;
+        widget.dataset.initialized = 'true';
 
-    colorPickers.forEach(function(pickerContainer) {
-        // Проверяем, не инициализирован ли уже этот пикер
-        if (pickerContainer.dataset.initialized === 'true') return;
+        const colorInput = widget.querySelector('input[type="color"]');
+        const hexInput = widget.querySelector('input.color-hex-input');
+        const preview = widget.querySelector('.color-preview');
 
-        const colorInput = pickerContainer.querySelector('input[type="color"]');
-        const hexInput = pickerContainer.querySelector('.color-hex-input');
-
-        if (!colorInput || !hexInput) return;
-
-        // Функция обновления из цветового пикера
-        function updateFromColorInput() {
-            const colorValue = colorInput.value;
-            hexInput.value = colorValue;
-            // Обновляем превью цвета
-            const colorPreview = pickerContainer.querySelector('.color-preview');
-            if (colorPreview) {
-                colorPreview.style.backgroundColor = colorValue;
-            }
-            // Небольшое изменение границы для визуального отклика
-            colorInput.style.borderColor = adjustBrightness(colorValue, -0.3);
+        function syncFromColor() {
+            const val = colorInput.value.toLowerCase();
+            hexInput.value = val;
+            if (preview) preview.style.backgroundColor = val;
         }
 
-        // Функция обновления из HEX-поля с debounce
-        const updateFromHexInput = debounce(function() {
-            let value = hexInput.value.trim();
-
-            // Добавляем # если его нет
-            if (value && !value.startsWith('#')) {
-                value = '#' + value;
-                hexInput.value = value;
-            }
-
-            // Проверяем корректность HEX кода
-            if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(value)) {
-                // Если короткий формат (#RGB), преобразуем в полный (#RRGGBB)
-                if (value.length === 4) {
-                    value = '#' + value[1] + value[1] + value[2] + value[2] + value[3] + value[3];
-                    hexInput.value = value.toLowerCase();
-                } else if (value.length === 7) {
-                    // Нормализуем к нижнему регистру
-                    hexInput.value = value.toLowerCase();
+        function syncFromHex() {
+            let val = hexInput.value.trim().toLowerCase();
+            if (!val.startsWith('#')) val = '#' + val;
+            if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/.test(val)) {
+                if (val.length === 4) {
+                    val = '#' + val[1]+val[1] + val[2]+val[2] + val[3]+val[3];
                 }
-                colorInput.value = value;
-                // Обновляем превью цвета
-                const colorPreview = pickerContainer.querySelector('.color-preview');
-                if (colorPreview) {
-                    colorPreview.style.backgroundColor = value;
-                }
-                colorInput.style.borderColor = adjustBrightness(value, -0.3);
-            }
-        }, 300);
-
-        // Функция для регулировки яркости цвета (с защитой от ошибок)
-        function adjustBrightness(hex, percent) {
-            try {
-                // Приводим к 6-символьному виду
-                let cleanHex = hex.replace('#', '');
-                if (cleanHex.length === 3) {
-                    cleanHex = cleanHex.split('').map(c => c + c).join('');
-                }
-                if (cleanHex.length !== 6) {
-                    return hex; // невалидный HEX, возвращаем как есть
-                }
-
-                let r = parseInt(cleanHex.substring(0, 2), 16);
-                let g = parseInt(cleanHex.substring(2, 4), 16);
-                let b = parseInt(cleanHex.substring(4, 6), 16);
-
-                r = Math.min(255, Math.max(0, Math.round(r + r * percent)));
-                g = Math.min(255, Math.max(0, Math.round(g + g * percent)));
-                b = Math.min(255, Math.max(0, Math.round(b + b * percent)));
-
-                return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
-            } catch (e) {
-                console.warn('Error adjusting brightness:', e);
-                return hex;
+                hexInput.value = val;
+                colorInput.value = val;
+                if (preview) preview.style.backgroundColor = val;
             }
         }
 
-        // Функция debounce
-        function debounce(func, wait) {
-            let timeout;
-            return function(...args) {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(this, args), wait);
-            };
-        }
-
-        // Связываем события
-        colorInput.addEventListener('input', updateFromColorInput);
-        hexInput.addEventListener('input', updateFromHexInput);
-        hexInput.addEventListener('blur', updateFromHexInput);
-
-        // Инициализируем начальное состояние - синхронизируем с текущим значением
-        updateFromColorInput();
-
-        // Помечаем как инициализированный
-        pickerContainer.dataset.initialized = 'true';
+        colorInput.addEventListener('input', syncFromColor);
+        hexInput.addEventListener('input', syncFromHex);
+        hexInput.addEventListener('blur', syncFromHex);
+        syncFromColor(); // начальное состояние
     });
 }

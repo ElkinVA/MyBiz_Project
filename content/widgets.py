@@ -48,24 +48,34 @@ class ColorPickerWidget(forms.TextInput):
             if len(value) == 4:
                 value = '#' + value[1] + value[1] + value[2] + value[2] + value[3] + value[3]
 
-        # Атрибуты для текстового поля HEX
+        # Базовые атрибуты для текстового поля HEX
         final_attrs = self.build_attrs(self.attrs, attrs)
+        
+        # Объединяем классы корректно
+        base_classes = final_attrs.get('class', '')
+        all_classes = f"{base_classes} color-hex-input".strip()
+        
         final_attrs.update({
-            'type': 'text',
             'name': name,
             'value': value,
-            'class': 'color-hex-input',
             'maxlength': '7',
+            'class': all_classes,
         })
 
-        attrs_string = ' '.join(f'{key}="{val}"' for key, val in final_attrs.items())
+        # Формируем строку атрибутов без type (так как задаем явно)
+        attrs_list = []
+        for key, val in final_attrs.items():
+            if key == 'type':
+                continue  # Пропускаем type из attrs, так как задаем свой
+            attrs_list.append(f'{key}="{val}"')
+        attrs_string = ' '.join(attrs_list)
 
         # Генерируем input type="color" и текстовое поле HEX
         html = f'''
         <div class="color-picker-widget" data-widget="color-picker">
             <div class="color-picker-container">
                 <input type="color" value="{value}">
-                <input {attrs_string} placeholder="#000000">
+                <input type="text" {attrs_string} placeholder="#000000">
                 <div class="color-preview" style="background-color: {value};"></div>
             </div>
         </div>
