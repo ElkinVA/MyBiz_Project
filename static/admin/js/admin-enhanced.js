@@ -168,8 +168,16 @@
         const form = document.querySelector('#content-main form');
         if (!form) return;
 
+        // Проверяем, это ли форма SiteSettings
+        const isSiteSettingsForm = form.querySelector('input[name="color_scheme"]') !== null;
+        if (!isSiteSettingsForm) {
+            console.log('Это не форма SiteSettings, пропускаем автосохранение');
+            return;
+        }
+
         const formInputs = form.querySelectorAll('input, textarea, select');
         const formId = form.id || 'admin_form';
+        let autoSaveTimeout = null;
 
         // Загрузка сохранённых данных
         formInputs.forEach(function(input) {
@@ -186,17 +194,14 @@
             }
         });
 
-        // Сохранение при изменении
+        // Сохранение при изменении с задержкой (debounce)
         formInputs.forEach(function(input) {
             input.addEventListener('change', function() {
-                const inputName = input.name;
-                if (inputName) {
-                    const value = input.type === 'checkbox' ? input.checked : input.value;
-                    localStorage.setItem('autosave_' + formId + '_' + inputName, value);
-
-                    // Показать уведомление
-                    showAutoSaveNotification();
-                }
+                scheduleAutoSave(form, formId);
+            });
+            
+            input.addEventListener('input', function() {
+                scheduleAutoSave(form, formId);
             });
         });
 
@@ -209,6 +214,78 @@
                 }
             });
         });
+    }
+
+    /**
+     * Планирование автосохранения с задержкой
+     */
+    function scheduleAutoSave(form, formId) {
+        // Очищаем предыдущий таймер
+        if (autoSaveTimeout) {
+            clearTimeout(autoSaveTimeout);
+        }
+        
+        // Планируем новое автосохранение через 2 секунды
+        autoSaveTimeout = setTimeout(function() {
+            performAutoSave(form, formId);
+        }, 2000);
+    }
+
+    /**
+     * Реальное автосохранение через AJAX
+     */
+    function performAutoSave(form, formId) {
+        const formData = new FormData(form);
+        
+        // Получаем URL для отправки
+        const actionUrl = form.action || window.location.href;
+        
+        // Получаем CSRF токен
+        const csrfToken = getCookie('csrftoken');
+        
+        fetch(actionUrl, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                showAutoSaveNotification();
+                // Очищаем localStorage после успешного сохранения
+                form.querySelectorAll('input, textarea, select').forEach(function(input) {
+                    if (input.name) {
+                        localStorage.removeItem('autosave_' + formId + '_' + input.name);
+                    }
+                });
+            } else {
+                showAutoSaveError();
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка автосохранения:', error);
+            showAutoSaveError();
+        });
+    }
+
+    /**
+     * Получение CSRF токена из cookie
+     */
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
     }
 
     /**
@@ -244,6 +321,41 @@
                 notification.remove();
             }, 300);
         }, 2000);
+    }
+
+    /**
+     * Уведомление об ошибке автосохранения
+     */
+    function showAutoSaveError() {
+        const existingNotification = document.querySelector('.autosave-notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+
+        const notification = document.createElement('div');
+        notification.className = 'autosave-notification';
+        notification.textContent = '⚠ Ошибка сохранения. Пожалуйста, сохраните вручную.';
+        notification.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+        `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(function() {
+            notification.style.animation = 'slideOut 0.3s ease';
+            setTimeout(function() {
+                notification.remove();
+            }, 300);
+        }, 3000);
     }
 
     /**
