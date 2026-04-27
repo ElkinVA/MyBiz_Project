@@ -5,7 +5,9 @@
 .form-row.field-text_color,
 .form-row.field-background_color,
 .form-row.field-header_bg_color,
+.form-row.field-header_text_color,
 .form-row.field-footer_bg_color,
+.form-row.field-footer_text_color,
 .form-row.field-hero_bg_color {
     display: flex;
     align-items: center;
@@ -24,7 +26,9 @@
 .form-row.field-text_color label,
 .form-row.field-background_color label,
 .form-row.field-header_bg_color label,
+.form-row.field-header_text_color label,
 .form-row.field-footer_bg_color label,
+.form-row.field-footer_text_color label,
 .form-row.field-hero_bg_color label {
     flex: 0 0 130px;          /* фиксированная ширина метки */
     margin-right: 10px;
@@ -41,7 +45,9 @@
 .form-row.field-text_color .color-picker-widget,
 .form-row.field-background_color .color-picker-widget,
 .form-row.field-header_bg_color .color-picker-widget,
+.form-row.field-header_text_color .color-picker-widget,
 .form-row.field-footer_bg_color .color-picker-widget,
+.form-row.field-footer_text_color .color-picker-widget,
 .form-row.field-hero_bg_color .color-picker-widget {
     flex: 1 1 auto;
 }
@@ -53,7 +59,9 @@
     .form-row.field-text_color,
     .form-row.field-background_color,
     .form-row.field-header_bg_color,
+    .form-row.field-header_text_color,
     .form-row.field-footer_bg_color,
+    .form-row.field-footer_text_color,
     .form-row.field-hero_bg_color {
         width: 100%;
         margin-right: 0;

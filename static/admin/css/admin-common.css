@@ -7,7 +7,9 @@
 .form-row.field-text_color,
 .form-row.field-background_color,
 .form-row.field-header_bg_color,
+.form-row.field-header_text_color,
 .form-row.field-footer_bg_color,
+.form-row.field-footer_text_color,
 .form-row.field-hero_bg_color {
     background: #f9f9f9;
     padding: 15px;
@@ -22,7 +24,9 @@
 .form-row.field-text_color label,
 .form-row.field-background_color label,
 .form-row.field-header_bg_color label,
+.form-row.field-header_text_color label,
 .form-row.field-footer_bg_color label,
+.form-row.field-footer_text_color label,
 .form-row.field-hero_bg_color label {
     font-weight: 600;
     margin-bottom: 10px;
@@ -37,7 +41,9 @@
 .form-row.field-text_color .help,
 .form-row.field-background_color .help,
 .form-row.field-header_bg_color .help,
+.form-row.field-header_text_color .help,
 .form-row.field-footer_bg_color .help,
+.form-row.field-footer_text_color .help,
 .form-row.field-hero_bg_color .help {
     color: #666;
     font-size: 12px;
@@ -53,7 +59,9 @@
     .form-row.field-text_color,
     .form-row.field-background_color,
     .form-row.field-header_bg_color,
+    .form-row.field-header_text_color,
     .form-row.field-footer_bg_color,
+    .form-row.field-footer_text_color,
     .form-row.field-hero_bg_color {
         background: #2d2d2d;
         border-color: #444;
@@ -64,7 +72,9 @@
     .form-row.field-text_color label,
     .form-row.field-background_color label,
     .form-row.field-header_bg_color label,
+    .form-row.field-header_text_color label,
     .form-row.field-footer_bg_color label,
+    .form-row.field-footer_text_color label,
     .form-row.field-hero_bg_color label {
         color: #ddd;
     }
@@ -74,7 +84,9 @@
     .form-row.field-text_color .help,
     .form-row.field-background_color .help,
     .form-row.field-header_bg_color .help,
+    .form-row.field-header_text_color .help,
     .form-row.field-footer_bg_color .help,
+    .form-row.field-footer_text_color .help,
     .form-row.field-hero_bg_color .help {
         color: #aaa;
     }
