@@ -41,6 +41,11 @@ function initializeColorPickers() {
         function updateFromColorInput() {
             const colorValue = colorInput.value;
             hexInput.value = colorValue;
+            // Обновляем отображение HEX-кода
+            const hexDisplay = pickerContainer.querySelector('.color-hex-display');
+            if (hexDisplay) {
+                hexDisplay.textContent = colorValue.toUpperCase();
+            }
             // Небольшое изменение границы для визуального отклика
             colorInput.style.borderColor = adjustBrightness(colorValue, -0.3);
         }
@@ -63,6 +68,11 @@ function initializeColorPickers() {
                     hexInput.value = value;
                 }
                 colorInput.value = value;
+                // Обновляем отображение HEX-кода
+                const hexDisplay = pickerContainer.querySelector('.color-hex-display');
+                if (hexDisplay) {
+                    hexDisplay.textContent = value.toUpperCase();
+                }
                 colorInput.style.borderColor = adjustBrightness(value, -0.3);
             }
         }, 300);

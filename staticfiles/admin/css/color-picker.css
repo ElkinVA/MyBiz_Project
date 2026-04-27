@@ -77,6 +77,21 @@
     flex-shrink: 0 !important;
 }
 
+/* Отображение HEX-кода рядом с цветовым квадратом */
+.color-hex-display {
+    font-family: 'Courier New', monospace !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #374151 !important;
+    background-color: #f3f4f6 !important;
+    padding: 6px 10px !important;
+    border-radius: 4px !important;
+    border: 1px solid #e5e7eb !important;
+    min-width: 75px !important;
+    text-align: center !important;
+    letter-spacing: 0.5px !important;
+}
+
 .color-picker-text {
     flex: 0 1 auto !important;
 }

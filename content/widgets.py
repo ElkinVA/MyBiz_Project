@@ -49,12 +49,13 @@ class ColorPickerWidget(forms.TextInput):
 
         attrs_string = ' '.join(f'{key}="{val}"' for key, val in final_attrs.items())
 
-        # Генерируем input type="color" и текстовое поле HEX
+        # Генерируем input type="color" и текстовое поле HEX с явным отображением HEX-кода
         html = f'''
         <div class="color-picker-widget" data-widget="color-picker">
             <div class="color-picker-container">
                 <input type="color" value="{value}">
                 <input {attrs_string} placeholder="#000000">
+                <span class="color-hex-display">{value.upper()}</span>
                 <div class="color-preview" style="background-color: {value};"></div>
             </div>
         </div>

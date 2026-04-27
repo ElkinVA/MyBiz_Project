@@ -36,17 +36,14 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             'classes': ('collapse',),
             'description': 'Базовая информация о сайте'
         }),
-        ('🎨 Цветовая схема', {
-            'fields': ('color_scheme',),
-            'classes': ('collapse',),
-        }),
-        ('🖌️ Палитра бренда', {
+        ('🎨 Цвета и схемы', {
             'fields': (
+                'color_scheme',
                 ('primary_color', 'secondary_color', 'accent_color'),
                 ('text_color', 'background_color', 'border_color'),
             ),
             'classes': ('collapse',),
-            'description': 'Основные цвета бренда и текста. Изменение переключает на пользовательскую схему.'
+            'description': 'Выберите готовую цветовую схему или настройте цвета вручную. Изменение цветов переключает на пользовательскую схему.'
         }),
         ('🖥️ Шапка сайта (Header)', {
             'fields': (
