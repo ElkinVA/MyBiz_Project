@@ -4,26 +4,28 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-.Python
-env/
-venv/
-.venv/
-.ENV
-.ENV.local
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Logs
+*.log
+
+# Environment
 .env
 .env.local
-.env.*
+*.env.*
 
-# Coverage
-.coverage
-coverage/
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tmp
 
-# Django
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-
-# Media files (if not intended for version control)
-media/
+# OS
+.DS_Store
+Thumbs.db
 ```

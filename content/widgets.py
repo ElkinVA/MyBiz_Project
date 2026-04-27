@@ -26,7 +26,6 @@ class ColorPickerWidget(forms.TextInput):
 
     def __init__(self, attrs=None):
         default_attrs = {
-            'class': 'vColorPickerField',
             'placeholder': '#000000',
             'pattern': '^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$',
         }
@@ -48,7 +47,7 @@ class ColorPickerWidget(forms.TextInput):
             if len(value) == 4:
                 value = '#' + value[1] + value[1] + value[2] + value[2] + value[3] + value[3]
 
-        # Базовые атрибуты для текстового поля HEX
+        # Базовые атрибуты для скрытого поля, которое будет отправлять значение
         final_attrs = self.build_attrs(self.attrs, attrs)
         
         # Объединяем классы корректно
@@ -56,17 +55,16 @@ class ColorPickerWidget(forms.TextInput):
         all_classes = f"{base_classes} color-hex-input".strip()
         
         final_attrs.update({
+            'type': 'text',
             'name': name,
             'value': value,
             'maxlength': '7',
             'class': all_classes,
         })
 
-        # Формируем строку атрибутов без type (так как задаем явно)
+        # Формируем строку атрибутов
         attrs_list = []
         for key, val in final_attrs.items():
-            if key == 'type':
-                continue  # Пропускаем type из attrs, так как задаем свой
             attrs_list.append(f'{key}="{val}"')
         attrs_string = ' '.join(attrs_list)
 
@@ -75,7 +73,7 @@ class ColorPickerWidget(forms.TextInput):
         <div class="color-picker-widget" data-widget="color-picker">
             <div class="color-picker-container">
                 <input type="color" value="{value}">
-                <input type="text" {attrs_string} placeholder="#000000">
+                <input {attrs_string}>
                 <div class="color-preview" style="background-color: {value};"></div>
             </div>
         </div>
