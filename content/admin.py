@@ -38,14 +38,14 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         }),
         ('🎨 Цветовая схема', {
             'fields': ('color_scheme',),
-            'classes': ('wide',),
+            'classes': ('collapse',),
         }),
         ('🖌️ Палитра бренда', {
             'fields': (
                 ('primary_color', 'secondary_color', 'accent_color'),
                 ('text_color', 'background_color', 'border_color'),
             ),
-            'classes': ('wide', 'collapse'),
+            'classes': ('collapse',),
             'description': 'Основные цвета бренда и текста. Изменение переключает на пользовательскую схему.'
         }),
         ('🖥️ Шапка сайта (Header)', {
@@ -55,7 +55,7 @@ class SiteSettingsAdmin(admin.ModelAdmin):
                 'logo',
                 ('header_bg_color', 'header_text_color'),
             ),
-            'classes': ('wide', 'collapse'),
+            'classes': ('collapse',),
             'description': 'Название, слоган, логотип и цвета шапки'
         }),
         ('🖼️ Hero-секция', {

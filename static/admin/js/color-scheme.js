@@ -270,13 +270,22 @@ function initializeColorScheme() {
     }
 
     // ---- УЛУЧШЕННЫЙ ПОИСК ПОЛЕЙ ЦВЕТА ----
-    const colorFieldsByName = document.querySelectorAll('input[name$="_color"]');
+    // Ищем только поля палитры бренда, НЕ header/footer цвета
+    const brandColorFields = [
+        'input[name="primary_color"]',
+        'input[name="secondary_color"]',
+        'input[name="accent_color"]',
+        'input[name="text_color"]',
+        'input[name="background_color"]',
+        'input[name="border_color"]'
+    ].map(selector => document.querySelector(selector)).filter(el => el);
+
     const colorPickers = document.querySelectorAll('input[type="color"]');
     const hexFields = document.querySelectorAll('input.color-hex-input');
 
-    // Объединяем в один массив (без повторов)
-    const allColorFields = [...new Set([...colorFieldsByName, ...colorPickers, ...hexFields])];
-    console.log('Найдено полей цвета:', allColorFields.length);
+    // Объединяем только поля палитры бренда
+    const allColorFields = [...new Set([...brandColorFields, ...colorPickers, ...hexFields])];
+    console.log('Найдено полей цвета палитры бренда:', allColorFields.length);
 
     // Добавляем обработчики на все найденные поля
     allColorFields.forEach(field => {

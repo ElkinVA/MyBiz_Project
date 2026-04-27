@@ -108,17 +108,21 @@
     color: white;
 }
 
-/* Описание текущей схемы */
+/* Описание текущей схемы - стиль как у заголовков сворачиваемых разделов */
 .color-scheme-description {
-    padding: 10px 0;
+    padding: 10px 15px;
     margin-bottom: 15px;
+    background: #f8f9fa;
+    border: 1px solid #e1e8ed;
+    border-radius: 4px;
 }
 
 .color-scheme-description strong {
-    color: #666;
-    font-size: 12px;
-    font-weight: 500;
+    color: #333;
+    font-size: 14px;
+    font-weight: 600;
     display: block;
+    margin: 0;
 }
 
 /* Уведомление о применении схемы */
