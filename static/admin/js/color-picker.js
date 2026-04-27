@@ -52,7 +52,7 @@ function initializeColorPickers() {
 
         // Функция обновления из HEX-поля с debounce
         const updateFromHexInput = debounce(function() {
-            let value = hexInput.value;
+            let value = hexInput.value.trim();
 
             // Добавляем # если его нет
             if (value && !value.startsWith('#')) {
@@ -65,7 +65,10 @@ function initializeColorPickers() {
                 // Если короткий формат (#RGB), преобразуем в полный (#RRGGBB)
                 if (value.length === 4) {
                     value = '#' + value[1] + value[1] + value[2] + value[2] + value[3] + value[3];
-                    hexInput.value = value;
+                    hexInput.value = value.toLowerCase();
+                } else if (value.length === 7) {
+                    // Нормализуем к нижнему регистру
+                    hexInput.value = value.toLowerCase();
                 }
                 colorInput.value = value;
                 // Обновляем превью цвета
@@ -118,7 +121,7 @@ function initializeColorPickers() {
         hexInput.addEventListener('input', updateFromHexInput);
         hexInput.addEventListener('blur', updateFromHexInput);
 
-        // Инициализируем начальное состояние
+        // Инициализируем начальное состояние - синхронизируем с текущим значением
         updateFromColorInput();
 
         // Помечаем как инициализированный
