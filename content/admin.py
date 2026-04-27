@@ -85,8 +85,9 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
         ('⚙️ Дополнительно', {
-            'fields': ('footer_bg_color', 'border_color'),
-            'classes': ('collapse',)
+            'fields': ('footer_bg_color', 'footer_text_color', 'border_color'),
+            'classes': ('collapse',),
+            'description': 'Настройки подвала и границ'
         }),
     )
 

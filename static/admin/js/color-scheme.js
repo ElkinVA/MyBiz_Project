@@ -70,8 +70,11 @@ function initializeColorScheme() {
             text_color: '#1E2B26',
             background_color: '#F3F0E9',
             header_bg_color: '#FFFFFF',
+            header_text_color: '#1E2B26',
             footer_bg_color: '#2C4238',
-            hero_bg_color: '#DFD9CE'
+            footer_text_color: '#F3F0E9',
+            hero_bg_color: '#DFD9CE',
+            border_color: '#D4C5B0'
         },
         'coffee': {
             primary_color: '#87492E',
@@ -80,8 +83,11 @@ function initializeColorScheme() {
             text_color: '#342015',
             background_color: '#FCF5E8',
             header_bg_color: '#FFFFFF',
+            header_text_color: '#342015',
             footer_bg_color: '#583C2B',
-            hero_bg_color: '#F0E2D3'
+            footer_text_color: '#FCF5E8',
+            hero_bg_color: '#F0E2D3',
+            border_color: '#E6D5C3'
         },
         'flower': {
             primary_color: '#8F2E55',
@@ -90,8 +96,11 @@ function initializeColorScheme() {
             text_color: '#2D232E',
             background_color: '#FEF6F9',
             header_bg_color: '#FFFFFF',
+            header_text_color: '#2D232E',
             footer_bg_color: '#663A5F',
-            hero_bg_color: '#FCE4E4'
+            footer_text_color: '#FEF6F9',
+            hero_bg_color: '#FCE4E4',
+            border_color: '#F5D5E0'
         },
         'vintage': {
             primary_color: '#5F4F3F',
@@ -100,8 +109,11 @@ function initializeColorScheme() {
             text_color: '#31261D',
             background_color: '#EEE7DF',
             header_bg_color: '#F8F1E8',
+            header_text_color: '#31261D',
             footer_bg_color: '#53453A',
-            hero_bg_color: '#DBCFC2'
+            footer_text_color: '#EEE7DF',
+            hero_bg_color: '#DBCFC2',
+            border_color: '#D5C5B5'
         },
         'pastel': {
             primary_color: '#2E5454',
@@ -110,8 +122,11 @@ function initializeColorScheme() {
             text_color: '#202A33',
             background_color: '#F9F6F0',
             header_bg_color: '#FFFFFF',
+            header_text_color: '#202A33',
             footer_bg_color: '#38434D',
-            hero_bg_color: '#E2F0F0'
+            footer_text_color: '#F9F6F0',
+            hero_bg_color: '#E2F0F0',
+            border_color: '#D8E0E0'
         },
         'custom': null
     };
@@ -185,14 +200,18 @@ function initializeColorScheme() {
                 <div class="color-scheme-color" style="background: linear-gradient(135deg, #667eea, #764ba2);" title="Primary"></div>
                 <div class="color-scheme-color" style="background: linear-gradient(135deg, #764ba2, #f093fb);" title="Secondary"></div>
                 <div class="color-scheme-color" style="background: linear-gradient(135deg, #f093fb, #f5576c);" title="Accent"></div>
-                <div class="color-scheme-color" style="background: linear-gradient(135deg, #4facfe, #00f2fe);" title="Text"></div>
+                <div class="color-scheme-color" style="background: linear-gradient(135deg, #4facfe, #00f2fe);" title="Header BG"></div>
+                <div class="color-scheme-color" style="background: linear-gradient(135deg, #f5af19, #f12711);" title="Footer BG"></div>
+                <div class="color-scheme-color" style="background: linear-gradient(135deg, #11998e, #38ef7d);" title="Footer Text"></div>
             `;
         } else if (colors) {
             colorsHtml = `
                 <div class="color-scheme-color" style="background: ${colors.primary_color};" title="Primary"></div>
                 <div class="color-scheme-color" style="background: ${colors.secondary_color};" title="Secondary"></div>
                 <div class="color-scheme-color" style="background: ${colors.accent_color};" title="Accent"></div>
-                <div class="color-scheme-color" style="background: ${colors.text_color};" title="Text"></div>
+                <div class="color-scheme-color" style="background: ${colors.header_bg_color};" title="Header BG"></div>
+                <div class="color-scheme-color" style="background: ${colors.footer_bg_color};" title="Footer BG"></div>
+                <div class="color-scheme-color" style="background: ${colors.footer_text_color};" title="Footer Text"></div>
             `;
         }
 

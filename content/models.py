@@ -163,6 +163,7 @@ class SiteSettings(models.Model):
     border_color = models.CharField(max_length=7, default='#e5e7eb', verbose_name="Цвет границ")
 
     header_text_color = models.CharField(max_length=7, default='#1f2937', verbose_name="Цвет текста в шапке")
+    footer_text_color = models.CharField(max_length=7, default='#f9fafb', verbose_name="Цвет текста в подвале")
 
     welcome_text = CKEditor5Field(
         blank=True,
@@ -213,6 +214,8 @@ class SiteSettings(models.Model):
         else:
             self.pk = 1
 
+        # Если выбрана пользовательская схема, не перезаписываем цвета
+        # Если выбрана готовая схема - применяем её цвета
         if self.color_scheme != 'custom':
             colors = SiteSettings.get_scheme_colors_by_name(self.color_scheme)
             for field_name, color_value in colors.items():
@@ -227,7 +230,7 @@ class SiteSettings(models.Model):
             'primary_color', 'secondary_color', 'accent_color',
             'text_color', 'background_color', 'header_bg_color',
             'footer_bg_color', 'hero_bg_color', 'border_color',
-            'header_text_color'
+            'header_text_color', 'footer_text_color'
         ]
         for field_name in hex_fields:
             color = getattr(self, field_name, '')
@@ -282,8 +285,9 @@ class SiteSettings(models.Model):
                 'header_bg_color': '#FFFFFF',
                 'header_text_color': '#1E2B26',
                 'footer_bg_color': '#2C4238',
+                'footer_text_color': '#F3F0E9',
                 'hero_bg_color': '#DFD9CE',
-                'border_color': '#e5e7eb',
+                'border_color': '#D4C5B0',
             },
             'coffee': {
                 'primary_color': '#87492E',
@@ -294,8 +298,9 @@ class SiteSettings(models.Model):
                 'header_bg_color': '#FFFFFF',
                 'header_text_color': '#342015',
                 'footer_bg_color': '#583C2B',
+                'footer_text_color': '#FCF5E8',
                 'hero_bg_color': '#F0E2D3',
-                'border_color': '#e5e7eb',
+                'border_color': '#E6D5C3',
             },
             'flower': {
                 'primary_color': '#8F2E55',
@@ -306,8 +311,9 @@ class SiteSettings(models.Model):
                 'header_bg_color': '#FFFFFF',
                 'header_text_color': '#2D232E',
                 'footer_bg_color': '#663A5F',
+                'footer_text_color': '#FEF6F9',
                 'hero_bg_color': '#FCE4E4',
-                'border_color': '#e5e7eb',
+                'border_color': '#F5D5E0',
             },
             'vintage': {
                 'primary_color': '#5F4F3F',
@@ -318,8 +324,9 @@ class SiteSettings(models.Model):
                 'header_bg_color': '#F8F1E8',
                 'header_text_color': '#31261D',
                 'footer_bg_color': '#53453A',
+                'footer_text_color': '#EEE7DF',
                 'hero_bg_color': '#DBCFC2',
-                'border_color': '#e5e7eb',
+                'border_color': '#D5C5B5',
             },
             'pastel': {
                 'primary_color': '#2E5454',
@@ -330,8 +337,9 @@ class SiteSettings(models.Model):
                 'header_bg_color': '#FFFFFF',
                 'header_text_color': '#202A33',
                 'footer_bg_color': '#38434D',
+                'footer_text_color': '#F9F6F0',
                 'hero_bg_color': '#E2F0F0',
-                'border_color': '#e5e7eb',
+                'border_color': '#D8E0E0',
             },
             'custom': {}
         }
