@@ -233,7 +233,6 @@ function initializeColorScheme() {
     previewContainer.innerHTML = `
         <div class="color-scheme-description">
             <strong>🎨 Текущая схема: ${schemeNames[currentScheme] || 'Дерево'}</strong>
-            <p></p>
         </div>
         <div class="color-scheme-options">
             ${optionsHtml}

@@ -33,12 +33,12 @@ class SiteSettingsAdmin(admin.ModelAdmin):
     fieldsets = (
         ('📋 Основные настройки', {
             'fields': ('favicon',),
+            'classes': ('collapse',),
             'description': 'Базовая информация о сайте'
         }),
         ('🎨 Цветовая схема', {
             'fields': ('color_scheme',),
             'classes': ('wide',),
-            'description': 'Выберите готовую схему или настройте цвета вручную'
         }),
         ('🖌️ Палитра бренда', {
             'fields': (
@@ -55,8 +55,8 @@ class SiteSettingsAdmin(admin.ModelAdmin):
                 'logo',
                 ('header_bg_color', 'header_text_color'),
             ),
-            'classes': ('wide',),
-            'description': 'Название, слоган, логотип и цвета шапки. Цвета участвуют в предустановленных схемах.'
+            'classes': ('wide', 'collapse'),
+            'description': 'Название, слоган, логотип и цвета шапки'
         }),
         ('🖼️ Hero-секция', {
             'fields': (
@@ -96,7 +96,7 @@ class SiteSettingsAdmin(admin.ModelAdmin):
                 ('footer_bg_color', 'footer_text_color'),
             ),
             'classes': ('collapse',),
-            'description': 'Цвета подвала участвуют в предустановленных схемах'
+            'description': 'Цвета подвала'
         }),
         ('📊 SEO настройки', {
             'fields': ('meta_title', 'meta_description', 'meta_keywords'),
