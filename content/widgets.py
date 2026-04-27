@@ -37,25 +37,14 @@ class ColorPickerWidget(forms.TextInput):
     def render(self, name, value, attrs=None, renderer=None):
         if value is None:
             value = '#000000'
-        elif not value.startswith('#'):
-            value = '#' + value
 
-        # Нормализуем значение до 6 символов
-        hex_value = value.lstrip('#')
-        if len(hex_value) == 3:
-            hex_value = ''.join([c*2 for c in hex_value])
-        value = '#' + hex_value.lower()
-
-        # Атрибуты для поля ввода HEX (основное поле для редактирования)
+        # Атрибуты для скрытого поля, которое будет отправлять значение
         final_attrs = self.build_attrs(self.attrs, attrs)
         final_attrs.update({
-            'type': 'text',
+            'type': 'text',    # текстовое поле для хранения HEX (синхронизируется с color input)
             'name': name,
             'value': value,
-            'class': 'color-hex-input',
-            'placeholder': '#000000',
-            'pattern': '^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$',
-            'maxlength': '7',
+            'class': 'color-hex-input',  # класс для JS
         })
 
         attrs_string = ' '.join(f'{key}="{val}"' for key, val in final_attrs.items())
@@ -64,8 +53,8 @@ class ColorPickerWidget(forms.TextInput):
         html = f'''
         <div class="color-picker-widget" data-widget="color-picker">
             <div class="color-picker-container">
-                <input type="color" value="{value}" title="Выберите цвет">
-                <input {attrs_string}>
+                <input type="color" value="{value}">
+                <input {attrs_string} placeholder="#000000">
                 <div class="color-preview" style="background-color: {value};"></div>
             </div>
         </div>

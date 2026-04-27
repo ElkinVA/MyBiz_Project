@@ -8,7 +8,8 @@
 .field-header_text_color,
 .field-footer_bg_color,
 .field-footer_text_color,
-.field-hero_bg_color {
+.field-hero_bg_color,
+.field-border_color {
     width: 50% !important;
     float: left !important;
     clear: none !important;
@@ -27,7 +28,8 @@
 .field-header_text_color .row,
 .field-footer_bg_color .row,
 .field-footer_text_color .row,
-.field-hero_bg_color .row {
+.field-hero_bg_color .row,
+.field-border_color .row {
     display: flex !important;
     align-items: center !important;
     margin: 0 !important;
@@ -44,7 +46,8 @@
 .field-header_text_color .col-sm-3,
 .field-footer_bg_color .col-sm-3,
 .field-footer_text_color .col-sm-3,
-.field-hero_bg_color .col-sm-3 {
+.field-hero_bg_color .col-sm-3,
+.field-border_color .col-sm-3 {
     flex: 0 0 140px !important;
     padding-right: 10px !important;
     padding-left: 0 !important;
@@ -65,7 +68,8 @@
 .field-header_text_color .col-sm-9,
 .field-footer_bg_color .col-sm-9,
 .field-footer_text_color .col-sm-9,
-.field-hero_bg_color .col-sm-9 {
+.field-hero_bg_color .col-sm-9,
+.field-border_color .col-sm-9 {
     flex: 1 1 auto !important;
     padding: 0 !important;
     margin: 0 !important;
@@ -129,7 +133,8 @@
 .field-header_text_color .help-block,
 .field-footer_bg_color .help-block,
 .field-footer_text_color .help-block,
-.field-hero_bg_color .help-block {
+.field-hero_bg_color .help-block,
+.field-border_color .help-block {
     display: none !important;
 }
 
@@ -143,7 +148,8 @@
 .field-header_text_color .text-red,
 .field-footer_bg_color .text-red,
 .field-footer_text_color .text-red,
-.field-hero_bg_color .text-red {
+.field-hero_bg_color .text-red,
+.field-border_color .text-red {
     display: none !important;
 }
 
@@ -163,7 +169,8 @@
     .field-header_text_color,
     .field-footer_bg_color,
     .field-footer_text_color,
-    .field-hero_bg_color {
+    .field-hero_bg_color,
+    .field-border_color {
         width: 100% !important;
         float: none !important;
         padding: 5px 0 !important;
