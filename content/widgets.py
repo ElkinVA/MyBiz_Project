@@ -35,16 +35,27 @@ class ColorPickerWidget(forms.TextInput):
         super().__init__(default_attrs)
 
     def render(self, name, value, attrs=None, renderer=None):
-        if value is None:
+        # Нормализация HEX-значения
+        if not value or value.strip() == '':
             value = '#000000'
+        else:
+            # Добавляем # если его нет
+            if not value.startswith('#'):
+                value = '#' + value
+            # Преобразуем к нижнему регистру
+            value = value.lower()
+            # Если короткий формат (#RGB), преобразуем в полный (#RRGGBB)
+            if len(value) == 4:
+                value = '#' + value[1] + value[1] + value[2] + value[2] + value[3] + value[3]
 
-        # Атрибуты для скрытого поля, которое будет отправлять значение
+        # Атрибуты для текстового поля HEX
         final_attrs = self.build_attrs(self.attrs, attrs)
         final_attrs.update({
-            'type': 'text',    # текстовое поле для хранения HEX (синхронизируется с color input)
+            'type': 'text',
             'name': name,
             'value': value,
-            'class': 'color-hex-input',  # класс для JS
+            'class': 'color-hex-input',
+            'maxlength': '7',
         })
 
         attrs_string = ' '.join(f'{key}="{val}"' for key, val in final_attrs.items())
