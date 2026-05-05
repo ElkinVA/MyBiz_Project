@@ -88,6 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
         div.className = 'contrast-indicator';
         div.innerHTML = `
             <div class="contrast-label">${pair.label}</div>
+            <div class="contrast-info-icon" title="Контрастность цветов проверяется по стандартам WCAG 2.1 для обеспечения доступности сайта для людей с нарушениями зрения">ℹ️</div>
             <div class="contrast-ratio">
                 <span class="ratio-value">--</span>
                 <span class="ratio-status"></span>

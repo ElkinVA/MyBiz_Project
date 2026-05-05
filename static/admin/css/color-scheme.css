@@ -243,6 +243,22 @@
     margin-right: 2%;
     vertical-align: top;
     box-sizing: border-box;
+    position: relative;
+}
+
+/* Иконка информации в правом верхнем углу блока */
+.contrast-info-icon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 16px;
+    cursor: help;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.contrast-info-icon:hover {
+    opacity: 1;
 }
 
 /* Убираем margin у каждого второго индикатора (чётные) */
