@@ -152,9 +152,9 @@ class SiteSettings(models.Model):
         validators=[validate_image_extension, validate_image_size, validate_image_dimensions]
     )
 
-    primary_color = models.CharField(max_length=7, default='#3b82f6', verbose_name="Основной цвет (Primary)")
-    secondary_color = models.CharField(max_length=7, default='#8b5cf6', verbose_name="Вторичный цвет (Secondary)")
-    accent_color = models.CharField(max_length=7, default='#10b981', verbose_name="Акцентный цвет (Accent)")
+    primary_color = models.CharField(max_length=7, default='#3b82f6', verbose_name="Основной цвет")
+    secondary_color = models.CharField(max_length=7, default='#8b5cf6', verbose_name="Вторичный цвет")
+    accent_color = models.CharField(max_length=7, default='#10b981', verbose_name="Акцентный цвет")
     text_color = models.CharField(max_length=7, default='#1f2937', verbose_name="Цвет текста")
     background_color = models.CharField(max_length=7, default='#f9fafb', verbose_name="Цвет фона")
     header_bg_color = models.CharField(max_length=7, default='#ffffff', verbose_name="Фон шапки")
