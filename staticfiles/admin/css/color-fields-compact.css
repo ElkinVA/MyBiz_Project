@@ -56,7 +56,7 @@
     width: 100% !important;
 }
 
-/* Контейнер виджета выбора цвета */
+/* Контейнер виджета выбора цвета - добавляем внутренние отступы */
 .form-row.field-primary_color .color-picker-widget,
 .form-row.field-secondary_color .color-picker-widget,
 .form-row.field-accent_color .color-picker-widget,
@@ -69,6 +69,8 @@
 .form-row.field-footer_text_color .color-picker-widget,
 .form-row.field-hero_bg_color .color-picker-widget {
     width: 100% !important;
+    padding: 8px 0 0 0 !important;
+    box-sizing: border-box !important;
 }
 
 /* Адаптивность для планшетов */

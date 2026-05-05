@@ -367,6 +367,33 @@ fieldset.collapse.collapsed h2 {
     border-bottom: none;
 }
 
+/* Исправление отступов в раскрытых collapsible fieldsets */
+fieldset.collapse:not(.collapsed) .form-row {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+}
+
+fieldset.collapse:not(.collapsed) .aligned label {
+    min-width: 140px !important;
+    width: 140px !important;
+    padding-right: 10px !important;
+}
+
+fieldset.collapse:not(.collapsed) .aligned label + p,
+fieldset.collapse:not(.collapsed) .aligned label + div.help,
+fieldset.collapse:not(.collapsed) .aligned label + div.readonly {
+    margin-left: 150px !important;
+    padding-left: 10px !important;
+}
+
+/* Для темной темы */
+@media (prefers-color-scheme: dark) {
+    fieldset.collapse h2 {
+        background: #1f2937;
+        border-bottom-color: #374151;
+    }
+}
+
 /* --- User Info --- */
 .admin-user-info {
     display: flex;
