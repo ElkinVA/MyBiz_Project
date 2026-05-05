@@ -20,44 +20,6 @@
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* Цветовые поля в одну строку */
-.form-row.field-primary_color,
-.form-row.field-secondary_color,
-.form-row.field-accent_color,
-.form-row.field-text_color,
-.form-row.field-background_color,
-.form-row.field-header_bg_color,
-.form-row.field-footer_bg_color,
-.form-row.field-hero_bg_color {
-    display: inline-block;
-    width: 48%;
-    margin-right: 2%;
-    vertical-align: top;
-}
-
-.form-row.field-primary_color:nth-child(even),
-.form-row.field-secondary_color:nth-child(even),
-.form-row.field-accent_color:nth-child(even),
-.form-row.field-text_color:nth-child(even),
-.form-row.field-background_color:nth-child(even),
-.form-row.field-header_bg_color:nth-child(even),
-.form-row.field-footer_bg_color:nth-child(even),
-.form-row.field-hero_bg_color:nth-child(even) {
-    margin-right: 0;
-}
-
-/* Превью цветов */
-.color-preview-box {
-    display: inline-block;
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    border: 2px solid #e5e7eb;
-    margin-left: 10px;
-    vertical-align: middle;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
 /* Поля изображений */
 .field-logo .file-upload,
 .field-favicon .file-upload,
@@ -78,17 +40,7 @@
 
 /* Адаптация для мобильных */
 @media (max-width: 768px) {
-    .form-row.field-primary_color,
-    .form-row.field-secondary_color,
-    .form-row.field-accent_color,
-    .form-row.field-text_color,
-    .form-row.field-background_color,
-    .form-row.field-header_bg_color,
-    .form-row.field-footer_bg_color,
-    .form-row.field-hero_bg_color {
-        width: 100%;
-        margin-right: 0;
-    }
+    /* На мобильных все поля в одну колонку */
 }
 
 /* Уведомление о сохранении */
