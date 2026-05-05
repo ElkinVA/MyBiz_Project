@@ -16,7 +16,7 @@
     float: left !important;
     clear: none !important;
     margin: 0 1% 15px 0 !important;
-    padding: 8px 0 0 0 !important;
+    padding: 8px 12px 0 12px !important; /* Добавлены отступы слева и справа (12px) */
     box-sizing: border-box !important;
     background: transparent !important;
     border: none !important;

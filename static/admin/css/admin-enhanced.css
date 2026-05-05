@@ -386,6 +386,21 @@ fieldset.collapse:not(.collapsed) .aligned label + div.readonly {
     padding-left: 10px !important;
 }
 
+/* Специальные правила для цветовых полей внутри collapsible fieldsets */
+fieldset.collapse:not(.collapsed) .form-row.field-primary_color,
+fieldset.collapse:not(.collapsed) .form-row.field-secondary_color,
+fieldset.collapse:not(.collapsed) .form-row.field-accent_color,
+fieldset.collapse:not(.collapsed) .form-row.field-text_color,
+fieldset.collapse:not(.collapsed) .form-row.field-background_color,
+fieldset.collapse:not(.collapsed) .form-row.field-border_color,
+fieldset.collapse:not(.collapsed) .form-row.field-header_bg_color,
+fieldset.collapse:not(.collapsed) .form-row.field-header_text_color,
+fieldset.collapse:not(.collapsed) .form-row.field-footer_bg_color,
+fieldset.collapse:not(.collapsed) .form-row.field-footer_text_color,
+fieldset.collapse:not(.collapsed) .form-row.field-hero_bg_color {
+    padding: 8px 12px 0 12px !important; /* Гарантируем отступы внутри раскрытых секций */
+}
+
 /* Для темной темы */
 @media (prefers-color-scheme: dark) {
     fieldset.collapse h2 {
