@@ -242,6 +242,15 @@
             }
         });
 
+        // Отслеживаем клик по кнопкам сохранения и отправки формы
+        const submitButtons = changeForm.querySelectorAll('input[type="submit"], button[type="submit"], .submit-row input, .submit-row button');
+        submitButtons.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                isSubmitting = true;
+                hasUnsavedChanges = false;
+            });
+        });
+
         // После успешной отправки формы сбрасываем флаг
         changeForm.addEventListener('submit', function() {
             isSubmitting = true;

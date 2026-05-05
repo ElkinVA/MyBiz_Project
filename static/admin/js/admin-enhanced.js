@@ -217,6 +217,8 @@
 
         // Флаг для отслеживания изменений
         let hasUnsavedChanges = false;
+        // Флаг отправки формы
+        let isSubmitting = false;
 
         // Получаем все поля ввода кроме скрытых и кнопок
         const formInputs = changeForm.querySelectorAll('input:not([type="hidden"]):not([type="submit"]):not([type="button"]), textarea, select');
@@ -233,15 +235,25 @@
 
         // Предупреждение при попытке уйти с страницы с несохранёнными изменениями
         window.addEventListener('beforeunload', function(e) {
-            if (hasUnsavedChanges) {
+            if (hasUnsavedChanges && !isSubmitting) {
                 e.preventDefault();
                 e.returnValue = '';
                 return '';
             }
         });
 
+        // Отслеживаем клик по кнопкам сохранения и отправки формы
+        const submitButtons = changeForm.querySelectorAll('input[type="submit"], button[type="submit"], .submit-row input, .submit-row button');
+        submitButtons.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                isSubmitting = true;
+                hasUnsavedChanges = false;
+            });
+        });
+
         // После успешной отправки формы сбрасываем флаг
         changeForm.addEventListener('submit', function() {
+            isSubmitting = true;
             hasUnsavedChanges = false;
         });
     }
