@@ -252,13 +252,43 @@
     top: 8px;
     right: 8px;
     font-size: 16px;
-    cursor: help;
+    cursor: default;
     opacity: 0.7;
     transition: opacity 0.2s ease;
 }
 
 .contrast-info-icon:hover {
     opacity: 1;
+}
+
+/* Тултип с информацией о WCAG */
+.contrast-info-icon::after {
+    content: attr(title);
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: #333;
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    line-height: 1.5;
+    white-space: normal;
+    width: 280px;
+    max-width: 300px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-5px);
+    transition: all 0.2s ease;
+    pointer-events: none;
+}
+
+.contrast-info-icon:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
 }
 
 /* Убираем margin у каждого второго индикатора (чётные) */

@@ -1,4 +1,29 @@
 ```
-# Static files
+# Build artifacts
 staticfiles/
+*.css
+*.js
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+
+# Editors
+.vscode/
+.idea/
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
 ```
