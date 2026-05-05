@@ -45,7 +45,11 @@ document.addEventListener('DOMContentLoaded', function() {
             let indicator = document.getElementById(pair.containerId);
             if (!indicator) {
                 indicator = createContrastIndicator(pair);
-                bgInput.closest('.form-row')?.after(indicator);
+                // Вставляем индикатор после поля фона (background_color или hero_bg_color или footer_bg_color)
+                const bgFormRow = bgInput.closest('.form-row');
+                if (bgFormRow) {
+                    bgFormRow.after(indicator);
+                }
             }
 
             // Добавляем обработчики изменений
@@ -54,6 +58,26 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Первичная проверка
             setTimeout(() => checkContrast(pair), 500);
+        });
+        
+        // Добавляем clearfix после последнего индикатора в каждой группе
+        addContrastClearfix();
+    }
+    
+    // Добавление clearfix для очистки float после индикаторов
+    function addContrastClearfix() {
+        // Находим все группы полей и добавляем clearfix после последней пары в группе
+        const clearFields = ['border_color', 'hero_bg_color', 'footer_text_color'];
+        clearFields.forEach(fieldName => {
+            const field = document.querySelector(`input[name="${fieldName}"]`);
+            if (field) {
+                const formRow = field.closest('.form-row');
+                if (formRow && !formRow.nextElementSibling?.classList.contains('clearfix-contrast')) {
+                    const clearfix = document.createElement('div');
+                    clearfix.className = 'clearfix-contrast';
+                    formRow.after(clearfix);
+                }
+            }
         });
     }
 

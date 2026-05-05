@@ -5,8 +5,11 @@
 .form-row.field-text_color,
 .form-row.field-background_color,
 .form-row.field-header_bg_color,
+.form-row.field-header_text_color,
 .form-row.field-footer_bg_color,
-.form-row.field-hero_bg_color {
+.form-row.field-footer_text_color,
+.form-row.field-hero_bg_color,
+.form-row.field-border_color {
     display: flex;
     align-items: center;
     width: calc(50% - 10px);
@@ -16,6 +19,16 @@
     padding: 0;
     border: none;
     box-sizing: border-box;
+    float: left;
+}
+
+/* Очистка float после каждой группы полей */
+.form-row.field-accent_color::after,
+.form-row.field-border_color::after,
+.form-row.field-footer_text_color::after {
+    content: "";
+    display: table;
+    clear: both;
 }
 
 .form-row.field-primary_color label,
@@ -24,8 +37,11 @@
 .form-row.field-text_color label,
 .form-row.field-background_color label,
 .form-row.field-header_bg_color label,
+.form-row.field-header_text_color label,
 .form-row.field-footer_bg_color label,
-.form-row.field-hero_bg_color label {
+.form-row.field-footer_text_color label,
+.form-row.field-hero_bg_color label,
+.form-row.field-border_color label {
     flex: 0 0 130px;          /* фиксированная ширина метки */
     margin-right: 10px;
     margin-bottom: 0;
@@ -41,8 +57,11 @@
 .form-row.field-text_color .color-picker-widget,
 .form-row.field-background_color .color-picker-widget,
 .form-row.field-header_bg_color .color-picker-widget,
+.form-row.field-header_text_color .color-picker-widget,
 .form-row.field-footer_bg_color .color-picker-widget,
-.form-row.field-hero_bg_color .color-picker-widget {
+.form-row.field-footer_text_color .color-picker-widget,
+.form-row.field-hero_bg_color .color-picker-widget,
+.form-row.field-border_color .color-picker-widget {
     flex: 1 1 auto;
 }
 
@@ -53,8 +72,11 @@
     .form-row.field-text_color,
     .form-row.field-background_color,
     .form-row.field-header_bg_color,
+    .form-row.field-header_text_color,
     .form-row.field-footer_bg_color,
-    .form-row.field-hero_bg_color {
+    .form-row.field-footer_text_color,
+    .form-row.field-hero_bg_color,
+    .form-row.field-border_color {
         width: 100%;
         margin-right: 0;
     }

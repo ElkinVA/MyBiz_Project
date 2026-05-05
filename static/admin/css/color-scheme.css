@@ -231,12 +231,33 @@
    ========================================================================== */
 
 .contrast-indicator {
-    margin: 15px 0;
+    margin: 0 0 15px 0;
     padding: 15px;
     background: #f8f9fa;
     border-radius: 8px;
     border-left: 4px solid #ccc;
     transition: all 0.3s ease;
+    /* Выравнивание по сетке полей цвета */
+    display: flex;
+    flex-direction: column;
+    width: calc(50% - 10px);
+    margin-right: 10px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    float: left;
+}
+
+/* Убираем float для последнего элемента в ряду */
+.contrast-indicator:nth-of-type(even) {
+    margin-right: 0;
+    clear: right;
+}
+
+/* Очистка float после индикаторов */
+.form-row.field-background_color + .contrast-indicator:last-child,
+.form-row.field-hero_bg_color + .contrast-indicator:last-child,
+.form-row.field-footer_bg_color + .contrast-indicator:last-child {
+    clear: both;
 }
 
 .contrast-indicator.excellent {
@@ -353,18 +374,27 @@
 /* Адаптивность для индикаторов контрастности */
 @media (max-width: 768px) {
     .contrast-indicator {
+        width: 100%;
+        margin-right: 0;
         padding: 12px;
     }
-    
+
     .ratio-value {
         font-size: 16px;
     }
-    
+
     .preview-box {
         height: 50px;
     }
-    
+
     .preview-text {
         font-size: 24px;
     }
+}
+
+/* Очистка float после всех индикаторов */
+.clearfix-contrast::after {
+    content: "";
+    display: table;
+    clear: both;
 }
