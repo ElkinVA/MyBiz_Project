@@ -1,15 +1,11 @@
 ```
-# Static files build artifacts
+# Build artifacts
 staticfiles/
+*.css.map
 
-# Python cache
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-
-# Logs
+# Logs and temp files
 *.log
+*.tmp
 
 # Environment
 .env
@@ -19,19 +15,21 @@ __pycache__/
 # Editors
 .vscode/
 .idea/
-*.swp
-*.swo
-*.tmp
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.py~
+.Python
+*.so
 
 # Dependencies
-node_modules/
 venv/
 .venv/
-.mypy_cache/
-.pytest_cache/
-.coverage
-coverage/
-htmlcov/
+.env/
+node_modules/
 
 # OS generated files
 .DS_Store
