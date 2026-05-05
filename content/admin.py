@@ -10,8 +10,8 @@ from .forms import SiteSettingsForm
 @admin.register(SiteSettings)
 class SiteSettingsAdmin(admin.ModelAdmin):
     form = SiteSettingsForm
-    save_on_top = True
-
+    save_on_top = False  # Убираем дублирование кнопок, форма не слишком длинная
+    
     def has_add_permission(self, request):
         return not SiteSettings.objects.exists()
 
@@ -29,6 +29,15 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         return HttpResponseRedirect(
             reverse('admin:content_sitesettings_change', args=[obj.id])
         )
+
+    def response_change(self, request, obj):
+        """
+        Переопределяем поведение после сохранения.
+        Добавляем сообщение об успешном сохранении через Django messages framework.
+        """
+        from django.contrib import messages
+        messages.success(request, '✅ Настройки сайта успешно сохранены!')
+        return super().response_change(request, obj)
 
     fieldsets = (
         ('📋 Основные настройки', {

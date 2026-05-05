@@ -20,6 +20,8 @@
         initActionCheckboxes();
         initDateTimeWidgets();
         initKeyboardShortcuts();
+        initUnsavedChangesWarning();
+        initScrollToErrors();
     }
 
     /**
@@ -203,6 +205,73 @@
     }
 
     /**
+     * Предупреждение о несохранённых изменениях
+     * Работает для всех форм редактирования в админке
+     */
+    function initUnsavedChangesWarning() {
+        // Проверяем, что мы на странице изменения объекта (не список)
+        const changeForm = document.querySelector('#content-main form');
+        if (!changeForm) {
+            return;
+        }
+
+        // Флаг для отслеживания изменений
+        let hasUnsavedChanges = false;
+
+        // Получаем все поля ввода кроме скрытых и кнопок
+        const formInputs = changeForm.querySelectorAll('input:not([type="hidden"]):not([type="submit"]):not([type="button"]), textarea, select');
+
+        // Добавляем обработчики изменений
+        formInputs.forEach(function(input) {
+            input.addEventListener('change', function() {
+                hasUnsavedChanges = true;
+            });
+            input.addEventListener('input', function() {
+                hasUnsavedChanges = true;
+            });
+        });
+
+        // Предупреждение при попытке уйти с страницы с несохранёнными изменениями
+        window.addEventListener('beforeunload', function(e) {
+            if (hasUnsavedChanges) {
+                e.preventDefault();
+                e.returnValue = '';
+                return '';
+            }
+        });
+
+        // После успешной отправки формы сбрасываем флаг
+        changeForm.addEventListener('submit', function() {
+            hasUnsavedChanges = false;
+        });
+    }
+
+    /**
+     * Автоматическая прокрутка к ошибкам валидации
+     * Если на странице есть ошибки, прокручиваем к первой ошибке
+     */
+    function initScrollToErrors() {
+        // Ищем элементы с ошибками
+        const errorNote = document.querySelector('.errornote');
+        const errorList = document.querySelector('.errorlist');
+        const formRowError = document.querySelector('.form-row.errors');
+
+        // Приоритет: errornote -> errorlist -> form-row с ошибками
+        const errorElement = errorNote || errorList || formRowError;
+
+        if (errorElement) {
+            // Плавная прокрутка к ошибке
+            errorElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+
+            // Дополнительно добавляем визуальный акцент
+            errorElement.style.animation = 'highlightError 0.5s ease-in-out';
+        }
+    }
+
+    /**
      * Добавление анимаций
      */
     const style = document.createElement('style');
@@ -226,6 +295,15 @@
             to {
                 transform: translateX(100%);
                 opacity: 0;
+            }
+        }
+
+        @keyframes highlightError {
+            0%, 100% {
+                background-color: transparent;
+            }
+            50% {
+                background-color: rgba(239, 68, 68, 0.1);
             }
         }
     `;
