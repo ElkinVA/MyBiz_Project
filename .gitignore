@@ -1,27 +1,41 @@
-```gitignore
+```
 # Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-# Logs
-*.log
-
 # Environment
 .env
 .env.local
-.env.*
+*.env.*
 
-# Dependencies
-venv/
-.venv/
+# Logs
+*.log
 
-# Tests
-.pytest_cache/
+# Temporary files
+*.tmp
+*.swp
+*.swo
+
+# Coverage
 .coverage
 coverage/
+htmlcov/
 
-# Static files
-staticfiles/
+# Editors
+.vscode/
+.idea/
+
+# Dependencies
+.venv/
+venv/
+node_modules/
+.mypy_cache/
+.pytest_cache/
+
+# Build artifacts
+dist/
+build/
+target/
 ```

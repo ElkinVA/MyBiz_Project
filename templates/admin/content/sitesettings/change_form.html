@@ -57,7 +57,38 @@
     color: #1f2937;
     font-size: 0.9rem;
 }
+
+/* Скрываем стандартную нижнюю панель кнопок для SiteSettings */
+.submit-row {
+    display: none !important;
+}
+
+/* Контейнер кнопки сохранения в секции */
+.section-save-btn-container {
+    display: inline-block;
+    float: right;
+    margin-left: auto;
+}
+
+/* Кнопка сохранения в секции */
+.section-save-btn {
+    padding: 4px 10px;
+    font-size: 0.85rem;
+    height: auto;
+    line-height: normal;
+    cursor: pointer;
+}
 </style>
+{% endblock %}
+
+{% block submit_buttons_bottom %}
+    {# Убираем стандартные кнопки «Сохранить» и «Сохранить и продолжить» #}
+    <div class="submit-row" style="display: none;"></div>
+{% endblock %}
+
+{% block after_field_sets %}
+    {{ block.super }}
+    <script src="{% static 'admin/js/sitesettings_save_sections.js' %}"></script>
 {% endblock %}
 
 {% block content %}
