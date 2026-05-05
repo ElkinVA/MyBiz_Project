@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const colorInput = widget.querySelector('input[type="color"]');
         const hexInput = widget.querySelector('.color-hex-input');
-        const preview = widget.querySelector('.color-preview');
 
         // Если нет необходимых элементов — ничего не делаем
         if (!colorInput || !hexInput) return;
@@ -22,7 +21,6 @@ document.addEventListener('DOMContentLoaded', function () {
         // Вспомогательные функции для обновления
         function updateFromColor() {
             hexInput.value = colorInput.value;
-            if (preview) preview.style.backgroundColor = colorInput.value;
         }
 
         function normalizeHex(val) {
@@ -43,7 +41,6 @@ document.addEventListener('DOMContentLoaded', function () {
             if (normalized) {
                 hexInput.value = normalized;
                 colorInput.value = normalized;
-                if (preview) preview.style.backgroundColor = normalized;
             }
         }
 
@@ -60,18 +57,15 @@ document.addEventListener('DOMContentLoaded', function () {
             if (normalized) {
                 colorInput.value = normalized;
                 hexInput.value = normalized;
-                if (preview) preview.style.backgroundColor = normalized;
             } else {
                 // Если HEX некорректен — ставим чёрный по умолчанию
                 colorInput.value = '#000000';
                 hexInput.value = '#000000';
-                if (preview) preview.style.backgroundColor = '#000000';
             }
         } else {
             // Оба пустые — выставляем дефолтный чёрный
             colorInput.value = '#000000';
             hexInput.value = '#000000';
-            if (preview) preview.style.backgroundColor = '#000000';
         }
 
         widget.dataset.colorPickerInitialized = 'true';

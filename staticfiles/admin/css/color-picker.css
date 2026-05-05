@@ -129,15 +129,6 @@
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
 }
 
-/* Превью цвета */
-.color-picker-container .color-preview {
-    width: 24px !important;
-    height: 24px !important;
-    border-radius: 4px !important;
-    border: 1px solid #e5e7eb !important;
-    flex-shrink: 0 !important;
-}
-
 /* Скрываем пустые блоки help-block */
 .form-row.field-primary_color .help-block,
 .form-row.field-secondary_color .help-block,
