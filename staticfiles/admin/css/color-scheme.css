@@ -237,20 +237,17 @@
     border-radius: 8px;
     border-left: 4px solid #ccc;
     transition: all 0.3s ease;
-    /* Выравнивание по сетке полей цвета */
-    display: flex;
-    flex-direction: column;
-    width: calc(50% - 10px);
-    margin-right: 10px;
-    margin-bottom: 15px;
+    /* Выравнивание по сетке полей цвета - используем такую же логику как у полей */
+    display: inline-block;
+    width: 48%;
+    margin-right: 2%;
+    vertical-align: top;
     box-sizing: border-box;
-    float: left;
 }
 
-/* Убираем float для последнего элемента в ряду */
+/* Убираем margin у каждого второго индикатора (чётные) */
 .contrast-indicator:nth-of-type(even) {
     margin-right: 0;
-    clear: right;
 }
 
 /* Очистка float после индикаторов */
@@ -377,6 +374,7 @@
         width: 100%;
         margin-right: 0;
         padding: 12px;
+        display: block;
     }
 
     .ratio-value {
