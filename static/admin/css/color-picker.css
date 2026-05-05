@@ -1,21 +1,33 @@
-/* Принудительное размещение цветовых полей в две колонки */
+/* Принудительное размещение цветовых полей в три колонки для секции "Цвета и схемы" */
+
+/* Базовые стили - отменяем любые конфликтующие стили */
 .field-primary_color,
 .field-secondary_color,
 .field-accent_color,
 .field-text_color,
 .field-background_color,
+.field-border_color,
 .field-header_bg_color,
 .field-header_text_color,
 .field-footer_bg_color,
 .field-footer_text_color,
-.field-hero_bg_color,
-.field-border_color {
-    width: 50% !important;
+.field-hero_bg_color {
+    width: 32% !important;
     float: left !important;
     clear: none !important;
-    margin: 0 !important;
-    padding: 5px 0 !important;
+    margin: 0 1% 15px 0 !important;
+    padding: 0 !important;
     box-sizing: border-box !important;
+    background: transparent !important;
+    border: none !important;
+}
+
+/* Каждое третье поле (последнее в ряду) без правого отступа */
+.field-accent_color,
+.field-border_color,
+.field-footer_text_color,
+.field-hero_bg_color {
+    margin-right: 0 !important;
 }
 
 /* Контейнер строки внутри поля */
@@ -24,38 +36,39 @@
 .field-accent_color .row,
 .field-text_color .row,
 .field-background_color .row,
+.field-border_color .row,
 .field-header_bg_color .row,
 .field-header_text_color .row,
 .field-footer_bg_color .row,
 .field-footer_text_color .row,
-.field-hero_bg_color .row,
-.field-border_color .row {
-    display: flex !important;
-    align-items: center !important;
+.field-hero_bg_color .row {
+    display: block !important;
     margin: 0 !important;
     padding: 0 !important;
 }
 
-/* Метка (левая колонка) */
-.field-primary_color .col-sm-3,
-.field-secondary_color .col-sm-3,
-.field-accent_color .col-sm-3,
-.field-text_color .col-sm-3,
-.field-background_color .col-sm-3,
-.field-header_bg_color .col-sm-3,
-.field-header_text_color .col-sm-3,
-.field-footer_bg_color .col-sm-3,
-.field-footer_text_color .col-sm-3,
-.field-hero_bg_color .col-sm-3,
-.field-border_color .col-sm-3 {
-    flex: 0 0 140px !important;
-    padding-right: 10px !important;
-    padding-left: 0 !important;
+/* Метка (label) над полем */
+.field-primary_color label,
+.field-secondary_color label,
+.field-accent_color label,
+.field-text_color label,
+.field-background_color label,
+.field-border_color label,
+.field-header_bg_color label,
+.field-header_text_color label,
+.field-footer_bg_color label,
+.field-footer_text_color label,
+.field-hero_bg_color label {
+    display: block !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 0 6px 0 !important;
     text-align: left !important;
     font-size: 13px !important;
     line-height: 1.3 !important;
     white-space: normal !important;
-    margin: 0 !important;
+    font-weight: 600 !important;
+    color: #333 !important;
 }
 
 /* Правая колонка с виджетом */
@@ -64,15 +77,17 @@
 .field-accent_color .col-sm-9,
 .field-text_color .col-sm-9,
 .field-background_color .col-sm-9,
+.field-border_color .col-sm-9,
 .field-header_bg_color .col-sm-9,
 .field-header_text_color .col-sm-9,
 .field-footer_bg_color .col-sm-9,
 .field-footer_text_color .col-sm-9,
-.field-hero_bg_color .col-sm-9,
-.field-border_color .col-sm-9 {
-    flex: 1 1 auto !important;
+.field-hero_bg_color .col-sm-9 {
+    display: block !important;
+    width: 100% !important;
     padding: 0 !important;
     margin: 0 !important;
+    flex: none !important;
 }
 
 /* Горизонтальное расположение: квадрат слева, HEX-поле справа */
@@ -129,12 +144,12 @@
 .field-accent_color .help-block,
 .field-text_color .help-block,
 .field-background_color .help-block,
+.field-border_color .help-block,
 .field-header_bg_color .help-block,
 .field-header_text_color .help-block,
 .field-footer_bg_color .help-block,
 .field-footer_text_color .help-block,
-.field-hero_bg_color .help-block,
-.field-border_color .help-block {
+.field-hero_bg_color .help-block {
     display: none !important;
 }
 
@@ -144,12 +159,12 @@
 .field-accent_color .text-red,
 .field-text_color .text-red,
 .field-background_color .text-red,
+.field-border_color .text-red,
 .field-header_bg_color .text-red,
 .field-header_text_color .text-red,
 .field-footer_bg_color .text-red,
 .field-footer_text_color .text-red,
-.field-hero_bg_color .text-red,
-.field-border_color .text-red {
+.field-hero_bg_color .text-red {
     display: none !important;
 }
 
@@ -158,21 +173,47 @@
     margin-bottom: 0 !important;
 }
 
-/* Адаптация для узких экранов */
+/* Адаптация для планшетов - две колонки */
+@media (max-width: 1024px) {
+    .field-primary_color,
+    .field-secondary_color,
+    .field-accent_color,
+    .field-text_color,
+    .field-background_color,
+    .field-border_color,
+    .field-header_bg_color,
+    .field-header_text_color,
+    .field-footer_bg_color,
+    .field-footer_text_color,
+    .field-hero_bg_color {
+        width: 49% !important;
+        margin-right: 2% !important;
+    }
+    
+    /* Каждое второе поле без правого отступа */
+    .field-secondary_color,
+    .field-border_color,
+    .field-header_text_color,
+    .field-footer_text_color {
+        margin-right: 0 !important;
+    }
+}
+
+/* Адаптация для узких экранов - одна колонка */
 @media (max-width: 768px) {
     .field-primary_color,
     .field-secondary_color,
     .field-accent_color,
     .field-text_color,
     .field-background_color,
+    .field-border_color,
     .field-header_bg_color,
     .field-header_text_color,
     .field-footer_bg_color,
     .field-footer_text_color,
-    .field-hero_bg_color,
-    .field-border_color {
+    .field-hero_bg_color {
         width: 100% !important;
         float: none !important;
-        padding: 5px 0 !important;
+        margin-right: 0 !important;
     }
 }

@@ -1,83 +1,117 @@
+/* static/admin/css/color-fields-compact.css */
 /* Компактное отображение полей цвета в админке с выравниванием меток по центру */
+
+/* Группы полей в секции "Цвета и схемы" */
 .form-row.field-primary_color,
 .form-row.field-secondary_color,
 .form-row.field-accent_color,
 .form-row.field-text_color,
 .form-row.field-background_color,
+.form-row.field-border_color,
 .form-row.field-header_bg_color,
 .form-row.field-header_text_color,
 .form-row.field-footer_bg_color,
 .form-row.field-footer_text_color,
-.form-row.field-hero_bg_color,
-.form-row.field-border_color {
-    display: flex;
-    align-items: center;
-    width: calc(50% - 10px);
-    margin-right: 10px;
-    margin-bottom: 15px;
-    background: transparent;
-    padding: 0;
-    border: none;
-    box-sizing: border-box;
-    float: left;
+.form-row.field-hero_bg_color {
+    display: inline-block !important;
+    width: 32% !important;
+    margin-right: 1% !important;
+    margin-bottom: 15px !important;
+    vertical-align: top !important;
+    background: transparent !important;
+    padding: 0 !important;
+    border: none !important;
+    box-sizing: border-box !important;
+    float: none !important;
+    clear: none !important;
 }
 
-/* Очистка float после каждой группы полей */
-.form-row.field-accent_color::after,
-.form-row.field-border_color::after,
-.form-row.field-footer_text_color::after {
-    content: "";
-    display: table;
-    clear: both;
+/* Каждое третье поле (последнее в ряду) без правого отступа */
+.form-row.field-accent_color,
+.form-row.field-border_color,
+.form-row.field-footer_text_color,
+.form-row.field-hero_bg_color {
+    margin-right: 0 !important;
 }
 
+/* Метки полей */
 .form-row.field-primary_color label,
 .form-row.field-secondary_color label,
 .form-row.field-accent_color label,
 .form-row.field-text_color label,
 .form-row.field-background_color label,
+.form-row.field-border_color label,
 .form-row.field-header_bg_color label,
 .form-row.field-header_text_color label,
 .form-row.field-footer_bg_color label,
 .form-row.field-footer_text_color label,
-.form-row.field-hero_bg_color label,
-.form-row.field-border_color label {
-    flex: 0 0 130px;          /* фиксированная ширина метки */
-    margin-right: 10px;
-    margin-bottom: 0;
-    font-size: 13px;
-    line-height: 1.4;
-    color: #333;
-    align-self: center;       /* дополнительное выравнивание */
+.form-row.field-hero_bg_color label {
+    display: block !important;
+    margin-bottom: 6px !important;
+    font-size: 13px !important;
+    line-height: 1.4 !important;
+    color: #333 !important;
+    font-weight: 600 !important;
+    text-align: left !important;
+    width: 100% !important;
 }
 
+/* Контейнер виджета выбора цвета */
 .form-row.field-primary_color .color-picker-widget,
 .form-row.field-secondary_color .color-picker-widget,
 .form-row.field-accent_color .color-picker-widget,
 .form-row.field-text_color .color-picker-widget,
 .form-row.field-background_color .color-picker-widget,
+.form-row.field-border_color .color-picker-widget,
 .form-row.field-header_bg_color .color-picker-widget,
 .form-row.field-header_text_color .color-picker-widget,
 .form-row.field-footer_bg_color .color-picker-widget,
 .form-row.field-footer_text_color .color-picker-widget,
-.form-row.field-hero_bg_color .color-picker-widget,
-.form-row.field-border_color .color-picker-widget {
-    flex: 1 1 auto;
+.form-row.field-hero_bg_color .color-picker-widget {
+    width: 100% !important;
 }
 
+/* Адаптивность для планшетов */
+@media (max-width: 1024px) {
+    .form-row.field-primary_color,
+    .form-row.field-secondary_color,
+    .form-row.field-accent_color,
+    .form-row.field-text_color,
+    .form-row.field-background_color,
+    .form-row.field-border_color,
+    .form-row.field-header_bg_color,
+    .form-row.field-header_text_color,
+    .form-row.field-footer_bg_color,
+    .form-row.field-footer_text_color,
+    .form-row.field-hero_bg_color {
+        width: 49% !important;
+        margin-right: 2% !important;
+    }
+    
+    /* Каждое второе поле без правого отступа */
+    .form-row.field-secondary_color,
+    .form-row.field-border_color,
+    .form-row.field-header_text_color,
+    .form-row.field-footer_text_color {
+        margin-right: 0 !important;
+    }
+}
+
+/* Адаптивность для мобильных */
 @media (max-width: 767px) {
     .form-row.field-primary_color,
     .form-row.field-secondary_color,
     .form-row.field-accent_color,
     .form-row.field-text_color,
     .form-row.field-background_color,
+    .form-row.field-border_color,
     .form-row.field-header_bg_color,
     .form-row.field-header_text_color,
     .form-row.field-footer_bg_color,
     .form-row.field-footer_text_color,
-    .form-row.field-hero_bg_color,
-    .form-row.field-border_color {
-        width: 100%;
-        margin-right: 0;
+    .form-row.field-hero_bg_color {
+        width: 100% !important;
+        margin-right: 0 !important;
+        display: block !important;
     }
 }
