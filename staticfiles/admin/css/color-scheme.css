@@ -263,11 +263,11 @@
 
 /* Тултип с информацией о WCAG */
 .contrast-info-icon::after {
-    content: attr(title);
+    content: attr(data-wcag-info);
     position: absolute;
     top: 100%;
     right: 0;
-    background: #333;
+    background: #6f4e37;
     color: #fff;
     padding: 10px 14px;
     border-radius: 6px;

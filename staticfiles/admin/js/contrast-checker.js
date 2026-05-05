@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
         div.className = 'contrast-indicator';
         div.innerHTML = `
             <div class="contrast-label">${pair.label}</div>
-            <div class="contrast-info-icon" title="WCAG — международный стандарт доступности. Он показывает коэффициент контрастности и уровни (AA, AAA), чтобы цвета вашего оформления хорошо различали люди. Чем выше контраст, тем легче читать текст и пользоваться сайтом.">ℹ️</div>
+            <div class="contrast-info-icon" data-wcag-info="WCAG — международный стандарт доступности. Он показывает коэффициент контрастности и уровни (AA, AAA), чтобы цвета вашего оформления хорошо различали люди. Чем выше контраст, тем легче читать текст и пользоваться сайтом.">ℹ️</div>
             <div class="contrast-ratio">
                 <span class="ratio-value">--</span>
                 <span class="ratio-status"></span>
