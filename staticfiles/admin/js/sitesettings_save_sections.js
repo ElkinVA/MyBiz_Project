@@ -107,6 +107,12 @@
                 e.preventDefault();
                 e.stopPropagation();
                 
+                // Устанавливаем флаг отправки формы (для глобального обработчика unsaved changes)
+                if (window.__unsavedChanges) {
+                    window.__unsavedChanges.isSubmitting = true;
+                    window.__unsavedChanges.hasUnsavedChanges = false;
+                }
+                
                 // Сохраняем состояние перед отправкой
                 saveFieldsetsState();
                 

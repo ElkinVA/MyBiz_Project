@@ -207,6 +207,7 @@
     /**
      * Предупреждение о несохранённых изменениях
      * Работает для всех форм редактирования в админке
+     * Отключено для страницы SiteSettings (настройки сайта)
      */
     function initUnsavedChangesWarning() {
         // Проверяем, что мы на странице изменения объекта (не список)
@@ -215,10 +216,18 @@
             return;
         }
 
-        // Флаг для отслеживания изменений
-        let hasUnsavedChanges = false;
-        // Флаг отправки формы
-        let isSubmitting = false;
+        // Отключаем предупреждение для страницы SiteSettings
+        const currentUrl = window.location.href;
+        if (currentUrl.includes('/admin/main/sitesettings/') || 
+            currentUrl.includes('/admin/main/site/')) {
+            return;
+        }
+
+        // Глобальные флаги для доступа из других скриптов
+        window.__unsavedChanges = {
+            hasUnsavedChanges: false,
+            isSubmitting: false
+        };
 
         // Получаем все поля ввода кроме скрытых и кнопок
         const formInputs = changeForm.querySelectorAll('input:not([type="hidden"]):not([type="submit"]):not([type="button"]), textarea, select');
@@ -226,16 +235,16 @@
         // Добавляем обработчики изменений
         formInputs.forEach(function(input) {
             input.addEventListener('change', function() {
-                hasUnsavedChanges = true;
+                window.__unsavedChanges.hasUnsavedChanges = true;
             });
             input.addEventListener('input', function() {
-                hasUnsavedChanges = true;
+                window.__unsavedChanges.hasUnsavedChanges = true;
             });
         });
 
         // Предупреждение при попытке уйти с страницы с несохранёнными изменениями
         window.addEventListener('beforeunload', function(e) {
-            if (hasUnsavedChanges && !isSubmitting) {
+            if (window.__unsavedChanges.hasUnsavedChanges && !window.__unsavedChanges.isSubmitting) {
                 e.preventDefault();
                 e.returnValue = '';
                 return '';
@@ -246,15 +255,15 @@
         const submitButtons = changeForm.querySelectorAll('input[type="submit"], button[type="submit"], .submit-row input, .submit-row button');
         submitButtons.forEach(function(btn) {
             btn.addEventListener('click', function() {
-                isSubmitting = true;
-                hasUnsavedChanges = false;
+                window.__unsavedChanges.isSubmitting = true;
+                window.__unsavedChanges.hasUnsavedChanges = false;
             });
         });
 
         // После успешной отправки формы сбрасываем флаг
         changeForm.addEventListener('submit', function() {
-            isSubmitting = true;
-            hasUnsavedChanges = false;
+            window.__unsavedChanges.isSubmitting = true;
+            window.__unsavedChanges.hasUnsavedChanges = false;
         });
     }
 
