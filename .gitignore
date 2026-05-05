@@ -1,12 +1,15 @@
 ```
-# Compiled and build artifacts
-*.pyc
+# Python
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
 
-# Dependencies
-.venv/
-venv/
+# Database
+db.sqlite3
 
-# Static files directories (if they contain generated/build files)
-staticfiles/
+# Environment
+.env
+.env.local
+*.env.*
 ```
