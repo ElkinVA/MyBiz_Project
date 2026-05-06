@@ -785,6 +785,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Сторонние приложения
+    'rest_framework',        # ← добавлен DRF
     'django_filters',
     'django_ckeditor_5',
     'sorl.thumbnail',
@@ -1054,6 +1055,20 @@ LOGGING = {
             'propagate': False,
         },
     },
+}
+
+# ==============================================================================
+# DRF настройки (троттлинг)
+# ==============================================================================
+REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/day',
+        'user': '1000/day'
+    }
 }
 
 
@@ -1530,8 +1545,8 @@ from .forms import SiteSettingsForm
 @admin.register(SiteSettings)
 class SiteSettingsAdmin(admin.ModelAdmin):
     form = SiteSettingsForm
-    save_on_top = True
-
+    save_on_top = False  # Убираем дублирование кнопок, форма не слишком длинная
+    
     def has_add_permission(self, request):
         return not SiteSettings.objects.exists()
 
@@ -1549,6 +1564,15 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         return HttpResponseRedirect(
             reverse('admin:content_sitesettings_change', args=[obj.id])
         )
+
+    def response_change(self, request, obj):
+        """
+        Переопределяем поведение после сохранения.
+        Добавляем сообщение об успешном сохранении через Django messages framework.
+        """
+        from django.contrib import messages
+        messages.success(request, '✅ Настройки сайта успешно сохранены!')
+        return super().response_change(request, obj)
 
     fieldsets = (
         ('📋 Основные настройки', {
@@ -1788,6 +1812,7 @@ FILE: ./content/context_processors.py
 from django.core.cache import cache
 from .models import SiteSettings
 from pages.models import Page
+from services.product_services import PromotionService
 import logging
 
 logger = logging.getLogger(__name__)
@@ -1830,13 +1855,8 @@ def site_settings(request):
 def promotions(request):
     if _is_admin_request(request):
         return {'promotions': []}
-    from .models import Promotion
-    cache_key = 'active_promotions'
-    promotions_list = cache.get(cache_key)
-    if not promotions_list:
-        promotions_list = Promotion.objects.filter(is_active=True).order_by('-created_at')[:3]
-        cache.set(cache_key, promotions_list, 300)
-    return {'promotions': promotions_list}
+    # Используем единый сервис с проверкой дат
+    return {'promotions': PromotionService.get_active_promotions()}
 
 
 def header_pages(request):
@@ -1968,277 +1988,6 @@ class NewsletterSubscriberForm(forms.ModelForm):
         widgets = {
             'email': forms.EmailInput(attrs={'placeholder': 'Ваш email для рассылки', 'class': 'form-control'}),
         }
-
-
-================================================================================
-FILE: ./content/management/commands/init_settings.py
-================================================================================
-
-# content/management/commands/init_settings.py
-from django.core.management.base import BaseCommand
-from django.core.cache import cache
-from django.core.files.base import ContentFile
-from content.models import SiteSettings
-from mybiz_core.models import Category, Product
-from pages.models import Page
-import random
-from decimal import Decimal
-from datetime import datetime, timedelta
-from django.utils.text import slugify
-from PIL import Image, ImageDraw
-import io
-
-class Command(BaseCommand):
-    help = 'Инициализирует базовые настройки сайта, тестовые данные и управляет кэшем'
-
-    def add_arguments(self, parser):
-        parser.add_argument(
-            '--skip-data',
-            action='store_true',
-            help='Пропустить создание тестовых данных',
-        )
-        parser.add_argument(
-            '--clear-cache',
-            action='store_true',
-            help='Только очистить кэш (без создания данных)',
-        )
-        parser.add_argument(
-            '--force',
-            action='store_true',
-            help='Принудительно пересоздать все данные',
-        )
-
-    def handle(self, *args, **options):
-        # Если указан флаг --clear-cache, только очищаем кэш
-        if options['clear_cache']:
-            self.stdout.write("🔄 Очистка кэша...")
-            self.clear_all_cache()
-            self.stdout.write(self.style.SUCCESS('✅ Кэш успешно очищен'))
-            return
-
-        self.stdout.write("🔄 Начинаем инициализацию проекта MyBiz...")
-
-        # 1. Создаем настройки сайта
-        self.create_site_settings()
-
-        # 2. Создаем тестовые данные (если не указан --skip-data)
-        if not options['skip_data']:
-            self.create_test_categories()
-            self.create_test_products()
-            self.create_test_pages()
-            self.stdout.write(self.style.SUCCESS('✅ Тестовые данные созданы'))
-        else:
-            self.stdout.write(self.style.WARNING('⚠️ Создание тестовых данных пропущено'))
-
-        # 3. Очищаем кэш после создания данных
-        self.stdout.write("🔄 Очистка кэша...")
-        self.clear_all_cache()
-
-        self.stdout.write(self.style.SUCCESS('🎉 Инициализация проекта завершена!'))
-
-    def clear_all_cache(self):
-        """Полная очистка кэша сайта"""
-        try:
-            # Очищаем весь кэш Django
-            cache.clear()
-            self.stdout.write(self.style.SUCCESS('✓ Кэш Django очищен'))
-
-            # Очищаем кэш настроек сайта через модель
-            try:
-                site_settings = SiteSettings.load()
-                if site_settings:
-                    site_settings.clear_cache()
-                    self.stdout.write(
-                        self.style.SUCCESS(
-                            f'✓ Кэш настроек сайта очищен: {site_settings.site_name}'
-                        )
-                    )
-            except Exception as e:
-                self.stdout.write(
-                    self.style.WARNING(f'⚠️ Не удалось очистить кэш настроек: {e}')
-                )
-
-        except Exception as e:
-            self.stdout.write(self.style.ERROR(f'❌ Ошибка при очистке кэша: {e}'))
-
-    def create_site_settings(self):
-        """Создает или обновляет настройки сайта"""
-        try:
-            settings = SiteSettings.load()
-            # Обновляем только если это новая запись
-            if settings._state.adding:
-                settings.site_name = 'MyBiz Витрина'
-                settings.site_tagline = 'Лучшие товары по доступным ценам'
-                settings.contact_email = 'info@mybiz.ru'
-                settings.contact_phone = '+7 (999) 123-45-67'
-                settings.contact_address = 'Москва, ул. Примерная, д. 1'
-                settings.working_hours = 'Пн-Пт: 9:00-18:00, Сб: 10:00-16:00'
-                settings.telegram_url = 'https://t.me/mybiz'
-                settings.vk_url = 'https://vk.com/mybiz'
-                settings.max_url = 'https://max.mail.ru/'
-                settings.instagram_url = 'https://instagram.com/mybiz'
-                settings.meta_description = 'Интернет-магазин качественных товаров'
-                settings.meta_keywords = 'магазин, товары, купить, онлайн, доставка'
-                settings.color_scheme = 'wood'
-                settings.save()
-                self.stdout.write(self.style.SUCCESS('✓ Настройки сайта созданы'))
-            else:
-                self.stdout.write(self.style.WARNING('✓ Настройки сайта уже существуют'))
-        except Exception as e:
-            self.stdout.write(self.style.ERROR(f'❌ Ошибка создания настроек: {e}'))
-
-    def create_test_categories(self):
-        """Создает тестовые категории"""
-        categories_data = [
-            {'name': 'Электроника', 'slug': 'electronics'},
-            {'name': 'Смартфоны', 'slug': 'smartphones'},
-            {'name': 'Ноутбуки', 'slug': 'laptops'},
-            {'name': 'Одежда', 'slug': 'clothing'},
-            {'name': 'Обувь', 'slug': 'shoes'},
-            {'name': 'Книги', 'slug': 'books'},
-            {'name': 'Спорт', 'slug': 'sports'},
-            {'name': 'Красота', 'slug': 'beauty'},
-        ]
-        created = 0
-        for cat_data in categories_data:
-            category, created_flag = Category.objects.get_or_create(
-                slug=cat_data['slug'],
-                defaults={
-                    'name': cat_data['name'],
-                    'description': f'Категория {cat_data["name"]}. Широкий выбор товаров.',
-                    'is_active': True,
-                }
-            )
-            if created_flag:
-                created += 1
-        self.stdout.write(self.style.SUCCESS(f'✓ Создано {created} категорий'))
-
-    def _create_placeholder_image(self, name):
-        """Создает простое тестовое изображение с названием товара"""
-        # Создаем изображение 400x400 с градиентом
-        img = Image.new('RGB', (400, 400), color=(240, 245, 250))
-        draw = ImageDraw.Draw(img)
-
-        # Добавляем текст с названием товара
-        draw.text((200, 180), name[:20], fill=(100, 100, 100), anchor="mm")
-        draw.text((200, 220), "Тестовое изображение", fill=(150, 150, 150), anchor="mm")
-
-        # Сохраняем в буфер
-        buffer = io.BytesIO()
-        img.save(buffer, format='JPEG', quality=85)
-        buffer.seek(0)
-        return ContentFile(buffer.read(), name=f"{slugify(name, allow_unicode=True)}.jpg")
-
-    def create_test_products(self):
-        """Создает тестовые товары с уникальными slug и изображениями"""
-        # Удаляем старые тестовые товары
-        Product.objects.all().delete()
-        self.stdout.write(self.style.WARNING('🗑️ Все старые товары удалены'))
-
-        categories = Category.objects.all()
-        if not categories:
-            self.stdout.write(self.style.WARNING('⚠️ Нет категорий для создания товаров'))
-            return
-
-        product_names = [
-            'Смартфон', 'Ноутбук', 'Наушники', 'Часы', 'Планшет',
-            'Футболка', 'Джинсы', 'Куртка', 'Кроссовки', 'Рюкзак',
-            'Книга', 'Игра', 'Косметика', 'Аксессуар', 'Техника'
-        ]
-        created = 0
-        used_slugs = set()  # Для отслеживания использованных slug в рамках одной команды
-
-        for i in range(50):  # Создаем 50 тестовых товаров
-            category = random.choice(categories)
-            base_name = random.choice(product_names)
-            name = f'{base_name} {i+1}'
-
-            # Генерируем уникальный slug с проверкой на конфликты
-            base_slug = slugify(name, allow_unicode=True)
-            slug = base_slug
-            counter = 1
-
-            # Проверяем уникальность в базе данных и в текущем сеансе
-            while Product.objects.filter(slug=slug).exists() or slug in used_slugs:
-                slug = f"{base_slug}-{counter}"
-                counter += 1
-                if len(slug) > 200:
-                    slug = slug[:200]
-
-            used_slugs.add(slug)
-
-            price = Decimal(random.randint(1000, 50000))
-            # 30% товаров со скидкой
-            discount_price = None
-            if random.random() < 0.3:
-                discount_price = price * Decimal('0.8')
-
-            # Создаем тестовое изображение
-            image = self._create_placeholder_image(name)
-
-            product = Product.objects.create(
-                name=name,
-                slug=slug,  # Уникальный slug
-                category=category,
-                price=price,
-                discount_price=discount_price,
-                short_description=f'Тестовый товар {i+1}',
-                description=f'<p>Описание тестового товара {i+1}. Высокое качество.</p>',
-                sku=f'TEST{i+1:04d}',
-                brand=random.choice(['Brand A', 'Brand B', 'Brand C', '']),
-                image=image,  # Тестовое изображение
-                rating=Decimal(random.randint(30, 50)) / 10,
-                review_count=random.randint(0, 100),
-                is_new=random.random() < 0.2,
-                in_stock=random.random() < 0.8,
-                stock=random.randint(0, 100) if random.random() < 0.8 else 0,
-                is_active=True,
-                is_featured=random.random() < 0.3,
-            )
-            created += 1
-
-        self.stdout.write(self.style.SUCCESS(f'✓ Создано {created} тестовых товаров'))
-
-    def create_test_pages(self):
-        """Создает тестовые страницы"""
-        pages_data = [
-            {
-                'title': 'О компании',
-                'slug': 'about',
-                'content': '<h2>О компании MyBiz</h2><p>Мы - современная компания.</p>',
-                'excerpt': 'Информация о компании',
-                'show_in_header': True,
-            },
-            {
-                'title': 'Доставка',
-                'slug': 'delivery',
-                'content': '<h2>Условия доставки</h2><p>Быстрая доставка по России.</p>',
-                'excerpt': 'Информация о доставке',
-                'show_in_header': True,
-            },
-            {
-                'title': 'Контакты',
-                'slug': 'contacts',
-                'content': '<h2>Наши контакты</h2><p>Свяжитесь с нами.</p>',
-                'excerpt': 'Контактная информация',
-                'show_in_header': False,
-            },
-        ]
-        created = 0
-        for page_data in pages_data:
-            page, created_flag = Page.objects.get_or_create(
-                slug=page_data['slug'],
-                defaults={
-                    'title': page_data['title'],
-                    'content': page_data['content'],
-                    'excerpt': page_data['excerpt'],
-                    'show_in_header': page_data['show_in_header'],
-                    'is_active': True,
-                }
-            )
-            if created_flag:
-                created += 1
-        self.stdout.write(self.style.SUCCESS(f'✓ Создано {created} тестовых страниц'))
 
 
 ================================================================================
@@ -2399,9 +2148,9 @@ class SiteSettings(models.Model):
         validators=[validate_image_extension, validate_image_size, validate_image_dimensions]
     )
 
-    primary_color = models.CharField(max_length=7, default='#3b82f6', verbose_name="Основной цвет (Primary)")
-    secondary_color = models.CharField(max_length=7, default='#8b5cf6', verbose_name="Вторичный цвет (Secondary)")
-    accent_color = models.CharField(max_length=7, default='#10b981', verbose_name="Акцентный цвет (Accent)")
+    primary_color = models.CharField(max_length=7, default='#3b82f6', verbose_name="Основной цвет")
+    secondary_color = models.CharField(max_length=7, default='#8b5cf6', verbose_name="Вторичный цвет")
+    accent_color = models.CharField(max_length=7, default='#10b981', verbose_name="Акцентный цвет")
     text_color = models.CharField(max_length=7, default='#1f2937', verbose_name="Цвет текста")
     background_color = models.CharField(max_length=7, default='#f9fafb', verbose_name="Цвет фона")
     header_bg_color = models.CharField(max_length=7, default='#ffffff', verbose_name="Фон шапки")
@@ -2688,6 +2437,7 @@ from django.views.generic import ListView
 from django.utils.http import url_has_allowed_host_and_scheme
 from .models import NewsletterSubscriber, SiteSettings, StockNotification, Promotion
 from mybiz_core.models import Product
+from services.product_services import PromotionService
 import logging
 
 logger = logging.getLogger(__name__)
@@ -2811,7 +2561,8 @@ class PromotionListView(ListView):
     paginate_by = 9
 
     def get_queryset(self):
-        return Promotion.objects.filter(is_active=True).order_by('-created_at')
+        # Используем сервис для учёта дат
+        return PromotionService.get_active_promotions()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -3428,6 +3179,7 @@ FILE: ./mybiz_core/context_processors.py
 """
 from django.core.cache import cache
 from .models import Category, Product
+from pages.models import Page
 
 
 def categories(request):
@@ -3464,6 +3216,7 @@ def admin_dashboard_stats(request):
             'inactive_products': Product.objects.filter(is_active=False).count(),
             'featured_products': Product.objects.filter(is_featured=True).count(),
             'total_categories': Category.objects.filter(is_active=True).count(),
+            'total_pages': Page.objects.filter(is_active=True).count(),  # ← добавлено
         }
 
         # Кэширование на 5 минут
@@ -3907,8 +3660,7 @@ class Category(models.Model):
         for child in self.children.all():
             ids.append(child.pk)
             ids.extend(child.get_descendants_ids())
-            return ids
-        return ids
+        return ids   # ← больше нет return внутри цикла
 
     @property
     def products_count(self):
@@ -4275,7 +4027,6 @@ from services.product_services import ProductService
 def home(request):
     """Главная страница"""
     featured_products = ProductService.get_featured_products()
-    total_products = ProductService.get_new_products()  # или используем общий подсчёт, но оставим логику
     total_products = Product.objects.filter(is_active=True).count()
 
     context = {
@@ -4286,10 +4037,13 @@ def home(request):
 
 
 def product_list(request, category_slug=None):
-    """Список товаров с фильтрацией по категории"""
+    """Список товаров с фильтрацией по категории (из URL или GET-параметра)"""
     categories = Category.objects.filter(is_active=True).prefetch_related('children')
 
-    # Сбор фильтров из GET-параметров
+    # Поддержка выбора категории через GET-параметр 'category'
+    if not category_slug:
+        category_slug = request.GET.get('category')
+
     filters = {}
     if category_slug:
         filters['category_slug'] = category_slug
@@ -4728,9 +4482,6 @@ python_files = tests.py test_*.py *_tests.py
 python_classes = Test*
 python_functions = test_*
 addopts = 
-    --cov=.
-    --cov-report=html
-    --cov-report=term-missing
     --strict-markers
     --tb=short
     -v
@@ -4753,15 +4504,15 @@ annotated-types==0.7.0
 anyio==4.12.0
 asgiref==3.11.0
 async-timeout==5.0.1
-Authlib==1.6.6
+Authlib==1.6.9
 backports-datetime-fromisoformat==2.0.3
 certifi==2025.11.12
 cffi==2.0.0
 charset-normalizer==3.4.4
 click==8.3.1
-cryptography==46.0.3
+cryptography==46.0.7
 defusedxml==0.7.1
-Django==5.2.11
+Django==5.2.13
 django-auditlog==3.4.1
 django-ckeditor-5==0.2.20
 django-csp==4.0
@@ -4770,7 +4521,7 @@ django-js-asset==3.1.2
 django-redis==6.0.0
 dparse==0.6.4
 exceptiongroup==1.3.1
-filelock==3.20.1
+filelock==3.29.0
 gunicorn==25.1.0
 h11==0.16.0
 httpcore==1.0.9
@@ -4780,22 +4531,22 @@ Jinja2==3.1.6
 joblib==1.5.3
 markdown-it-py==4.0.0
 MarkupSafe==3.0.3
-marshmallow==4.1.1
+marshmallow==4.3.0
 mdurl==0.1.2
-nltk==3.9.2
+nltk==3.9.4
 packaging==25.0
 pillow==12.1.1
 psycopg2-binary==2.9.11
 pycparser==2.23
 pydantic==2.12.5
 pydantic_core==2.41.5
-Pygments==2.19.2
+Pygments==2.20.0
 python-dateutil==2.9.0.post0
 python-decouple==3.8
 python-dotenv==1.2.2
 redis==7.2.1
 regex==2025.11.3
-requests==2.32.5
+requests==2.33.1
 rich==14.2.0
 ruamel.yaml==0.18.17
 ruamel.yaml.clib==0.2.15
@@ -4812,13 +4563,13 @@ tqdm==4.67.1
 typer==0.20.0
 typing-inspection==0.4.2
 typing_extensions==4.15.0
-urllib3==2.6.2
+urllib3==2.6.3
 whitenoise==6.12.0
 django-ratelimit==4.1.0
 sentry-sdk==2.34.1
-djangorestframework==3.15.2
+djangorestframework==3.17.1
 django-filter==25.2
-pytest==8.3.5
+pytest==9.0.3
 pytest-django==4.11.1
 pytest-cov==6.1.1
 factory-boy==3.3.3
@@ -5152,36 +4903,19 @@ FILE: ./static/admin/css/admin-common.css
 /* static/admin/css/admin-common.css */
 /* Общие стили для цветовых полей в админке */
 
-.form-row.field-primary_color,
-.form-row.field-secondary_color,
-.form-row.field-accent_color,
-.form-row.field-text_color,
-.form-row.field-background_color,
-.form-row.field-header_bg_color,
-.form-row.field-header_text_color,
-.form-row.field-footer_bg_color,
-.form-row.field-footer_text_color,
-.form-row.field-hero_bg_color {
-    background: #f9f9f9;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    border: 1px solid #eee;
-}
-
+/* Базовые стили для меток - только типографика, без layout */
 .form-row.field-primary_color label,
 .form-row.field-secondary_color label,
 .form-row.field-accent_color label,
 .form-row.field-text_color label,
 .form-row.field-background_color label,
+.form-row.field-border_color label,
 .form-row.field-header_bg_color label,
 .form-row.field-header_text_color label,
 .form-row.field-footer_bg_color label,
 .form-row.field-footer_text_color label,
 .form-row.field-hero_bg_color label {
     font-weight: 600;
-    margin-bottom: 10px;
-    display: block;
     color: #333;
     font-size: 14px;
 }
@@ -5191,6 +4925,7 @@ FILE: ./static/admin/css/admin-common.css
 .form-row.field-accent_color .help,
 .form-row.field-text_color .help,
 .form-row.field-background_color .help,
+.form-row.field-border_color .help,
 .form-row.field-header_bg_color .help,
 .form-row.field-header_text_color .help,
 .form-row.field-footer_bg_color .help,
@@ -5204,24 +4939,12 @@ FILE: ./static/admin/css/admin-common.css
 
 /* Темная тема для общих полей */
 @media (prefers-color-scheme: dark) {
-    .form-row.field-primary_color,
-    .form-row.field-secondary_color,
-    .form-row.field-accent_color,
-    .form-row.field-text_color,
-    .form-row.field-background_color,
-    .form-row.field-header_bg_color,
-    .form-row.field-header_text_color,
-    .form-row.field-footer_bg_color,
-    .form-row.field-footer_text_color,
-    .form-row.field-hero_bg_color {
-        background: #2d2d2d;
-        border-color: #444;
-    }
     .form-row.field-primary_color label,
     .form-row.field-secondary_color label,
     .form-row.field-accent_color label,
     .form-row.field-text_color label,
     .form-row.field-background_color label,
+    .form-row.field-border_color label,
     .form-row.field-header_bg_color label,
     .form-row.field-header_text_color label,
     .form-row.field-footer_bg_color label,
@@ -5234,6 +4957,7 @@ FILE: ./static/admin/css/admin-common.css
     .form-row.field-accent_color .help,
     .form-row.field-text_color .help,
     .form-row.field-background_color .help,
+    .form-row.field-border_color .help,
     .form-row.field-header_bg_color .help,
     .form-row.field-header_text_color .help,
     .form-row.field-footer_bg_color .help,
@@ -5617,6 +5341,48 @@ fieldset.collapse.collapsed h2 {
     border-bottom: none;
 }
 
+/* Исправление отступов в раскрытых collapsible fieldsets */
+fieldset.collapse:not(.collapsed) .form-row {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+}
+
+fieldset.collapse:not(.collapsed) .aligned label {
+    min-width: 140px !important;
+    width: 140px !important;
+    padding-right: 10px !important;
+}
+
+fieldset.collapse:not(.collapsed) .aligned label + p,
+fieldset.collapse:not(.collapsed) .aligned label + div.help,
+fieldset.collapse:not(.collapsed) .aligned label + div.readonly {
+    margin-left: 150px !important;
+    padding-left: 10px !important;
+}
+
+/* Специальные правила для цветовых полей внутри collapsible fieldsets */
+fieldset.collapse:not(.collapsed) .form-row.field-primary_color,
+fieldset.collapse:not(.collapsed) .form-row.field-secondary_color,
+fieldset.collapse:not(.collapsed) .form-row.field-accent_color,
+fieldset.collapse:not(.collapsed) .form-row.field-text_color,
+fieldset.collapse:not(.collapsed) .form-row.field-background_color,
+fieldset.collapse:not(.collapsed) .form-row.field-border_color,
+fieldset.collapse:not(.collapsed) .form-row.field-header_bg_color,
+fieldset.collapse:not(.collapsed) .form-row.field-header_text_color,
+fieldset.collapse:not(.collapsed) .form-row.field-footer_bg_color,
+fieldset.collapse:not(.collapsed) .form-row.field-footer_text_color,
+fieldset.collapse:not(.collapsed) .form-row.field-hero_bg_color {
+    padding: 8px 12px 0 12px !important; /* Гарантируем отступы внутри раскрытых секций */
+}
+
+/* Для темной темы */
+@media (prefers-color-scheme: dark) {
+    fieldset.collapse h2 {
+        background: #1f2937;
+        border-bottom-color: #374151;
+    }
+}
+
 /* --- User Info --- */
 .admin-user-info {
     display: flex;
@@ -5720,77 +5486,122 @@ fieldset.collapse.collapsed h2 {
 FILE: ./static/admin/css/color-fields-compact.css
 ================================================================================
 
+/* static/admin/css/color-fields-compact.css */
 /* Компактное отображение полей цвета в админке с выравниванием меток по центру */
+
+/* Группы полей в секции "Цвета и схемы" */
 .form-row.field-primary_color,
 .form-row.field-secondary_color,
 .form-row.field-accent_color,
 .form-row.field-text_color,
 .form-row.field-background_color,
+.form-row.field-border_color,
 .form-row.field-header_bg_color,
 .form-row.field-header_text_color,
 .form-row.field-footer_bg_color,
 .form-row.field-footer_text_color,
-.form-row.field-hero_bg_color,
-.form-row.field-border_color {
-    display: flex;
-    align-items: center;
-    width: calc(50% - 10px);
-    margin-right: 10px;
-    margin-bottom: 15px;
-    background: transparent;
-    padding: 0;
-    border: none;
-    box-sizing: border-box;
+.form-row.field-hero_bg_color {
+    display: inline-block !important;
+    width: 32% !important;
+    margin-right: 1% !important;
+    margin-bottom: 15px !important;
+    vertical-align: top !important;
+    background: transparent !important;
+    /* padding не переопределяем - используется значение из color-picker.css (8px 12px 0 12px) */
+    border: none !important;
+    box-sizing: border-box !important;
+    float: none !important;
+    clear: none !important;
 }
 
+/* Каждое третье поле (последнее в ряду) без правого отступа */
+.form-row.field-accent_color,
+.form-row.field-border_color,
+.form-row.field-footer_text_color,
+.form-row.field-hero_bg_color {
+    margin-right: 0 !important;
+}
+
+/* Метки полей */
 .form-row.field-primary_color label,
 .form-row.field-secondary_color label,
 .form-row.field-accent_color label,
 .form-row.field-text_color label,
 .form-row.field-background_color label,
+.form-row.field-border_color label,
 .form-row.field-header_bg_color label,
 .form-row.field-header_text_color label,
 .form-row.field-footer_bg_color label,
 .form-row.field-footer_text_color label,
-.form-row.field-hero_bg_color label,
-.form-row.field-border_color label {
-    flex: 0 0 130px;          /* фиксированная ширина метки */
-    margin-right: 10px;
-    margin-bottom: 0;
-    font-size: 13px;
-    line-height: 1.4;
-    color: #333;
-    align-self: center;       /* дополнительное выравнивание */
+.form-row.field-hero_bg_color label {
+    display: block !important;
+    margin-bottom: 6px !important;
+    font-size: 13px !important;
+    line-height: 1.4 !important;
+    color: #333 !important;
+    font-weight: 600 !important;
+    text-align: left !important;
+    width: 100% !important;
 }
 
+/* Контейнер виджета выбора цвета - не переопределяем padding, используем значение из color-picker.css */
 .form-row.field-primary_color .color-picker-widget,
 .form-row.field-secondary_color .color-picker-widget,
 .form-row.field-accent_color .color-picker-widget,
 .form-row.field-text_color .color-picker-widget,
 .form-row.field-background_color .color-picker-widget,
+.form-row.field-border_color .color-picker-widget,
 .form-row.field-header_bg_color .color-picker-widget,
 .form-row.field-header_text_color .color-picker-widget,
 .form-row.field-footer_bg_color .color-picker-widget,
 .form-row.field-footer_text_color .color-picker-widget,
-.form-row.field-hero_bg_color .color-picker-widget,
-.form-row.field-border_color .color-picker-widget {
-    flex: 1 1 auto;
+.form-row.field-hero_bg_color .color-picker-widget {
+    width: 100% !important;
+    box-sizing: border-box !important;
 }
 
+/* Адаптивность для планшетов */
+@media (max-width: 1024px) {
+    .form-row.field-primary_color,
+    .form-row.field-secondary_color,
+    .form-row.field-accent_color,
+    .form-row.field-text_color,
+    .form-row.field-background_color,
+    .form-row.field-border_color,
+    .form-row.field-header_bg_color,
+    .form-row.field-header_text_color,
+    .form-row.field-footer_bg_color,
+    .form-row.field-footer_text_color,
+    .form-row.field-hero_bg_color {
+        width: 49% !important;
+        margin-right: 2% !important;
+    }
+    
+    /* Каждое второе поле без правого отступа */
+    .form-row.field-secondary_color,
+    .form-row.field-border_color,
+    .form-row.field-header_text_color,
+    .form-row.field-footer_text_color {
+        margin-right: 0 !important;
+    }
+}
+
+/* Адаптивность для мобильных */
 @media (max-width: 767px) {
     .form-row.field-primary_color,
     .form-row.field-secondary_color,
     .form-row.field-accent_color,
     .form-row.field-text_color,
     .form-row.field-background_color,
+    .form-row.field-border_color,
     .form-row.field-header_bg_color,
     .form-row.field-header_text_color,
     .form-row.field-footer_bg_color,
     .form-row.field-footer_text_color,
-    .form-row.field-hero_bg_color,
-    .form-row.field-border_color {
-        width: 100%;
-        margin-right: 0;
+    .form-row.field-hero_bg_color {
+        width: 100% !important;
+        margin-right: 0 !important;
+        display: block !important;
     }
 }
 
@@ -5799,81 +5610,96 @@ FILE: ./static/admin/css/color-fields-compact.css
 FILE: ./static/admin/css/color-picker.css
 ================================================================================
 
-/* Принудительное размещение цветовых полей в две колонки */
-.field-primary_color,
-.field-secondary_color,
-.field-accent_color,
-.field-text_color,
-.field-background_color,
-.field-header_bg_color,
-.field-header_text_color,
-.field-footer_bg_color,
-.field-footer_text_color,
-.field-hero_bg_color,
-.field-border_color {
-    width: 50% !important;
+/* Принудительное размещение цветовых полей в три колонки для секции "Цвета и схемы" */
+
+/* Базовые стили - отменяем любые конфликтующие стили */
+.form-row.field-primary_color,
+.form-row.field-secondary_color,
+.form-row.field-accent_color,
+.form-row.field-text_color,
+.form-row.field-background_color,
+.form-row.field-border_color,
+.form-row.field-header_bg_color,
+.form-row.field-header_text_color,
+.form-row.field-footer_bg_color,
+.form-row.field-footer_text_color,
+.form-row.field-hero_bg_color {
+    width: 32% !important;
     float: left !important;
     clear: none !important;
-    margin: 0 !important;
-    padding: 5px 0 !important;
+    margin: 0 1% 15px 0 !important;
+    padding: 8px 12px 0 12px !important; /* Добавлены отступы слева и справа (12px) */
     box-sizing: border-box !important;
+    background: transparent !important;
+    border: none !important;
+}
+
+/* Каждое третье поле (последнее в ряду) без правого отступа */
+.form-row.field-accent_color,
+.form-row.field-border_color,
+.form-row.field-footer_text_color,
+.form-row.field-hero_bg_color {
+    margin-right: 0 !important;
 }
 
 /* Контейнер строки внутри поля */
-.field-primary_color .row,
-.field-secondary_color .row,
-.field-accent_color .row,
-.field-text_color .row,
-.field-background_color .row,
-.field-header_bg_color .row,
-.field-header_text_color .row,
-.field-footer_bg_color .row,
-.field-footer_text_color .row,
-.field-hero_bg_color .row,
-.field-border_color .row {
-    display: flex !important;
-    align-items: center !important;
+.form-row.field-primary_color .row,
+.form-row.field-secondary_color .row,
+.form-row.field-accent_color .row,
+.form-row.field-text_color .row,
+.form-row.field-background_color .row,
+.form-row.field-border_color .row,
+.form-row.field-header_bg_color .row,
+.form-row.field-header_text_color .row,
+.form-row.field-footer_bg_color .row,
+.form-row.field-footer_text_color .row,
+.form-row.field-hero_bg_color .row {
+    display: block !important;
     margin: 0 !important;
     padding: 0 !important;
 }
 
-/* Метка (левая колонка) */
-.field-primary_color .col-sm-3,
-.field-secondary_color .col-sm-3,
-.field-accent_color .col-sm-3,
-.field-text_color .col-sm-3,
-.field-background_color .col-sm-3,
-.field-header_bg_color .col-sm-3,
-.field-header_text_color .col-sm-3,
-.field-footer_bg_color .col-sm-3,
-.field-footer_text_color .col-sm-3,
-.field-hero_bg_color .col-sm-3,
-.field-border_color .col-sm-3 {
-    flex: 0 0 140px !important;
-    padding-right: 10px !important;
-    padding-left: 0 !important;
+/* Метка (label) над полем */
+.form-row.field-primary_color label,
+.form-row.field-secondary_color label,
+.form-row.field-accent_color label,
+.form-row.field-text_color label,
+.form-row.field-background_color label,
+.form-row.field-border_color label,
+.form-row.field-header_bg_color label,
+.form-row.field-header_text_color label,
+.form-row.field-footer_bg_color label,
+.form-row.field-footer_text_color label,
+.form-row.field-hero_bg_color label {
+    display: block !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 0 6px 0 !important;
     text-align: left !important;
     font-size: 13px !important;
     line-height: 1.3 !important;
     white-space: normal !important;
-    margin: 0 !important;
+    font-weight: 600 !important;
+    color: #333 !important;
 }
 
 /* Правая колонка с виджетом */
-.field-primary_color .col-sm-9,
-.field-secondary_color .col-sm-9,
-.field-accent_color .col-sm-9,
-.field-text_color .col-sm-9,
-.field-background_color .col-sm-9,
-.field-header_bg_color .col-sm-9,
-.field-header_text_color .col-sm-9,
-.field-footer_bg_color .col-sm-9,
-.field-footer_text_color .col-sm-9,
-.field-hero_bg_color .col-sm-9,
-.field-border_color .col-sm-9 {
-    flex: 1 1 auto !important;
+.form-row.field-primary_color .col-sm-9,
+.form-row.field-secondary_color .col-sm-9,
+.form-row.field-accent_color .col-sm-9,
+.form-row.field-text_color .col-sm-9,
+.form-row.field-background_color .col-sm-9,
+.form-row.field-border_color .col-sm-9,
+.form-row.field-header_bg_color .col-sm-9,
+.form-row.field-header_text_color .col-sm-9,
+.form-row.field-footer_bg_color .col-sm-9,
+.form-row.field-footer_text_color .col-sm-9,
+.form-row.field-hero_bg_color .col-sm-9 {
+    display: block !important;
+    width: 100% !important;
     padding: 0 !important;
     margin: 0 !important;
+    flex: none !important;
 }
 
 /* Горизонтальное расположение: квадрат слева, HEX-поле справа */
@@ -5925,32 +5751,32 @@ FILE: ./static/admin/css/color-picker.css
 }
 
 /* Скрываем пустые блоки help-block */
-.field-primary_color .help-block,
-.field-secondary_color .help-block,
-.field-accent_color .help-block,
-.field-text_color .help-block,
-.field-background_color .help-block,
-.field-header_bg_color .help-block,
-.field-header_text_color .help-block,
-.field-footer_bg_color .help-block,
-.field-footer_text_color .help-block,
-.field-hero_bg_color .help-block,
-.field-border_color .help-block {
+.form-row.field-primary_color .help-block,
+.form-row.field-secondary_color .help-block,
+.form-row.field-accent_color .help-block,
+.form-row.field-text_color .help-block,
+.form-row.field-background_color .help-block,
+.form-row.field-border_color .help-block,
+.form-row.field-header_bg_color .help-block,
+.form-row.field-header_text_color .help-block,
+.form-row.field-footer_bg_color .help-block,
+.form-row.field-footer_text_color .help-block,
+.form-row.field-hero_bg_color .help-block {
     display: none !important;
 }
 
 /* Убираем звёздочки обязательных полей */
-.field-primary_color .text-red,
-.field-secondary_color .text-red,
-.field-accent_color .text-red,
-.field-text_color .text-red,
-.field-background_color .text-red,
-.field-header_bg_color .text-red,
-.field-header_text_color .text-red,
-.field-footer_bg_color .text-red,
-.field-footer_text_color .text-red,
-.field-hero_bg_color .text-red,
-.field-border_color .text-red {
+.form-row.field-primary_color .text-red,
+.form-row.field-secondary_color .text-red,
+.form-row.field-accent_color .text-red,
+.form-row.field-text_color .text-red,
+.form-row.field-background_color .text-red,
+.form-row.field-border_color .text-red,
+.form-row.field-header_bg_color .text-red,
+.form-row.field-header_text_color .text-red,
+.form-row.field-footer_bg_color .text-red,
+.form-row.field-footer_text_color .text-red,
+.form-row.field-hero_bg_color .text-red {
     display: none !important;
 }
 
@@ -5959,22 +5785,48 @@ FILE: ./static/admin/css/color-picker.css
     margin-bottom: 0 !important;
 }
 
-/* Адаптация для узких экранов */
+/* Адаптация для планшетов - две колонки */
+@media (max-width: 1024px) {
+    .form-row.field-primary_color,
+    .form-row.field-secondary_color,
+    .form-row.field-accent_color,
+    .form-row.field-text_color,
+    .form-row.field-background_color,
+    .form-row.field-border_color,
+    .form-row.field-header_bg_color,
+    .form-row.field-header_text_color,
+    .form-row.field-footer_bg_color,
+    .form-row.field-footer_text_color,
+    .form-row.field-hero_bg_color {
+        width: 49% !important;
+        margin-right: 2% !important;
+    }
+    
+    /* Каждое второе поле без правого отступа */
+    .form-row.field-secondary_color,
+    .form-row.field-border_color,
+    .form-row.field-header_text_color,
+    .form-row.field-footer_text_color {
+        margin-right: 0 !important;
+    }
+}
+
+/* Адаптация для узких экранов - одна колонка */
 @media (max-width: 768px) {
-    .field-primary_color,
-    .field-secondary_color,
-    .field-accent_color,
-    .field-text_color,
-    .field-background_color,
-    .field-header_bg_color,
-    .field-header_text_color,
-    .field-footer_bg_color,
-    .field-footer_text_color,
-    .field-hero_bg_color,
-    .field-border_color {
+    .form-row.field-primary_color,
+    .form-row.field-secondary_color,
+    .form-row.field-accent_color,
+    .form-row.field-text_color,
+    .form-row.field-background_color,
+    .form-row.field-border_color,
+    .form-row.field-header_bg_color,
+    .form-row.field-header_text_color,
+    .form-row.field-footer_bg_color,
+    .form-row.field-footer_text_color,
+    .form-row.field-hero_bg_color {
         width: 100% !important;
         float: none !important;
-        padding: 5px 0 !important;
+        margin-right: 0 !important;
     }
 }
 
@@ -6216,12 +6068,76 @@ FILE: ./static/admin/css/color-scheme.css
    ========================================================================== */
 
 .contrast-indicator {
-    margin: 15px 0;
+    margin: 0 0 15px 0;
     padding: 15px;
     background: #f8f9fa;
     border-radius: 8px;
     border-left: 4px solid #ccc;
     transition: all 0.3s ease;
+    /* Выравнивание по сетке полей цвета - используем такую же логику как у полей */
+    display: inline-block;
+    width: 48%;
+    margin-right: 2%;
+    vertical-align: top;
+    box-sizing: border-box;
+    position: relative;
+}
+
+/* Иконка информации в правом верхнем углу блока */
+.contrast-info-icon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 16px;
+    cursor: default;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.contrast-info-icon:hover {
+    opacity: 1;
+}
+
+/* Тултип с информацией о WCAG */
+.contrast-info-icon::after {
+    content: attr(data-wcag-info);
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: #6f4e37;
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    line-height: 1.5;
+    white-space: normal;
+    width: 280px;
+    max-width: 300px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-5px);
+    transition: all 0.2s ease;
+    pointer-events: none;
+}
+
+.contrast-info-icon:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Убираем margin у каждого второго индикатора (чётные) */
+.contrast-indicator:nth-of-type(even) {
+    margin-right: 0;
+}
+
+/* Очистка float после индикаторов */
+.form-row.field-background_color + .contrast-indicator:last-child,
+.form-row.field-hero_bg_color + .contrast-indicator:last-child,
+.form-row.field-footer_bg_color + .contrast-indicator:last-child {
+    clear: both;
 }
 
 .contrast-indicator.excellent {
@@ -6338,20 +6254,30 @@ FILE: ./static/admin/css/color-scheme.css
 /* Адаптивность для индикаторов контрастности */
 @media (max-width: 768px) {
     .contrast-indicator {
+        width: 100%;
+        margin-right: 0;
         padding: 12px;
+        display: block;
     }
-    
+
     .ratio-value {
         font-size: 16px;
     }
-    
+
     .preview-box {
         height: 50px;
     }
-    
+
     .preview-text {
         font-size: 24px;
     }
+}
+
+/* Очистка float после всех индикаторов */
+.clearfix-contrast::after {
+    content: "";
+    display: table;
+    clear: both;
 }
 
 
@@ -6381,6 +6307,8 @@ FILE: ./static/admin/js/admin-enhanced.js
         initActionCheckboxes();
         initDateTimeWidgets();
         initKeyboardShortcuts();
+        initUnsavedChangesWarning();
+        initScrollToErrors();
     }
 
     /**
@@ -6564,6 +6492,85 @@ FILE: ./static/admin/js/admin-enhanced.js
     }
 
     /**
+     * Предупреждение о несохранённых изменениях
+     * Работает для всех форм редактирования в админке
+     */
+    function initUnsavedChangesWarning() {
+        // Проверяем, что мы на странице изменения объекта (не список)
+        const changeForm = document.querySelector('#content-main form');
+        if (!changeForm) {
+            return;
+        }
+
+        // Флаг для отслеживания изменений
+        let hasUnsavedChanges = false;
+        // Флаг отправки формы
+        let isSubmitting = false;
+
+        // Получаем все поля ввода кроме скрытых и кнопок
+        const formInputs = changeForm.querySelectorAll('input:not([type="hidden"]):not([type="submit"]):not([type="button"]), textarea, select');
+
+        // Добавляем обработчики изменений
+        formInputs.forEach(function(input) {
+            input.addEventListener('change', function() {
+                hasUnsavedChanges = true;
+            });
+            input.addEventListener('input', function() {
+                hasUnsavedChanges = true;
+            });
+        });
+
+        // Предупреждение при попытке уйти с страницы с несохранёнными изменениями
+        window.addEventListener('beforeunload', function(e) {
+            if (hasUnsavedChanges && !isSubmitting) {
+                e.preventDefault();
+                e.returnValue = '';
+                return '';
+            }
+        });
+
+        // Отслеживаем клик по кнопкам сохранения и отправки формы
+        const submitButtons = changeForm.querySelectorAll('input[type="submit"], button[type="submit"], .submit-row input, .submit-row button');
+        submitButtons.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                isSubmitting = true;
+                hasUnsavedChanges = false;
+            });
+        });
+
+        // После успешной отправки формы сбрасываем флаг
+        changeForm.addEventListener('submit', function() {
+            isSubmitting = true;
+            hasUnsavedChanges = false;
+        });
+    }
+
+    /**
+     * Автоматическая прокрутка к ошибкам валидации
+     * Если на странице есть ошибки, прокручиваем к первой ошибке
+     */
+    function initScrollToErrors() {
+        // Ищем элементы с ошибками
+        const errorNote = document.querySelector('.errornote');
+        const errorList = document.querySelector('.errorlist');
+        const formRowError = document.querySelector('.form-row.errors');
+
+        // Приоритет: errornote -> errorlist -> form-row с ошибками
+        const errorElement = errorNote || errorList || formRowError;
+
+        if (errorElement) {
+            // Плавная прокрутка к ошибке
+            errorElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+
+            // Дополнительно добавляем визуальный акцент
+            errorElement.style.animation = 'highlightError 0.5s ease-in-out';
+        }
+    }
+
+    /**
      * Добавление анимаций
      */
     const style = document.createElement('style');
@@ -6587,6 +6594,15 @@ FILE: ./static/admin/js/admin-enhanced.js
             to {
                 transform: translateX(100%);
                 opacity: 0;
+            }
+        }
+
+        @keyframes highlightError {
+            0%, 100% {
+                background-color: transparent;
+            }
+            50% {
+                background-color: rgba(239, 68, 68, 0.1);
             }
         }
     `;
@@ -7139,7 +7155,11 @@ document.addEventListener('DOMContentLoaded', function() {
             let indicator = document.getElementById(pair.containerId);
             if (!indicator) {
                 indicator = createContrastIndicator(pair);
-                bgInput.closest('.form-row')?.after(indicator);
+                // Вставляем индикатор после поля фона (background_color или hero_bg_color или footer_bg_color)
+                const bgFormRow = bgInput.closest('.form-row');
+                if (bgFormRow) {
+                    bgFormRow.after(indicator);
+                }
             }
 
             // Добавляем обработчики изменений
@@ -7148,6 +7168,26 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Первичная проверка
             setTimeout(() => checkContrast(pair), 500);
+        });
+        
+        // Добавляем clearfix после последнего индикатора в каждой группе
+        addContrastClearfix();
+    }
+    
+    // Добавление clearfix для очистки float после индикаторов
+    function addContrastClearfix() {
+        // Находим все группы полей и добавляем clearfix после последней пары в группе
+        const clearFields = ['border_color', 'hero_bg_color', 'footer_text_color'];
+        clearFields.forEach(fieldName => {
+            const field = document.querySelector(`input[name="${fieldName}"]`);
+            if (field) {
+                const formRow = field.closest('.form-row');
+                if (formRow && !formRow.nextElementSibling?.classList.contains('clearfix-contrast')) {
+                    const clearfix = document.createElement('div');
+                    clearfix.className = 'clearfix-contrast';
+                    formRow.after(clearfix);
+                }
+            }
         });
     }
 
@@ -7158,6 +7198,7 @@ document.addEventListener('DOMContentLoaded', function() {
         div.className = 'contrast-indicator';
         div.innerHTML = `
             <div class="contrast-label">${pair.label}</div>
+            <div class="contrast-info-icon" data-wcag-info="WCAG — международный стандарт доступности. Он показывает коэффициент контрастности и уровни (AA, AAA), чтобы цвета вашего оформления хорошо различали люди. Чем выше контраст, тем легче читать текст и пользоваться сайтом.">ℹ️</div>
             <div class="contrast-ratio">
                 <span class="ratio-value">--</span>
                 <span class="ratio-status"></span>
@@ -7303,6 +7344,239 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+
+================================================================================
+FILE: ./static/admin/js/messages-auto-hide.js
+================================================================================
+
+/**
+ * messages-auto-hide.js
+ * Автоматическое скрытие всплывающих сообщений в админ-панели Django через 5 секунд
+ */
+
+(function() {
+    'use strict';
+
+    /**
+     * Скрывает сообщения с плавной анимацией
+     */
+    function hideMessages() {
+        // Находим все сообщения в админке
+        const messages = document.querySelectorAll('#content .messagelist li, .messagelist li');
+        
+        if (messages.length === 0) return;
+        
+        // Через 5 секунд скрываем сообщения
+        setTimeout(function() {
+            messages.forEach(function(msg) {
+                // Добавляем плавное исчезновение
+                msg.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                msg.style.opacity = '0';
+                msg.style.transform = 'translateY(-10px)';
+                
+                // Удаляем элемент из DOM после завершения анимации
+                setTimeout(function() {
+                    if (msg.parentNode) {
+                        msg.remove();
+                    }
+                    
+                    // Если список сообщений пустой, удаляем и его
+                    const messageList = document.querySelector('.messagelist');
+                    if (messageList && messageList.children.length === 0) {
+                        messageList.remove();
+                    }
+                }, 500);
+            });
+        }, 5000);
+    }
+
+    // Запускаем когда DOM готов
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', hideMessages);
+    } else {
+        hideMessages();
+    }
+})();
+
+
+================================================================================
+FILE: ./static/admin/js/sitesettings_save_sections.js
+================================================================================
+
+/**
+ * sitesettings_save_sections.js
+ * Скрипт для добавления кнопок "Сохранить" в каждый раздел формы SiteSettings
+ * и сохранения состояния сворачивания/разворачивания разделов
+ */
+
+(function() {
+    'use strict';
+
+    const STORAGE_KEY = 'siteSettings_fieldsets_state';
+
+    /**
+     * Сохраняет состояние всех fieldset в localStorage
+     */
+    function saveFieldsetsState() {
+        const fieldsets = document.querySelectorAll('fieldset.module');
+        const state = {};
+        
+        fieldsets.forEach(function(fieldset, index) {
+            const id = fieldset.id || 'fieldset_' + index;
+            // Проверяем, свернут ли fieldset (через details[open] или класс collapsed)
+            const details = fieldset.querySelector('details');
+            if (details) {
+                state[id] = details.hasAttribute('open');
+            } else {
+                state[id] = !fieldset.classList.contains('collapsed');
+            }
+        });
+        
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {
+            console.warn('Не удалось сохранить состояние разделов:', e);
+        }
+    }
+
+    /**
+     * Восстанавливает состояние fieldset из localStorage
+     */
+    function restoreFieldsetsState() {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (!saved) return;
+            
+            const state = JSON.parse(saved);
+            const fieldsets = document.querySelectorAll('fieldset.module');
+            
+            fieldsets.forEach(function(fieldset) {
+                const id = fieldset.id || 'fieldset_' + Array.prototype.indexOf.call(fieldsets, fieldset);
+                if (state.hasOwnProperty(id)) {
+                    const details = fieldset.querySelector('details');
+                    if (details) {
+                        // Для details: open=true если развернут
+                        if (state[id]) {
+                            details.setAttribute('open', 'open');
+                        } else {
+                            details.removeAttribute('open');
+                        }
+                    } else {
+                        // Для старых fieldset с классом collapsed
+                        if (state[id]) {
+                            fieldset.classList.remove('collapsed');
+                        } else {
+                            fieldset.classList.add('collapsed');
+                        }
+                    }
+                }
+            });
+        } catch (e) {
+            console.warn('Не удалось восстановить состояние разделов:', e);
+        }
+    }
+
+    /**
+     * Добавляет кнопку "Сохранить" в каждый fieldset
+     */
+    function addSaveButtonsToFieldsets() {
+        const fieldsets = document.querySelectorAll('fieldset.module');
+        
+        fieldsets.forEach(function(fieldset) {
+            // Проверяем, есть ли уже кнопка
+            if (fieldset.querySelector('.section-save-btn')) {
+                return;
+            }
+            
+            // Находим summary (для collapsible fieldset) или заголовок
+            let insertTarget = fieldset.querySelector('summary');
+            
+            // Если нет summary, пробуем найти заголовок
+            if (!insertTarget) {
+                insertTarget = fieldset.querySelector('h2.fieldset-heading');
+            }
+            if (!insertTarget) {
+                insertTarget = fieldset.querySelector('legend');
+            }
+            if (!insertTarget) return;
+            
+            // Создаём кнопку
+            const saveBtn = document.createElement('button');
+            saveBtn.type = 'button';
+            saveBtn.className = 'section-save-btn default';
+            saveBtn.textContent = '💾 Сохранить';
+            saveBtn.style.cssText = 'float: right; margin-left: auto; padding: 4px 10px; font-size: 0.85rem; height: auto; line-height: normal; cursor: pointer;';
+            
+            // Обработчик клика
+            saveBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Сохраняем состояние перед отправкой
+                saveFieldsetsState();
+                
+                // Находим форму и отправляем её с параметром _save
+                const form = document.querySelector('form');
+                if (!form) return;
+                
+                // Удаляем параметр _continue если он есть
+                const continueInput = form.querySelector('input[name="_continue"]');
+                if (continueInput) {
+                    continueInput.remove();
+                }
+                
+                // Добавляем параметр _save
+                let saveInput = form.querySelector('input[name="_save"]');
+                if (!saveInput) {
+                    saveInput = document.createElement('input');
+                    saveInput.type = 'hidden';
+                    saveInput.name = '_save';
+                    saveInput.value = '1';
+                    form.appendChild(saveInput);
+                }
+                
+                // Отправляем форму
+                form.submit();
+            });
+            
+            // Вставляем кнопку в конец summary/заголовка
+            insertTarget.appendChild(saveBtn);
+            
+            // Также отслеживаем клик по summary/details для обновления состояния
+            const detailsElement = fieldset.querySelector('details');
+            if (detailsElement) {
+                detailsElement.addEventListener('toggle', function() {
+                    // Небольшая задержка чтобы атрибут open успел примениться
+                    setTimeout(saveFieldsetsState, 50);
+                });
+            }
+            
+            // И отслеживаем клик по заголовку
+            insertTarget.addEventListener('click', function(e) {
+                setTimeout(saveFieldsetsState, 100);
+            });
+        });
+    }
+
+    /**
+     * Инициализация после загрузки DOM
+     */
+    function init() {
+        // Восстанавливаем состояние разделов
+        restoreFieldsetsState();
+        
+        // Добавляем кнопки сохранения
+        addSaveButtonsToFieldsets();
+    }
+
+    // Запускаем когда DOM готов
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
 
 
 ================================================================================
@@ -8184,6 +8458,7 @@ FILE: ./templates/admin/base_site.html
 {% block extrahead %}
 {{ block.super }}
 <script src="{% static 'admin/js/admin-enhanced.js' %}" defer></script>
+<script src="{% static 'admin/js/messages-auto-hide.js' %}" defer></script>
 {% endblock %}
 
 {% block bodyclass %}{{ block.super }} admin-enhanced{% endblock %}
@@ -8229,44 +8504,6 @@ FILE: ./templates/admin/content/sitesettings/change_form.html
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* Цветовые поля в одну строку */
-.form-row.field-primary_color,
-.form-row.field-secondary_color,
-.form-row.field-accent_color,
-.form-row.field-text_color,
-.form-row.field-background_color,
-.form-row.field-header_bg_color,
-.form-row.field-footer_bg_color,
-.form-row.field-hero_bg_color {
-    display: inline-block;
-    width: 48%;
-    margin-right: 2%;
-    vertical-align: top;
-}
-
-.form-row.field-primary_color:nth-child(even),
-.form-row.field-secondary_color:nth-child(even),
-.form-row.field-accent_color:nth-child(even),
-.form-row.field-text_color:nth-child(even),
-.form-row.field-background_color:nth-child(even),
-.form-row.field-header_bg_color:nth-child(even),
-.form-row.field-footer_bg_color:nth-child(even),
-.form-row.field-hero_bg_color:nth-child(even) {
-    margin-right: 0;
-}
-
-/* Превью цветов */
-.color-preview-box {
-    display: inline-block;
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    border: 2px solid #e5e7eb;
-    margin-left: 10px;
-    vertical-align: middle;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
 /* Поля изображений */
 .field-logo .file-upload,
 .field-favicon .file-upload,
@@ -8287,47 +8524,7 @@ FILE: ./templates/admin/content/sitesettings/change_form.html
 
 /* Адаптация для мобильных */
 @media (max-width: 768px) {
-    .form-row.field-primary_color,
-    .form-row.field-secondary_color,
-    .form-row.field-accent_color,
-    .form-row.field-text_color,
-    .form-row.field-background_color,
-    .form-row.field-header_bg_color,
-    .form-row.field-footer_bg_color,
-    .form-row.field-hero_bg_color {
-        width: 100%;
-        margin-right: 0;
-    }
-}
-
-/* Уведомление о сохранении */
-.settings-saved-notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: linear-gradient(135deg, #10b981, #059669);
-    color: white;
-    padding: 16px 24px;
-    border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-    z-index: 10000;
-    animation: slideInDown 0.3s ease;
-    display: none;
-}
-
-.settings-saved-notification.show {
-    display: block;
-}
-
-@keyframes slideInDown {
-    from {
-        transform: translateY(-100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+    /* На мобильных все поля в одну колонку */
 }
 
 /* Помощь по цветовой схеме */
@@ -8344,120 +8541,85 @@ FILE: ./templates/admin/content/sitesettings/change_form.html
     color: #1f2937;
     font-size: 0.9rem;
 }
+
+/* Скрываем стандартную нижнюю панель кнопок для SiteSettings */
+.submit-row {
+    display: none !important;
+}
+
+/* Контейнер кнопки сохранения в секции */
+.section-save-btn-container {
+    display: inline-block;
+    float: right;
+    margin-left: auto;
+}
+
+/* Кнопка сохранения в секции */
+.section-save-btn {
+    padding: 4px 10px;
+    font-size: 0.85rem;
+    height: auto;
+    line-height: normal;
+    cursor: pointer;
+}
 </style>
 {% endblock %}
 
-{% block content %}
-{{ block.super }}
-
-<!-- Уведомление о сохранении -->
-<div id="settings-saved-notification" class="settings-saved-notification">
-    ✅ Настройки успешно сохранены!
-</div>
+{% block submit_buttons_bottom %}
+    {# Убираем стандартные кнопки «Сохранить» и «Сохранить и продолжить» #}
+    <div class="submit-row" style="display: none;"></div>
 {% endblock %}
 
-{% block admin_change_form_document_ready %}
-{{ block.super }}
-<script>
-(function() {
-    'use strict';
-
-    // Флаг для отслеживания изменений
-    let hasUnsavedChanges = false;
-
-    // Показ уведомления при успешном сохранении через URL параметр
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('_saved')) {
-        const notification = document.getElementById('settings-saved-notification');
-        if (notification) {
-            notification.classList.add('show');
-            setTimeout(function() {
-                notification.classList.remove('show');
-            }, 3000);
-        }
-        // Очищаем параметр URL без перезагрузки
-        const newUrl = new URL(window.location);
-        newUrl.searchParams.delete('_saved');
-        window.history.replaceState({}, '', newUrl);
-    }
-
-    // Обновление превью цветов
-    document.querySelectorAll('input[type="color"], input.vColorPickerField').forEach(function(input) {
-        input.addEventListener('input', function() {
-            const preview = this.parentElement.querySelector('.color-preview');
-            if (preview) {
-                preview.style.backgroundColor = this.value;
-            }
-            markAsChanged();
-        });
-    });
-
-    // Предпросмотр изображений
-    document.querySelectorAll('input[type="file"][accept="image/*"]').forEach(function(input) {
-        input.addEventListener('change', function() {
-            const file = this.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const previewContainer = input.parentElement.querySelector('.image-preview-container');
-                    const previewImg = previewContainer.querySelector('.image-preview');
-                    if (previewContainer && previewImg) {
-                        previewImg.src = e.target.result;
-                        previewContainer.style.display = 'block';
-                    }
-                };
-                reader.readAsDataURL(file);
-            }
-            markAsChanged();
-        });
-    });
-
-    // Отслеживание изменений во всех полях формы
-    const form = document.querySelector('#content-main form');
-    if (form) {
-        const formInputs = form.querySelectorAll('input:not([type="hidden"]):not([type="submit"]), textarea, select');
-        
-        // Добавляем обработчики изменений
-        formInputs.forEach(function(input) {
-            input.addEventListener('change', function() {
-                markAsChanged();
-            });
-            input.addEventListener('input', function() {
-                markAsChanged();
-            });
-        });
-
-        // Функция отметки изменений
-        function markAsChanged() {
-            hasUnsavedChanges = true;
-        }
-
-        // Предупреждение при попытке уйти с страницы с несохранёнными изменениями
-        window.addEventListener('beforeunload', function(e) {
-            if (hasUnsavedChanges) {
-                e.preventDefault();
-                e.returnValue = '';
-                return '';
-            }
-        });
-
-        // После успешной отправки формы сбрасываем флаг
-        form.addEventListener('submit', function() {
-            hasUnsavedChanges = false;
-        });
-    }
-
-    // Обработчик для уведомления об успешном сохранении (после перезагрузки)
-    document.addEventListener('DOMContentLoaded', function() {
-        const notification = document.getElementById('settings-saved-notification');
-        if (notification && !urlParams.has('_saved')) {
-            // Показываем только если есть параметр _saved
-            notification.classList.remove('show');
-        }
-    });
-})();
-</script>
+{% block after_field_sets %}
+    {{ block.super }}
+    <script src="{% static 'admin/js/sitesettings_save_sections.js' %}"></script>
 {% endblock %}
+
+
+================================================================================
+FILE: ./templates/admin/includes/fieldset.html
+================================================================================
+
+{% load i18n %}
+<fieldset class="module aligned {{ fieldset.classes }}" {% if fieldset.name %}aria-labelledby="{{ prefix }}-{{ id_prefix}}-{{ id_suffix }}-heading" {% endif %}>
+    {% if fieldset.name %}
+        {% if fieldset.is_collapsible %}<details><summary>{% endif %}
+        <h{{ heading_level|default:2 }} id="{{ prefix }}-{{ id_prefix}}-{{ id_suffix }}-heading" class="fieldset-heading">{{ fieldset.name }}</h{{ heading_level|default:2 }}>
+        {% if fieldset.is_collapsible %}</summary>{% endif %}
+    {% endif %}
+    {% if fieldset.description %}
+        <div class="description">{{ fieldset.description|safe }}</div>
+    {% endif %}
+    {% for line in fieldset %}
+        <div class="form-row{% if line.fields|length == 1 and line.errors %} errors{% endif %}{% if not line.has_visible_field %} hidden{% endif %}{% for field in line %}{% if field.field.name %} field-{{ field.field.name }}{% endif %}{% endfor %}">
+            {% if line.fields|length == 1 %}{{ line.errors }}{% else %}<div class="flex-container form-multiline">{% endif %}
+            {% for field in line %}
+                <div>
+                    {% if not line.fields|length == 1 and not field.is_readonly %}{{ field.errors }}{% endif %}
+                        <div class="flex-container{% if not line.fields|length == 1 %} fieldBox{% if field.field.name %} field-{{ field.field.name }}{% endif %}{% if not field.is_readonly and field.errors %} errors{% endif %}{% if field.field.is_hidden %} hidden{% endif %}{% endif %}{% if field.is_checkbox %} checkbox-row{% endif %}">
+                            {% if field.is_checkbox %}
+                                {{ field.field }}{{ field.label_tag }}
+                            {% else %}
+                                {{ field.label_tag }}
+                                {% if field.is_readonly %}
+                                    <div class="readonly">{{ field.contents }}</div>
+                                {% else %}
+                                    {{ field.field }}
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    {% if field.field.help_text %}
+                        <div class="help{% if field.field.is_hidden %} hidden{% endif %}"{% if field.field.id_for_label %} id="{{ field.field.id_for_label }}_helptext"{% endif %}>
+                            <div>{{ field.field.help_text|safe }}</div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            {% if not line.fields|length == 1 %}</div>{% endif %}
+        </div>
+    {% endfor %}
+    {% if fieldset.name and fieldset.is_collapsible %}</details>{% endif %}
+</fieldset>
 
 
 ================================================================================
@@ -8653,19 +8815,19 @@ FILE: ./templates/base.html
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-    <title>{% block title %}{{ site_settings.site_name }}{% if page_title %} | {{ page_title }}{% endif %}{% endblock %}</title>
+    <title>{% block title %}{{ site_settings.site_name|striptags }}{% if page_title %} | {{ page_title }}{% endif %}{% endblock %}</title>
 
     {% load static %}
     {% load color_filters %}
     {% load thumbnail %}
 
     {% block meta %}
-    <meta name="description" content="{{ site_settings.meta_description|default:'Современная сайт-витрина товаров' }}">
-    <meta name="keywords" content="{{ site_settings.meta_keywords|default:'товары, магазин, купить, онлайн, витрина' }}">
+    <meta name="description" content="{{ site_settings.meta_description|default:'Современная сайт-витрина товаров'|striptags }}">
+    <meta name="keywords" content="{{ site_settings.meta_keywords|default:'товары, магазин, купить, онлайн, витрина'|striptags }}">
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="{{ site_settings.site_name }}">
-    <meta property="og:title" content="{{ site_settings.site_name }}">
-    <meta property="og:description" content="{{ site_settings.meta_description|default:'Современная сайт-витрина товаров' }}">
+    <meta property="og:site_name" content="{{ site_settings.site_name|striptags }}">
+    <meta property="og:title" content="{{ site_settings.site_name|striptags }}">
+    <meta property="og:description" content="{{ site_settings.meta_description|default:'Современная сайт-витрина товаров'|striptags }}">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
     {% if site_settings.logo %}
     <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ site_settings.logo.url }}">
@@ -8673,8 +8835,8 @@ FILE: ./templates/base.html
     <meta property="og:image:height" content="630">
     {% endif %}
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{{ site_settings.site_name }}">
-    <meta name="twitter:description" content="{{ site_settings.meta_description|default:'Современная сайт-витрина товаров' }}">
+    <meta name="twitter:title" content="{{ site_settings.site_name|striptags }}">
+    <meta name="twitter:description" content="{{ site_settings.meta_description|default:'Современная сайт-витрина товаров'|striptags }}">
     <link rel="canonical" href="{{ request.build_absolute_uri }}">
     {% endblock %}
 
@@ -9260,10 +9422,12 @@ aria-label="{{ social.title }}">
 <a href="{% url 'mybiz_core:home' %}" class="flex items-center space-x-3 group">
 {% if site_settings.logo %}
 <div class="logo-container">
-<img src="{{ site_settings.logo.url }}"
-alt="{{ site_settings.site_name }}"
-class="logo-img"
-loading="lazy">
+    <img src="{{ site_settings.logo.url }}"
+         alt="{{ site_settings.site_name|striptags }}"
+         class="logo-img"
+         loading="lazy"
+         width="40"
+         height="40">
 </div>
 {% endif %}
 <div class="brand-text min-w-0">
@@ -10138,9 +10302,6 @@ class="filters-clear text-sm text-default/60 hover:text-primary">
 <form method="get" id="filtersForm" class="space-y-6">
 <!-- Скрытые поля для пагинации -->
 <input type="hidden" name="page" value="1">
-{% if category %}
-<input type="hidden" name="category" value="{{ category.slug }}">
-{% endif %}
 <!-- Фильтр по категориям -->
 <div class="filter-section">
 <h3 class="filter-section-title font-semibold text-default mb-3">Категории</h3>
@@ -10436,9 +10597,6 @@ aria-label="Закрыть фильтры">
 <!-- Форма фильтров для мобильных устройств -->
 <form method="get" id="mobileFiltersForm" class="space-y-6">
 <input type="hidden" name="page" value="1">
-{% if category %}
-<input type="hidden" name="category" value="{{ category.slug }}">
-{% endif %}
 <!-- Фильтр по категориям -->
 <div class="filter-section">
 <h3 class="filter-section-title font-semibold text-default mb-3">Категории</h3>
@@ -11330,5 +11488,5 @@ class TestErrorViews:
 
 
 === СБОР ЗАВЕРШЁН ===
-Всего файлов: 84
+Всего файлов: 86
 Выходной файл: project_sources.txt
