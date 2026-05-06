@@ -298,7 +298,7 @@ def save(self, *args, **kwargs):
     *   Перед сдачей задачи убедиться, что `pytest` проходит успешно.
 5.  **Язык:** Комментарии, докстринги, тексты интерфейса и админки — **на русском языке**.
 6.  **Температура генерации:** `temperature=0.0` для детерминированного кода.
-7. Ты работаешь в /workspace. наша схема работы такая: я из веб версии qwen отправляю изменения, которые ты делаешь, на гитхаб (нажимаю "опубликовать на github"), потом на своем компьютере делаю [
+7. Ты работаешь в веб версии qwen coder у тебя есть память в /workspace. наша схема работы такая: я из веб версии qwen отправляю изменения, которые ты делаешь, на гитхаб (нажимаю "опубликовать на github"), потом на своем компьютере делаю [
 git fetch origin
 git checkout main
 git merge origin/    + имя ветки
@@ -666,6 +666,82 @@ def health_check(request):
         health_status['status'] = 'unhealthy'
     status_code = status.HTTP_200_OK if health_status['status'] == 'healthy' else status.HTTP_503_SERVICE_UNAVAILABLE
     return Response(health_status, status=status_code)
+
+
+================================================================================
+FILE: ./config/admin.py
+================================================================================
+
+# config/admin.py
+"""
+Кастомизация админ-панели Django.
+Скрывает ненужные разделы и настраивает отображение.
+"""
+from django.contrib import admin
+from django.contrib.admin.sites import AdminSite
+from auditlog.models import LogEntry
+
+
+class MyBizAdminSite(AdminSite):
+    """Кастомный сайт администрирования"""
+    site_header = "MyBiz Администрирование"
+    site_title = "MyBiz Админ"
+    index_title = "Управление контентом"
+
+    def has_permission(self, request):
+        """Разрешаем доступ только авторизованным пользователям"""
+        return request.user.is_active and request.user.is_staff
+
+    def get_app_list(self, request, app_label=None):
+        """
+        Кастомизируем список приложений, скрывая ненужные разделы.
+        """
+        app_dict = self._build_app_dict(request, app_label)
+        
+        # Фильтруем приложения и модели
+        filtered_apps = []
+        for app in app_dict.values():
+            app_name = app['name']
+            
+            # Пропускаем приложение Audit log полностью
+            if app_name == 'Auditlog':
+                continue
+            
+            # Фильтруем модели внутри приложения Auth
+            if app_name == 'Authentication and Authorization':
+                # Оставляем только группы и пользователей, но скрываем их
+                # Полностью убираем раздел Users and groups
+                continue
+            
+            # Для остальных приложений фильтруем модели
+            filtered_models = []
+            for model in app['models']:
+                model_name = model['name']
+                
+                # Скрываем Запросы о поступлении (StockNotification)
+                if model_name == 'Stock notification':
+                    continue
+                
+                # Скрываем Подписчиков (NewsletterSubscriber)
+                if model_name == 'Newsletter subscriber':
+                    continue
+                
+                # Скрываем записи журнала аудита
+                if model_name == 'Log entry':
+                    continue
+                
+                filtered_models.append(model)
+            
+            # Добавляем приложение только если есть модели
+            if filtered_models:
+                app['models'] = filtered_models
+                filtered_apps.append(app)
+        
+        return filtered_apps
+
+
+# Переопределяем стандартный сайт админирования
+admin.site = MyBizAdminSite(name='admin')
 
 
 ================================================================================
@@ -1460,17 +1536,10 @@ FILE: ./config/urls.py
 ================================================================================
 
 # config/urls.py
-from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-
-# ==============================================================================
-# НАСТРОЙКИ АДМИНКИ
-# ==============================================================================
-admin.site.site_title = "Администрирование MyBiz"
-admin.site.site_header = "Панель управления MyBiz"
-admin.site.index_title = "Управление сайтом"
+from config.admin import admin  # Импортируем кастомный админ-сайт
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -2047,7 +2116,7 @@ class Promotion(models.Model):
     )
 
     class Meta:
-        verbose_name = "Промо-акция"
+        verbose_name = "промо-акцию"
         verbose_name_plural = "Промо-акции"
         ordering = ['-created_at']
         indexes = [
@@ -2194,7 +2263,7 @@ class SiteSettings(models.Model):
     updated_at = models.DateTimeField(auto_now=True, editable=False, verbose_name="Дата обновления")
 
     class Meta:
-        verbose_name = "Настройки сайта"
+        verbose_name = "настройки сайта"
         verbose_name_plural = "Настройки сайта"
 
     def __str__(self):
@@ -2378,7 +2447,7 @@ class NewsletterSubscriber(models.Model):
     is_active = models.BooleanField(default=True, verbose_name="Активен")
 
     class Meta:
-        verbose_name = "Подписчик"
+        verbose_name = "подписчика"
         verbose_name_plural = "Подписчики"
         ordering = ['-created_at']
 
@@ -2396,7 +2465,7 @@ class StockNotification(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['product', 'email'], name='unique_product_email')
         ]
-        verbose_name = "Запрос о поступлении"
+        verbose_name = "запрос о поступлении"
         verbose_name_plural = "Запросы о поступлении"
 
     def __str__(self):
@@ -2650,7 +2719,6 @@ class ColorPickerWidget(forms.TextInput):
             <div class="color-picker-container">
                 <input type="color" value="{value}">
                 <input {attrs_string}>
-                <div class="color-preview" style="background-color: {value};"></div>
             </div>
         </div>
         '''
@@ -3630,7 +3698,7 @@ class Category(models.Model):
     updated_at = models.DateTimeField(auto_now=True, editable=False, verbose_name="Дата обновления")
 
     class Meta:
-        verbose_name = "Категория"
+        verbose_name = "категорию"
         verbose_name_plural = "Категории"
         ordering = ['name']
 
@@ -3720,7 +3788,7 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True, editable=False, verbose_name="Дата обновления")
 
     class Meta:
-        verbose_name = "Товар"
+        verbose_name = "товар"
         verbose_name_plural = "Товары"
         ordering = ['-created_at']
         indexes = [
@@ -4265,7 +4333,7 @@ class PageAdminForm(forms.ModelForm):
         fields = '__all__'
         widgets = {
             'content': CKEditor5Widget(
-                config_name='extends',  # 👈 расширенный редактор
+                config_name='extends',
                 attrs={'class': 'django_ckeditor_5'}
             ),
         }
@@ -4274,12 +4342,41 @@ class PageAdminForm(forms.ModelForm):
 @admin.register(Page)
 class PageAdmin(admin.ModelAdmin):
     form = PageAdminForm
-    list_display = ('title', 'slug', 'show_in_header', 'show_in_footer', 'is_active', 'created_at')
+    
+    # Список: только самое важное
+    list_display = ('title', 'slug_preview', 'is_active', 'show_in_header', 'show_in_footer')
     list_filter = ('is_active', 'show_in_header', 'show_in_footer')
-    search_fields = ('title', 'content')
+    search_fields = ('title',)
     prepopulated_fields = {'slug': ('title',)}
     ordering = ('title',)
-    save_on_top = True  # 👈 Кнопки сохранения сверху
+    save_on_top = True
+    
+    # Группировка полей в форме
+    fieldsets = (
+        ('Основная информация', {
+            'fields': ('title', 'slug'),
+            'description': 'Заголовок и URL-адрес страницы'
+        }),
+        ('Содержание', {
+            'fields': ('content',),
+            'description': 'Текст страницы с форматированием'
+        }),
+        ('Отображение', {
+            'fields': ('is_active', 'show_in_header', 'show_in_footer'),
+            'description': 'Где и как показывать страницу'
+        }),
+        ('SEO-настройки', {
+            'fields': ('excerpt', 'meta_title', 'meta_description', 'meta_keywords'),
+            'classes': ('collapse',),  # Скрытая секция
+            'description': 'Мета-теги для поисковых систем (необязательно)'
+        }),
+    )
+    
+    def slug_preview(self, obj):
+        """Краткое отображение slug"""
+        return f"/{obj.slug}/"
+    slug_preview.short_description = "URL"
+    slug_preview.ordering = 'slug'
 
 
 ================================================================================
@@ -4324,7 +4421,7 @@ class Page(models.Model):
     updated_at = models.DateTimeField(auto_now=True, editable=False, verbose_name="Дата обновления")
 
     class Meta:
-        verbose_name = "Страница"
+        verbose_name = "страницу"
         verbose_name_plural = "Страницы"
         ordering = ['title']
 
@@ -4976,6 +5073,29 @@ FILE: ./static/admin/css/admin-enhanced.css
    MyBiz Admin Enhanced Styles
    Улучшенные стили для админ-панели Django
    ============================================ */
+
+/* --- Боковая панель всегда видна --- */
+.main > #nav-sidebar {
+    margin-left: 0 !important;
+    visibility: visible !important;
+}
+
+.main.shifted > #nav-sidebar {
+    margin-left: 0 !important;
+    visibility: visible !important;
+}
+
+.toggle-nav-sidebar {
+    display: none !important;
+}
+
+.main {
+    margin-left: 275px !important;
+}
+
+[dir="rtl"] .main {
+    margin-right: 275px !important;
+}
 
 /* --- Типографика --- */
 body.admin-enhanced {
@@ -5741,15 +5861,6 @@ FILE: ./static/admin/css/color-picker.css
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
 }
 
-/* Превью цвета */
-.color-picker-container .color-preview {
-    width: 24px !important;
-    height: 24px !important;
-    border-radius: 4px !important;
-    border: 1px solid #e5e7eb !important;
-    flex-shrink: 0 !important;
-}
-
 /* Скрываем пустые блоки help-block */
 .form-row.field-primary_color .help-block,
 .form-row.field-secondary_color .help-block,
@@ -6494,6 +6605,7 @@ FILE: ./static/admin/js/admin-enhanced.js
     /**
      * Предупреждение о несохранённых изменениях
      * Работает для всех форм редактирования в админке
+     * Отключено для страницы SiteSettings (настройки сайта)
      */
     function initUnsavedChangesWarning() {
         // Проверяем, что мы на странице изменения объекта (не список)
@@ -6502,10 +6614,18 @@ FILE: ./static/admin/js/admin-enhanced.js
             return;
         }
 
-        // Флаг для отслеживания изменений
-        let hasUnsavedChanges = false;
-        // Флаг отправки формы
-        let isSubmitting = false;
+        // Отключаем предупреждение для страницы SiteSettings
+        const currentUrl = window.location.href;
+        if (currentUrl.includes('/admin/main/sitesettings/') || 
+            currentUrl.includes('/admin/main/site/')) {
+            return;
+        }
+
+        // Глобальные флаги для доступа из других скриптов
+        window.__unsavedChanges = {
+            hasUnsavedChanges: false,
+            isSubmitting: false
+        };
 
         // Получаем все поля ввода кроме скрытых и кнопок
         const formInputs = changeForm.querySelectorAll('input:not([type="hidden"]):not([type="submit"]):not([type="button"]), textarea, select');
@@ -6513,16 +6633,16 @@ FILE: ./static/admin/js/admin-enhanced.js
         // Добавляем обработчики изменений
         formInputs.forEach(function(input) {
             input.addEventListener('change', function() {
-                hasUnsavedChanges = true;
+                window.__unsavedChanges.hasUnsavedChanges = true;
             });
             input.addEventListener('input', function() {
-                hasUnsavedChanges = true;
+                window.__unsavedChanges.hasUnsavedChanges = true;
             });
         });
 
         // Предупреждение при попытке уйти с страницы с несохранёнными изменениями
         window.addEventListener('beforeunload', function(e) {
-            if (hasUnsavedChanges && !isSubmitting) {
+            if (window.__unsavedChanges.hasUnsavedChanges && !window.__unsavedChanges.isSubmitting) {
                 e.preventDefault();
                 e.returnValue = '';
                 return '';
@@ -6533,15 +6653,15 @@ FILE: ./static/admin/js/admin-enhanced.js
         const submitButtons = changeForm.querySelectorAll('input[type="submit"], button[type="submit"], .submit-row input, .submit-row button');
         submitButtons.forEach(function(btn) {
             btn.addEventListener('click', function() {
-                isSubmitting = true;
-                hasUnsavedChanges = false;
+                window.__unsavedChanges.isSubmitting = true;
+                window.__unsavedChanges.hasUnsavedChanges = false;
             });
         });
 
         // После успешной отправки формы сбрасываем флаг
         changeForm.addEventListener('submit', function() {
-            isSubmitting = true;
-            hasUnsavedChanges = false;
+            window.__unsavedChanges.isSubmitting = true;
+            window.__unsavedChanges.hasUnsavedChanges = false;
         });
     }
 
@@ -6631,7 +6751,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const colorInput = widget.querySelector('input[type="color"]');
         const hexInput = widget.querySelector('.color-hex-input');
-        const preview = widget.querySelector('.color-preview');
 
         // Если нет необходимых элементов — ничего не делаем
         if (!colorInput || !hexInput) return;
@@ -6639,7 +6758,6 @@ document.addEventListener('DOMContentLoaded', function () {
         // Вспомогательные функции для обновления
         function updateFromColor() {
             hexInput.value = colorInput.value;
-            if (preview) preview.style.backgroundColor = colorInput.value;
         }
 
         function normalizeHex(val) {
@@ -6660,7 +6778,6 @@ document.addEventListener('DOMContentLoaded', function () {
             if (normalized) {
                 hexInput.value = normalized;
                 colorInput.value = normalized;
-                if (preview) preview.style.backgroundColor = normalized;
             }
         }
 
@@ -6677,18 +6794,15 @@ document.addEventListener('DOMContentLoaded', function () {
             if (normalized) {
                 colorInput.value = normalized;
                 hexInput.value = normalized;
-                if (preview) preview.style.backgroundColor = normalized;
             } else {
                 // Если HEX некорректен — ставим чёрный по умолчанию
                 colorInput.value = '#000000';
                 hexInput.value = '#000000';
-                if (preview) preview.style.backgroundColor = '#000000';
             }
         } else {
             // Оба пустые — выставляем дефолтный чёрный
             colorInput.value = '#000000';
             hexInput.value = '#000000';
-            if (preview) preview.style.backgroundColor = '#000000';
         }
 
         widget.dataset.colorPickerInitialized = 'true';
@@ -7513,6 +7627,12 @@ FILE: ./static/admin/js/sitesettings_save_sections.js
                 e.preventDefault();
                 e.stopPropagation();
                 
+                // Устанавливаем флаг отправки формы (для глобального обработчика unsaved changes)
+                if (window.__unsavedChanges) {
+                    window.__unsavedChanges.isSubmitting = true;
+                    window.__unsavedChanges.hasUnsavedChanges = false;
+                }
+                
                 // Сохраняем состояние перед отправкой
                 saveFieldsetsState();
                 
@@ -8230,6 +8350,173 @@ svg[class*="w-6"] {
     visibility: visible !important;
     opacity: 1 !important;
 }
+
+================================================================================
+FILE: ./static/widgets.py
+================================================================================
+
+# content/widgets.py
+"""
+Кастомные виджеты для админ-панели Django
+"""
+from django import forms
+from django.utils.safestring import mark_safe
+from django.conf import settings
+import os
+
+
+class ColorPickerWidget(forms.TextInput):
+    """
+    Виджет для выбора цвета с палитрой (input type="color") и текстовым полем HEX + превью.
+    Структура: .color-picker-widget > .color-picker-container > input[type=color] + input.color-hex-input + .color-preview
+    """
+    template_name = 'admin/widgets/color_picker.html'  # оставлено для совместимости, но не используется
+
+    class Media:
+        css = {
+            'all': (
+                'admin/css/color-picker.css',
+                'admin/css/color-fields-compact.css',
+            )
+        }
+        js = ('admin/js/color-picker.js',)
+
+    def __init__(self, attrs=None):
+        default_attrs = {
+            'placeholder': '#000000',
+            'pattern': '^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$',
+        }
+        if attrs:
+            default_attrs.update(attrs)
+        super().__init__(default_attrs)
+
+    def render(self, name, value, attrs=None, renderer=None):
+        # Нормализация HEX-значения
+        if not value or value.strip() == '':
+            value = '#000000'
+        else:
+            # Добавляем # если его нет
+            if not value.startswith('#'):
+                value = '#' + value
+            # Преобразуем к нижнему регистру
+            value = value.lower()
+            # Если короткий формат (#RGB), преобразуем в полный (#RRGGBB)
+            if len(value) == 4:
+                value = '#' + value[1] + value[1] + value[2] + value[2] + value[3] + value[3]
+
+        # Базовые атрибуты для скрытого поля, которое будет отправлять значение
+        final_attrs = self.build_attrs(self.attrs, attrs)
+
+        # Объединяем классы корректно
+        base_classes = final_attrs.get('class', '')
+        all_classes = f"{base_classes} color-hex-input".strip()
+
+        final_attrs.update({
+            'type': 'text',
+            'name': name,
+            'value': value,
+            'maxlength': '7',
+            'class': all_classes,
+        })
+
+        # Формируем строку атрибутов
+        attrs_list = []
+        for key, val in final_attrs.items():
+            attrs_list.append(f'{key}="{val}"')
+        attrs_string = ' '.join(attrs_list)
+
+        # Генерируем input type="color" и текстовое поле HEX
+        html = f'''
+        <div class="color-picker-widget" data-widget="color-picker">
+            <div class="color-picker-container">
+                <input type="color" value="{value}">
+                <input {attrs_string}>
+            </div>
+        </div>
+        '''
+        return mark_safe(html)
+
+
+class ImagePreviewWidget(forms.ClearableFileInput):
+    """
+    Виджет для загрузки изображений с превью.
+    """
+    template_name = 'admin/widgets/image_preview.html'
+
+    class Media:
+        css = {
+            'all': ('admin/css/image-preview.css',)
+        }
+        js = ('admin/js/image-preview.js',)
+
+    def __init__(self, attrs=None):
+        default_attrs = {
+            'class': 'vImageField',
+            'accept': 'image/*',
+        }
+        if attrs:
+            default_attrs.update(attrs)
+        super().__init__(default_attrs)
+
+    def get_context(self, name, value, attrs):
+        context = super().get_context(name, value, attrs)
+        if value and hasattr(value, 'url'):
+            context['image_url'] = value.url
+            context['image_name'] = value.name
+        else:
+            context['image_url'] = None
+            context['image_name'] = None
+        return context
+
+    def render(self, name, value, attrs=None, renderer=None):
+        context = self.get_context(name, value, attrs)
+
+        final_attrs = self.build_attrs(self.attrs, attrs)
+        final_attrs.update({'name': name, 'type': 'file'})
+        attrs_string = ' '.join(f'{key}="{val}"' for key, val in final_attrs.items())
+
+        html = f'''
+        <div class="image-preview-wrapper" data-widget="image-preview">
+        '''
+        if context['image_url']:
+            html += f'''
+            <div class="current-image">
+                <p class="image-label">Текущее изображение:</p>
+                <img src="{context['image_url']}" alt="{context['image_name']}"
+                     style="max-width: 200px; max-height: 200px; border-radius: 8px; border: 2px solid #e5e7eb;">
+                <p class="image-name">{context['image_name']}</p>
+            </div>
+            '''
+        html += f'''
+            <div class="new-image-upload">
+                <p class="image-label">Новое изображение:</p>
+                <input {attrs_string}>
+                <div class="image-preview-container" style="display: none;">
+                    <img class="image-preview"
+                         style="max-width: 200px; max-height: 200px; border-radius: 8px; border: 2px solid #3b82f6; margin-top: 10px;">
+                </div>
+            </div>
+        </div>
+        '''
+        return mark_safe(html)
+
+
+class CKEditor5PreviewWidget(forms.Textarea):
+    class Media:
+        css = {'all': ('admin/css/ckeditor-preview.css',)}
+
+    def render(self, name, value, attrs=None, renderer=None):
+        html = super().render(name, value, attrs, renderer)
+        if value:
+            html += f'''
+            <div class="ckeditor-preview" style="margin-top: 10px; padding: 15px;
+                background: #f9fafb; border-radius: 8px; border: 1px solid #e5e7eb;">
+                <p style="margin: 0 0 10px 0; font-weight: 600; color: #6b7280;">Предпросмотр:</p>
+                <div style="color: #1f2937;">{value}</div>
+            </div>
+            '''
+        return mark_safe(html)
+
 
 ================================================================================
 FILE: ./tailwind.config.js
@@ -11488,5 +11775,5 @@ class TestErrorViews:
 
 
 === СБОР ЗАВЕРШЁН ===
-Всего файлов: 86
+Всего файлов: 88
 Выходной файл: project_sources.txt
