@@ -248,11 +248,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'auditlog.middleware.AuditlogMiddleware',
 ]
-
-# Убираем модули, которых больше нет в INSTALLED_APPS
-# (никаких удалений не требуется, debug_toolbar и django_extensions отсутствуют)
 
 # ==============================================================================
 # КОНЕЧНЫЕ ПРОВЕРКИ

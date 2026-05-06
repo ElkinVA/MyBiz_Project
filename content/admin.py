@@ -11,7 +11,7 @@ from .forms import SiteSettingsForm
 class SiteSettingsAdmin(admin.ModelAdmin):
     form = SiteSettingsForm
     save_on_top = False  # Убираем дублирование кнопок, форма не слишком длинная
-    
+
     def has_add_permission(self, request):
         return not SiteSettings.objects.exists()
 
@@ -187,6 +187,10 @@ class StockNotificationAdmin(admin.ModelAdmin):
 
     actions = ['send_notification', 'mark_as_notified']
 
+    def has_module_permission(self, request):
+        """Скрывает раздел «Запросы о поступлении» со страницы приложений"""
+        return False
+
     def send_notification(self, request, queryset):
         from django.core.mail import send_mail
         from django.conf import settings
@@ -228,6 +232,10 @@ class NewsletterSubscriberAdmin(admin.ModelAdmin):
     list_per_page = 25
 
     actions = ['activate_subscribers', 'deactivate_subscribers', 'export_subscribers']
+
+    def has_module_permission(self, request):
+        """Скрывает раздел «Подписчики» со страницы приложений"""
+        return False
 
     def activate_subscribers(self, request, queryset):
         queryset.update(is_active=True)

@@ -58,7 +58,6 @@ INSTALLED_APPS = [
     'django_filters',
     'django_ckeditor_5',
     'sorl.thumbnail',
-    'auditlog',
     # Локальные приложения
     'mybiz_core',
     'content',
@@ -76,7 +75,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'auditlog.middleware.AuditlogMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -196,10 +194,6 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ==============================================================================
-# DEBUG TOOLBAR НАСТРОЙКИ
-# ==============================================================================
-
-# ==============================================================================
 # DJANGO CKEDITOR 5 НАСТРОЙКИ
 # ==============================================================================
 CKEDITOR_5_CONFIGS = {
@@ -264,12 +258,6 @@ THUMBNAIL_BACKEND = 'sorl.thumbnail.base.ThumbnailBackend'
 THUMBNAIL_KEY_PREFIX = 'mybiz'
 THUMBNAIL_QUALITY = 95
 THUMBNAIL_PRESERVE_FORMAT = True
-
-# ==============================================================================
-# AUDITLOG НАСТРОЙКИ
-# ==============================================================================
-AUDITLOG_INCLUDE_ALL_MODELS = False
-AUDITLOG_DISABLE_ON_RAW_SAVE = False
 
 # ==============================================================================
 # ЗАГРУЗКА ФАЙЛОВ

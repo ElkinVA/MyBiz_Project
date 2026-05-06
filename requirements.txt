@@ -11,7 +11,6 @@ click==8.3.1
 cryptography==46.0.7
 defusedxml==0.7.1
 Django==5.2.13
-django-auditlog==3.4.1
 django-ckeditor-5==0.2.20
 django-csp==4.0
 django-js-asset==3.1.2

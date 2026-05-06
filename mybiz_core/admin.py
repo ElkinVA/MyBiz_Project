@@ -7,6 +7,24 @@ from django_ckeditor_5.widgets import CKEditor5Widget
 from django.core.cache import cache
 from .models import Category, Product
 
+# --- Скрываем встроенные модели User и Group ---
+from django.contrib.auth.models import User, Group
+from django.contrib.auth.admin import UserAdmin, GroupAdmin
+
+class HiddenUserAdmin(UserAdmin):
+    def has_module_permission(self, request):
+        return False
+
+class HiddenGroupAdmin(GroupAdmin):
+    def has_module_permission(self, request):
+        return False
+
+admin.site.unregister(User)
+admin.site.unregister(Group)
+admin.site.register(User, HiddenUserAdmin)
+admin.site.register(Group, HiddenGroupAdmin)
+# --- Конец скрытия пользователей ---
+
 
 class ProductForm(forms.ModelForm):
     """Форма для товара с CKEditor"""
