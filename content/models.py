@@ -51,7 +51,7 @@ class Promotion(models.Model):
     )
 
     class Meta:
-        verbose_name = "Промо-акция"
+        verbose_name = "промо-акцию"
         verbose_name_plural = "Промо-акции"
         ordering = ['-created_at']
         indexes = [
@@ -198,7 +198,7 @@ class SiteSettings(models.Model):
     updated_at = models.DateTimeField(auto_now=True, editable=False, verbose_name="Дата обновления")
 
     class Meta:
-        verbose_name = "Настройки сайта"
+        verbose_name = "настройки сайта"
         verbose_name_plural = "Настройки сайта"
 
     def __str__(self):
@@ -382,7 +382,7 @@ class NewsletterSubscriber(models.Model):
     is_active = models.BooleanField(default=True, verbose_name="Активен")
 
     class Meta:
-        verbose_name = "Подписчик"
+        verbose_name = "подписчика"
         verbose_name_plural = "Подписчики"
         ordering = ['-created_at']
 
@@ -400,7 +400,7 @@ class StockNotification(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['product', 'email'], name='unique_product_email')
         ]
-        verbose_name = "Запрос о поступлении"
+        verbose_name = "запрос о поступлении"
         verbose_name_plural = "Запросы о поступлении"
 
     def __str__(self):

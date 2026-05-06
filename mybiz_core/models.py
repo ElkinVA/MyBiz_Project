@@ -37,7 +37,7 @@ class Category(models.Model):
     updated_at = models.DateTimeField(auto_now=True, editable=False, verbose_name="Дата обновления")
 
     class Meta:
-        verbose_name = "Категория"
+        verbose_name = "категорию"
         verbose_name_plural = "Категории"
         ordering = ['name']
 
@@ -127,7 +127,7 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True, editable=False, verbose_name="Дата обновления")
 
     class Meta:
-        verbose_name = "Товар"
+        verbose_name = "товар"
         verbose_name_plural = "Товары"
         ordering = ['-created_at']
         indexes = [

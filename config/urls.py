@@ -1,15 +1,8 @@
 # config/urls.py
-from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-
-# ==============================================================================
-# НАСТРОЙКИ АДМИНКИ
-# ==============================================================================
-admin.site.site_title = "Администрирование MyBiz"
-admin.site.site_header = "Панель управления MyBiz"
-admin.site.index_title = "Управление сайтом"
+from config.admin import admin  # Импортируем кастомный админ-сайт
 
 urlpatterns = [
     path('admin/', admin.site.urls),

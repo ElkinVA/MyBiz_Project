@@ -23,7 +23,7 @@ class Page(models.Model):
     updated_at = models.DateTimeField(auto_now=True, editable=False, verbose_name="Дата обновления")
 
     class Meta:
-        verbose_name = "Страница"
+        verbose_name = "страницу"
         verbose_name_plural = "Страницы"
         ordering = ['title']
 
