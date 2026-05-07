@@ -123,7 +123,6 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             'admin/js/color-scheme.js',
             'admin/js/color-picker.js',
             'admin/js/image-preview.js',
-            'admin/js/contrast-checker.js',
         )
 
 

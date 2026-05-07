@@ -26,10 +26,8 @@ class SiteSettingsForm(forms.ModelForm):
             'accent_color': ColorPickerWidget(),
             'text_color': ColorPickerWidget(),
             'background_color': ColorPickerWidget(),
-            'header_bg_color': ColorPickerWidget(),
-            'header_text_color': ColorPickerWidget(),
-            'footer_bg_color': ColorPickerWidget(),
-            'footer_text_color': ColorPickerWidget(),
+            'header_footer_bg_color': ColorPickerWidget(),
+            'header_footer_text_color': ColorPickerWidget(),
             'hero_bg_color': ColorPickerWidget(),
             'border_color': ColorPickerWidget(),
 
