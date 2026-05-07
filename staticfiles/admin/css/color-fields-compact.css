@@ -8,10 +8,8 @@
 .form-row.field-text_color,
 .form-row.field-background_color,
 .form-row.field-border_color,
-.form-row.field-header_bg_color,
-.form-row.field-header_text_color,
-.form-row.field-footer_bg_color,
-.form-row.field-footer_text_color,
+.form-row.field-header_footer_bg_color,
+.form-row.field-header_footer_text_color,
 .form-row.field-hero_bg_color {
     display: inline-block !important;
     width: 32% !important;
@@ -29,7 +27,7 @@
 /* Каждое третье поле (последнее в ряду) без правого отступа */
 .form-row.field-accent_color,
 .form-row.field-border_color,
-.form-row.field-footer_text_color,
+.form-row.field-header_footer_text_color,
 .form-row.field-hero_bg_color {
     margin-right: 0 !important;
 }
@@ -41,10 +39,8 @@
 .form-row.field-text_color label,
 .form-row.field-background_color label,
 .form-row.field-border_color label,
-.form-row.field-header_bg_color label,
-.form-row.field-header_text_color label,
-.form-row.field-footer_bg_color label,
-.form-row.field-footer_text_color label,
+.form-row.field-header_footer_bg_color label,
+.form-row.field-header_footer_text_color label,
 .form-row.field-hero_bg_color label {
     display: block !important;
     margin-bottom: 6px !important;
@@ -63,10 +59,8 @@
 .form-row.field-text_color .color-picker-widget,
 .form-row.field-background_color .color-picker-widget,
 .form-row.field-border_color .color-picker-widget,
-.form-row.field-header_bg_color .color-picker-widget,
-.form-row.field-header_text_color .color-picker-widget,
-.form-row.field-footer_bg_color .color-picker-widget,
-.form-row.field-footer_text_color .color-picker-widget,
+.form-row.field-header_footer_bg_color .color-picker-widget,
+.form-row.field-header_footer_text_color .color-picker-widget,
 .form-row.field-hero_bg_color .color-picker-widget {
     width: 100% !important;
     box-sizing: border-box !important;
@@ -80,10 +74,8 @@
     .form-row.field-text_color,
     .form-row.field-background_color,
     .form-row.field-border_color,
-    .form-row.field-header_bg_color,
-    .form-row.field-header_text_color,
-    .form-row.field-footer_bg_color,
-    .form-row.field-footer_text_color,
+    .form-row.field-header_footer_bg_color,
+    .form-row.field-header_footer_text_color,
     .form-row.field-hero_bg_color {
         width: 49% !important;
         margin-right: 2% !important;
@@ -92,8 +84,7 @@
     /* Каждое второе поле без правого отступа */
     .form-row.field-secondary_color,
     .form-row.field-border_color,
-    .form-row.field-header_text_color,
-    .form-row.field-footer_text_color {
+    .form-row.field-header_footer_text_color {
         margin-right: 0 !important;
     }
 }
@@ -106,10 +97,8 @@
     .form-row.field-text_color,
     .form-row.field-background_color,
     .form-row.field-border_color,
-    .form-row.field-header_bg_color,
-    .form-row.field-header_text_color,
-    .form-row.field-footer_bg_color,
-    .form-row.field-footer_text_color,
+    .form-row.field-header_footer_bg_color,
+    .form-row.field-header_footer_text_color,
     .form-row.field-hero_bg_color {
         width: 100% !important;
         margin-right: 0 !important;

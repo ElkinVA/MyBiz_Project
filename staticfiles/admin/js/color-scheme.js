@@ -69,10 +69,8 @@ function initializeColorScheme() {
             accent_color: '#D9734C',
             text_color: '#1E2B26',
             background_color: '#F3F0E9',
-            header_bg_color: '#FFFFFF',
-            header_text_color: '#1E2B26',
-            footer_bg_color: '#2C4238',
-            footer_text_color: '#F3F0E9',
+            header_footer_bg_color: '#FFFFFF',
+            header_footer_text_color: '#1E2B26',
             hero_bg_color: '#DFD9CE',
             border_color: '#D4C5B0'
         },
@@ -82,10 +80,8 @@ function initializeColorScheme() {
             accent_color: '#E6B17E',
             text_color: '#342015',
             background_color: '#FCF5E8',
-            header_bg_color: '#FFFFFF',
-            header_text_color: '#342015',
-            footer_bg_color: '#583C2B',
-            footer_text_color: '#FCF5E8',
+            header_footer_bg_color: '#FFFFFF',
+            header_footer_text_color: '#342015',
             hero_bg_color: '#F0E2D3',
             border_color: '#E6D5C3'
         },
@@ -95,10 +91,8 @@ function initializeColorScheme() {
             accent_color: '#F9A26C',
             text_color: '#2D232E',
             background_color: '#FEF6F9',
-            header_bg_color: '#FFFFFF',
-            header_text_color: '#2D232E',
-            footer_bg_color: '#663A5F',
-            footer_text_color: '#FEF6F9',
+            header_footer_bg_color: '#FFFFFF',
+            header_footer_text_color: '#2D232E',
             hero_bg_color: '#FCE4E4',
             border_color: '#F5D5E0'
         },
@@ -108,10 +102,8 @@ function initializeColorScheme() {
             accent_color: '#B95C3C',
             text_color: '#31261D',
             background_color: '#EEE7DF',
-            header_bg_color: '#F8F1E8',
-            header_text_color: '#31261D',
-            footer_bg_color: '#53453A',
-            footer_text_color: '#EEE7DF',
+            header_footer_bg_color: '#F8F1E8',
+            header_footer_text_color: '#31261D',
             hero_bg_color: '#DBCFC2',
             border_color: '#D5C5B5'
         },
@@ -121,10 +113,8 @@ function initializeColorScheme() {
             accent_color: '#5E4563',
             text_color: '#202A33',
             background_color: '#F9F6F0',
-            header_bg_color: '#FFFFFF',
-            header_text_color: '#202A33',
-            footer_bg_color: '#38434D',
-            footer_text_color: '#F9F6F0',
+            header_footer_bg_color: '#FFFFFF',
+            header_footer_text_color: '#202A33',
             hero_bg_color: '#E2F0F0',
             border_color: '#D8E0E0'
         },
@@ -200,22 +190,18 @@ function initializeColorScheme() {
                 <div class="color-scheme-color" style="background: linear-gradient(135deg, #667eea, #764ba2);" title="Primary"></div>
                 <div class="color-scheme-color" style="background: linear-gradient(135deg, #764ba2, #f093fb);" title="Secondary"></div>
                 <div class="color-scheme-color" style="background: linear-gradient(135deg, #f093fb, #f5576c);" title="Accent"></div>
-                <div class="color-scheme-color" style="background: linear-gradient(135deg, #4facfe, #00f2fe);" title="Header BG"></div>
-                <div class="color-scheme-color" style="background: linear-gradient(135deg, #f5af19, #f12711);" title="Footer BG"></div>
-                <div class="color-scheme-color" style="background: linear-gradient(135deg, #11998e, #38ef7d);" title="Footer Text"></div>
+                <div class="color-scheme-color" style="background: linear-gradient(135deg, #4facfe, #00f2fe);" title="Header/Footer BG"></div>
+                <div class="color-scheme-color" style="background: linear-gradient(135deg, #f5af19, #f12711);" title="Header/Footer Text"></div>
                 <div class="color-scheme-color" style="background: linear-gradient(135deg, #a8edea, #fed6e3);" title="Hero BG"></div>
-                <div class="color-scheme-color" style="background: linear-gradient(135deg, #d299c2, #fef9d7);" title="Header Text"></div>
             `;
         } else if (colors) {
             colorsHtml = `
                 <div class="color-scheme-color" style="background: ${colors.primary_color};" title="Primary"></div>
                 <div class="color-scheme-color" style="background: ${colors.secondary_color};" title="Secondary"></div>
                 <div class="color-scheme-color" style="background: ${colors.accent_color};" title="Accent"></div>
-                <div class="color-scheme-color" style="background: ${colors.header_bg_color}; border: 1px solid #ddd;" title="Header BG"></div>
-                <div class="color-scheme-color" style="background: ${colors.footer_bg_color};" title="Footer BG"></div>
-                <div class="color-scheme-color" style="background: ${colors.footer_text_color};" title="Footer Text"></div>
+                <div class="color-scheme-color" style="background: ${colors.header_footer_bg_color}; border: 1px solid #ddd;" title="Header/Footer BG"></div>
+                <div class="color-scheme-color" style="background: ${colors.header_footer_text_color};" title="Header/Footer Text"></div>
                 <div class="color-scheme-color" style="background: ${colors.hero_bg_color};" title="Hero BG"></div>
-                <div class="color-scheme-color" style="background: ${colors.header_text_color};" title="Header Text"></div>
             `;
         }
 
@@ -270,14 +256,16 @@ function initializeColorScheme() {
     }
 
     // ---- УЛУЧШЕННЫЙ ПОИСК ПОЛЕЙ ЦВЕТА ----
-    // Ищем только поля палитры бренда, НЕ header/footer цвета
+    // Ищем все поля цветов, включая header_footer
     const brandColorFields = [
         'input[name="primary_color"]',
         'input[name="secondary_color"]',
         'input[name="accent_color"]',
         'input[name="text_color"]',
         'input[name="background_color"]',
-        'input[name="border_color"]'
+        'input[name="border_color"]',
+        'input[name="header_footer_bg_color"]',
+        'input[name="header_footer_text_color"]'
     ].map(selector => document.querySelector(selector)).filter(el => el);
 
     const colorPickers = document.querySelectorAll('input[type="color"]');
