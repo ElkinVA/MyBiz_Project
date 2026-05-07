@@ -1,51 +1,33 @@
 ```
-# Python
+# Build artifacts
+static/admin/css/*.css
+static/admin/js/*.js
+
+# Cache and temporary files
+*.pyc
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# Database
-db.sqlite3
-*.db
-
-# Environment
-.env
-.env.local
-.env.*
-.env~*
-.venv/
-venv/
-ENV/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
 *.tmp
+*.swp
 
 # Logs
 *.log
 
-# Coverage
-.coverage
+# Environment files
+.env
+.env.local
+*.env.*
+
+# Editors
+.vscode/
+.idea/
+
+# Coverage reports
 coverage/
 htmlcov/
+.coverage
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
 ```
