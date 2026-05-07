@@ -50,6 +50,7 @@
     font-weight: 600 !important;
     text-align: left !important;
     width: 100% !important;
+    min-height: 40px !important; /* Фиксированная высота для выравнивания при длинных заголовках */
 }
 
 /* Контейнер виджета выбора цвета - не переопределяем padding, используем значение из color-picker.css */
