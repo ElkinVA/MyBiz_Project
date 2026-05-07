@@ -8,16 +8,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Пары полей для проверки контрастности
     const contrastPairs = [
         {
-            bgField: 'header_bg_color',
-            textField: 'header_text_color',
-            containerId: 'header-contrast-indicator',
-            label: 'Шапка (Header)'
-        },
-        {
-            bgField: 'footer_bg_color',
-            textField: 'footer_text_color',
-            containerId: 'footer-contrast-indicator',
-            label: 'Подвал (Footer)'
+            bgField: 'header_footer_bg_color',
+            textField: 'header_footer_text_color',
+            containerId: 'header-footer-contrast-indicator',
+            label: 'Шапка и подвал'
         },
         {
             bgField: 'hero_bg_color',
@@ -67,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Добавление clearfix для очистки float после индикаторов
     function addContrastClearfix() {
         // Находим все группы полей и добавляем clearfix после последней пары в группе
-        const clearFields = ['border_color', 'hero_bg_color', 'footer_text_color'];
+        const clearFields = ['border_color', 'hero_bg_color', 'header_footer_text_color'];
         clearFields.forEach(fieldName => {
             const field = document.querySelector(`input[name="${fieldName}"]`);
             if (field) {
