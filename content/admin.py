@@ -50,6 +50,7 @@ class SiteSettingsAdmin(admin.ModelAdmin):
                 'color_scheme',
                 ('primary_color', 'secondary_color', 'accent_color'),
                 ('text_color', 'background_color', 'border_color'),
+                ('header_footer_bg_color', 'header_footer_text_color'),
             ),
             'classes': ('collapse',),
             'description': 'Выберите готовую цветовую схему или настройте цвета вручную. Изменение цветов переключает на пользовательскую схему.'
@@ -59,10 +60,9 @@ class SiteSettingsAdmin(admin.ModelAdmin):
                 'site_name',
                 'site_tagline',
                 'logo',
-                ('header_bg_color', 'header_text_color'),
             ),
             'classes': ('collapse',),
-            'description': 'Название, слоган, логотип и цвета шапки'
+            'description': 'Название, слоган, логотип шапки'
         }),
         ('🖼️ Hero-секция', {
             'fields': (
@@ -98,11 +98,9 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
         ('🦶 Подвал сайта (Footer)', {
-            'fields': (
-                ('footer_bg_color', 'footer_text_color'),
-            ),
+            'fields': (),
             'classes': ('collapse',),
-            'description': 'Цвета подвала'
+            'description': 'Цвета подвала теперь настраиваются в разделе «Цвета и схемы»'
         }),
         ('📊 SEO настройки', {
             'fields': ('meta_title', 'meta_description', 'meta_keywords'),
