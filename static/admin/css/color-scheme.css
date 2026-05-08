@@ -298,7 +298,6 @@
 
 /* Очистка float после индикаторов */
 .form-row.field-background_color + .contrast-indicator:last-child,
-.form-row.field-hero_bg_color + .contrast-indicator:last-child,
 .form-row.field-footer_bg_color + .contrast-indicator:last-child {
     clear: both;
 }

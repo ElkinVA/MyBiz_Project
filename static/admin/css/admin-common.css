@@ -11,8 +11,7 @@
 .form-row.field-header_bg_color label,
 .form-row.field-header_text_color label,
 .form-row.field-footer_bg_color label,
-.form-row.field-footer_text_color label,
-.form-row.field-hero_bg_color label {
+.form-row.field-footer_text_color label {
     font-weight: 600;
     color: #333;
     font-size: 14px;
@@ -27,8 +26,7 @@
 .form-row.field-header_bg_color .help,
 .form-row.field-header_text_color .help,
 .form-row.field-footer_bg_color .help,
-.form-row.field-footer_text_color .help,
-.form-row.field-hero_bg_color .help {
+.form-row.field-footer_text_color .help {
     color: #666;
     font-size: 12px;
     margin-top: 5px;
@@ -46,8 +44,7 @@
     .form-row.field-header_bg_color label,
     .form-row.field-header_text_color label,
     .form-row.field-footer_bg_color label,
-    .form-row.field-footer_text_color label,
-    .form-row.field-hero_bg_color label {
+    .form-row.field-footer_text_color label {
         color: #ddd;
     }
     .form-row.field-primary_color .help,
@@ -59,8 +56,7 @@
     .form-row.field-header_bg_color .help,
     .form-row.field-header_text_color .help,
     .form-row.field-footer_bg_color .help,
-    .form-row.field-footer_text_color .help,
-    .form-row.field-hero_bg_color .help {
+    .form-row.field-footer_text_color .help {
         color: #aaa;
     }
 }

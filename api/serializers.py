@@ -93,11 +93,11 @@ class SiteSettingsSerializer(serializers.ModelSerializer):
         model = SiteSettings
         fields = [
             'id', 'site_name', 'site_tagline', 'color_scheme',
-            'favicon', 'logo', 'hero_image',
+            'favicon', 'logo',
             'primary_color', 'secondary_color', 'accent_color',
-            'text_color', 'background_color', 'header_bg_color',
-            'footer_bg_color', 'hero_bg_color', 'border_color',
-            'welcome_text', 'hero_subtitle',
+            'text_color', 'background_color', 'header_footer_bg_color',
+            'border_color', 'header_footer_text_color',
+            'welcome_text',
             'promotions_title', 'promotions_subtitle',
             'featured_products_title', 'featured_products_subtitle',
             'contact_email', 'contact_phone', 'contact_address',
