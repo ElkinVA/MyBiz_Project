@@ -468,11 +468,11 @@ class SiteSettingsSerializer(serializers.ModelSerializer):
         model = SiteSettings
         fields = [
             'id', 'site_name', 'site_tagline', 'color_scheme',
-            'favicon', 'logo', 'hero_image',
+            'favicon', 'logo',
             'primary_color', 'secondary_color', 'accent_color',
-            'text_color', 'background_color', 'header_bg_color',
-            'footer_bg_color', 'hero_bg_color', 'border_color',
-            'welcome_text', 'hero_subtitle',
+            'text_color', 'background_color', 'header_footer_bg_color',
+            'border_color', 'header_footer_text_color',
+            'welcome_text',
             'promotions_title', 'promotions_subtitle',
             'featured_products_title', 'featured_products_subtitle',
             'contact_email', 'contact_phone', 'contact_address',
@@ -1764,7 +1764,6 @@ def site_settings(request):
                 background_color='#f9fafb',
                 header_bg_color='#ffffff',
                 footer_bg_color='#111827',
-                hero_bg_color='#eff6ff',
                 border_color='#e5e7eb',
             )
     return {'site_settings': settings}
@@ -1821,8 +1820,6 @@ class SiteSettingsForm(forms.ModelForm):
         widgets = {
             'site_name': CKEditor5Widget(config_name='extends'),
             'site_tagline': CKEditor5Widget(config_name='extends'),
-            'hero_heading_prefix': forms.TextInput(attrs={'class': 'vTextField'}),
-            'hero_subtitle': forms.TextInput(attrs={'class': 'vTextField'}),
             'featured_products_title': forms.TextInput(attrs={'class': 'vTextField'}),
             'featured_products_subtitle': forms.TextInput(attrs={'class': 'vTextField'}),
             'promotions_title': forms.TextInput(attrs={'class': 'vTextField'}),
@@ -1837,12 +1834,10 @@ class SiteSettingsForm(forms.ModelForm):
             'background_color': ColorPickerWidget(),
             'header_footer_bg_color': ColorPickerWidget(),
             'header_footer_text_color': ColorPickerWidget(),
-            'hero_bg_color': ColorPickerWidget(),
             'border_color': ColorPickerWidget(),
 
             'logo': ImagePreviewWidget(),
             'favicon': ImagePreviewWidget(),
-            'hero_image': ImagePreviewWidget(),
 
             'contact_phone': forms.TextInput(attrs={'placeholder': '+7 (XXX) XXX-XX-XX', 'class': 'vTextField'}),
             'contact_email': forms.EmailInput(attrs={'placeholder': 'example@domain.com', 'class': 'vTextField'}),
@@ -2034,13 +2029,6 @@ class SiteSettings(models.Model):
         help_text="Краткий слоган (поддерживает простое форматирование)",
         config_name='extends'
     )
-    hero_heading_prefix = models.CharField(
-        max_length=100,
-        blank=True,
-        default="Добро пожаловать в",
-        verbose_name="Префикс заголовка (hero)",
-        help_text="Текст перед названием сайта в главном баннере"
-    )
 
     favicon = models.ImageField(
         upload_to='site/',
@@ -2056,13 +2044,6 @@ class SiteSettings(models.Model):
         verbose_name="Логотип",
         validators=[validate_image_extension, validate_image_size, validate_image_dimensions]
     )
-    hero_image = models.ImageField(
-        upload_to='site/',
-        blank=True,
-        null=True,
-        verbose_name="Главное изображение",
-        validators=[validate_image_extension, validate_image_size, validate_image_dimensions]
-    )
 
     primary_color = models.CharField(max_length=7, default='#3b82f6', verbose_name="Основной цвет")
     secondary_color = models.CharField(max_length=7, default='#8b5cf6', verbose_name="Вторичный цвет")
@@ -2070,7 +2051,6 @@ class SiteSettings(models.Model):
     text_color = models.CharField(max_length=7, default='#1f2937', verbose_name="Цвет текста")
     background_color = models.CharField(max_length=7, default='#f9fafb', verbose_name="Цвет фона")
     header_footer_bg_color = models.CharField(max_length=7, default='#ffffff', verbose_name="Фон шапки и подвала")
-    hero_bg_color = models.CharField(max_length=7, default='#eff6ff', verbose_name="Фон герой-секции")
     border_color = models.CharField(max_length=7, default='#e5e7eb', verbose_name="Цвет границ")
 
     header_footer_text_color = models.CharField(max_length=7, default='#1f2937', verbose_name="Цвет текста шапки и подвала")
@@ -2081,7 +2061,6 @@ class SiteSettings(models.Model):
         verbose_name='Приветственный текст',
         config_name='extends'
     )
-    hero_subtitle = models.CharField(max_length=200, blank=True, default='Лучшие товары по доступным ценам', verbose_name='Подзаголовок Hero')
     promotions_title = models.CharField(max_length=200, blank=True, default='Специальные предложения', verbose_name='Заголовок блока акций')
     promotions_subtitle = models.CharField(max_length=300, blank=True, default='Не упустите возможность...', verbose_name='Подзаголовок блока акций')
     featured_products_title = models.CharField(max_length=200, blank=True, default='Популярные товары', verbose_name='Заголовок блока популярных товаров')
@@ -2150,7 +2129,7 @@ class SiteSettings(models.Model):
         hex_fields = [
             'primary_color', 'secondary_color', 'accent_color',
             'text_color', 'background_color', 'header_footer_bg_color',
-            'hero_bg_color', 'border_color',
+            'border_color',
             'header_footer_text_color'
         ]
         for field_name in hex_fields:
@@ -2205,7 +2184,6 @@ class SiteSettings(models.Model):
                 'background_color': '#F3F0E9',
                 'header_footer_bg_color': '#F5F1E7',
                 'header_footer_text_color': '#1E2B26',
-                'hero_bg_color': '#DFD9CE',
                 'border_color': '#D4C5B0',
             },
             'coffee': {
@@ -2216,7 +2194,6 @@ class SiteSettings(models.Model):
                 'background_color': '#FCF5E8',
                 'header_footer_bg_color': '#F7EFE2',
                 'header_footer_text_color': '#342015',
-                'hero_bg_color': '#F0E2D3',
                 'border_color': '#E6D5C3',
             },
             'flower': {
@@ -2227,7 +2204,6 @@ class SiteSettings(models.Model):
                 'background_color': '#FEF6F9',
                 'header_footer_bg_color': '#FDF2F5',
                 'header_footer_text_color': '#2D232E',
-                'hero_bg_color': '#FCE4E4',
                 'border_color': '#F5D5E0',
             },
             'vintage': {
@@ -2238,7 +2214,6 @@ class SiteSettings(models.Model):
                 'background_color': '#EEE7DF',
                 'header_footer_bg_color': '#F0E6D8',
                 'header_footer_text_color': '#31261D',
-                'hero_bg_color': '#DBCFC2',
                 'border_color': '#D5C5B5',
             },
             'pastel': {
@@ -2249,7 +2224,6 @@ class SiteSettings(models.Model):
                 'background_color': '#F9F6F0',
                 'header_footer_bg_color': '#F4F9F5',
                 'header_footer_text_color': '#202A33',
-                'hero_bg_color': '#E2F0F0',
                 'border_color': '#D8E0E0',
             },
             'custom': {}
@@ -4861,8 +4835,7 @@ FILE: ./static/admin/css/admin-common.css
 .form-row.field-header_bg_color label,
 .form-row.field-header_text_color label,
 .form-row.field-footer_bg_color label,
-.form-row.field-footer_text_color label,
-.form-row.field-hero_bg_color label {
+.form-row.field-footer_text_color label {
     font-weight: 600;
     color: #333;
     font-size: 14px;
@@ -4877,8 +4850,7 @@ FILE: ./static/admin/css/admin-common.css
 .form-row.field-header_bg_color .help,
 .form-row.field-header_text_color .help,
 .form-row.field-footer_bg_color .help,
-.form-row.field-footer_text_color .help,
-.form-row.field-hero_bg_color .help {
+.form-row.field-footer_text_color .help {
     color: #666;
     font-size: 12px;
     margin-top: 5px;
@@ -4896,8 +4868,7 @@ FILE: ./static/admin/css/admin-common.css
     .form-row.field-header_bg_color label,
     .form-row.field-header_text_color label,
     .form-row.field-footer_bg_color label,
-    .form-row.field-footer_text_color label,
-    .form-row.field-hero_bg_color label {
+    .form-row.field-footer_text_color label {
         color: #ddd;
     }
     .form-row.field-primary_color .help,
@@ -4909,8 +4880,7 @@ FILE: ./static/admin/css/admin-common.css
     .form-row.field-header_bg_color .help,
     .form-row.field-header_text_color .help,
     .form-row.field-footer_bg_color .help,
-    .form-row.field-footer_text_color .help,
-    .form-row.field-hero_bg_color .help {
+    .form-row.field-footer_text_color .help {
         color: #aaa;
     }
 }
@@ -5333,8 +5303,7 @@ fieldset.collapse:not(.collapsed) .form-row.field-border_color,
 fieldset.collapse:not(.collapsed) .form-row.field-header_bg_color,
 fieldset.collapse:not(.collapsed) .form-row.field-header_text_color,
 fieldset.collapse:not(.collapsed) .form-row.field-footer_bg_color,
-fieldset.collapse:not(.collapsed) .form-row.field-footer_text_color,
-fieldset.collapse:not(.collapsed) .form-row.field-hero_bg_color {
+fieldset.collapse:not(.collapsed) .form-row.field-footer_text_color {
     padding: 8px 12px 0 12px !important; /* Гарантируем отступы внутри раскрытых секций */
 }
 
@@ -5459,8 +5428,7 @@ FILE: ./static/admin/css/color-fields-compact.css
 .form-row.field-background_color,
 .form-row.field-border_color,
 .form-row.field-header_footer_bg_color,
-.form-row.field-header_footer_text_color,
-.form-row.field-hero_bg_color {
+.form-row.field-header_footer_text_color {
     display: inline-block !important;
     width: 32% !important;
     margin-right: 1% !important;
@@ -5476,8 +5444,7 @@ FILE: ./static/admin/css/color-fields-compact.css
 
 .form-row.field-accent_color,
 .form-row.field-border_color,
-.form-row.field-header_footer_text_color,
-.form-row.field-hero_bg_color {
+.form-row.field-header_footer_text_color {
     margin-right: 0 !important;
 }
 
@@ -5489,8 +5456,7 @@ FILE: ./static/admin/css/color-fields-compact.css
 .form-row.field-background_color label,
 .form-row.field-border_color label,
 .form-row.field-header_footer_bg_color label,
-.form-row.field-header_footer_text_color label,
-.form-row.field-hero_bg_color label {
+.form-row.field-header_footer_text_color label {
     display: block !important;
     margin-bottom: 2px !important;      /* ← одинаково с color-picker.css */
     font-size: 13px !important;
@@ -5509,8 +5475,7 @@ FILE: ./static/admin/css/color-fields-compact.css
 .form-row.field-background_color .color-picker-widget,
 .form-row.field-border_color .color-picker-widget,
 .form-row.field-header_footer_bg_color .color-picker-widget,
-.form-row.field-header_footer_text_color .color-picker-widget,
-.form-row.field-hero_bg_color .color-picker-widget {
+.form-row.field-header_footer_text_color .color-picker-widget {
     width: 100% !important;
     box-sizing: border-box !important;
 }
@@ -5524,8 +5489,7 @@ FILE: ./static/admin/css/color-fields-compact.css
     .form-row.field-background_color,
     .form-row.field-border_color,
     .form-row.field-header_footer_bg_color,
-    .form-row.field-header_footer_text_color,
-    .form-row.field-hero_bg_color {
+    .form-row.field-header_footer_text_color {
         width: 49% !important;
         margin-right: 2% !important;
     }
@@ -5545,8 +5509,7 @@ FILE: ./static/admin/css/color-fields-compact.css
     .form-row.field-background_color,
     .form-row.field-border_color,
     .form-row.field-header_footer_bg_color,
-    .form-row.field-header_footer_text_color,
-    .form-row.field-hero_bg_color {
+    .form-row.field-header_footer_text_color {
         width: 100% !important;
         margin-right: 0 !important;
         display: block !important;
@@ -5568,8 +5531,7 @@ FILE: ./static/admin/css/color-picker.css
 .form-row.field-background_color,
 .form-row.field-border_color,
 .form-row.field-header_footer_bg_color,
-.form-row.field-header_footer_text_color,
-.form-row.field-hero_bg_color {
+.form-row.field-header_footer_text_color {
     width: 32% !important;
     float: left !important;
     clear: none !important;
@@ -5582,8 +5544,7 @@ FILE: ./static/admin/css/color-picker.css
 
 .form-row.field-accent_color,
 .form-row.field-border_color,
-.form-row.field-header_footer_text_color,
-.form-row.field-hero_bg_color {
+.form-row.field-header_footer_text_color {
     margin-right: 0 !important;
 }
 
@@ -5595,8 +5556,7 @@ FILE: ./static/admin/css/color-picker.css
 .form-row.field-background_color .row,
 .form-row.field-border_color .row,
 .form-row.field-header_footer_bg_color .row,
-.form-row.field-header_footer_text_color .row,
-.form-row.field-hero_bg_color .row {
+.form-row.field-header_footer_text_color .row {
     display: block !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -5610,8 +5570,7 @@ FILE: ./static/admin/css/color-picker.css
 .form-row.field-background_color .flex-container,
 .form-row.field-border_color .flex-container,
 .form-row.field-header_footer_bg_color .flex-container,
-.form-row.field-header_footer_text_color .flex-container,
-.form-row.field-hero_bg_color .flex-container {
+.form-row.field-header_footer_text_color .flex-container {
     flex-direction: column !important;
     align-items: stretch !important;
     gap: 0 !important;
@@ -5625,8 +5584,7 @@ FILE: ./static/admin/css/color-picker.css
 .form-row.field-background_color label,
 .form-row.field-border_color label,
 .form-row.field-header_footer_bg_color label,
-.form-row.field-header_footer_text_color label,
-.form-row.field-hero_bg_color label {
+.form-row.field-header_footer_text_color label {
     display: block !important;
     width: 100% !important;
     padding: 0 !important;
@@ -5647,8 +5605,7 @@ FILE: ./static/admin/css/color-picker.css
 .form-row.field-background_color .col-sm-9,
 .form-row.field-border_color .col-sm-9,
 .form-row.field-header_footer_bg_color .col-sm-9,
-.form-row.field-header_footer_text_color .col-sm-9,
-.form-row.field-hero_bg_color .col-sm-9 {
+.form-row.field-header_footer_text_color .col-sm-9 {
     display: block !important;
     width: 100% !important;
     padding: 0 !important;
@@ -5702,8 +5659,7 @@ FILE: ./static/admin/css/color-picker.css
 .form-row.field-background_color .help-block,
 .form-row.field-border_color .help-block,
 .form-row.field-header_footer_bg_color .help-block,
-.form-row.field-header_footer_text_color .help-block,
-.form-row.field-hero_bg_color .help-block {
+.form-row.field-header_footer_text_color .help-block {
     display: none !important;
 }
 
@@ -5714,8 +5670,7 @@ FILE: ./static/admin/css/color-picker.css
 .form-row.field-background_color .text-red,
 .form-row.field-border_color .text-red,
 .form-row.field-header_footer_bg_color .text-red,
-.form-row.field-header_footer_text_color .text-red,
-.form-row.field-hero_bg_color .text-red {
+.form-row.field-header_footer_text_color .text-red {
     display: none !important;
 }
 
@@ -5732,8 +5687,7 @@ FILE: ./static/admin/css/color-picker.css
     .form-row.field-background_color,
     .form-row.field-border_color,
     .form-row.field-header_footer_bg_color,
-    .form-row.field-header_footer_text_color,
-    .form-row.field-hero_bg_color {
+    .form-row.field-header_footer_text_color {
         width: 49% !important;
         margin-right: 2% !important;
     }
@@ -5753,8 +5707,7 @@ FILE: ./static/admin/css/color-picker.css
     .form-row.field-background_color,
     .form-row.field-border_color,
     .form-row.field-header_footer_bg_color,
-    .form-row.field-header_footer_text_color,
-    .form-row.field-hero_bg_color {
+    .form-row.field-header_footer_text_color {
         width: 100% !important;
         float: none !important;
         margin-right: 0 !important;
@@ -6066,7 +6019,6 @@ FILE: ./static/admin/css/color-scheme.css
 
 /* Очистка float после индикаторов */
 .form-row.field-background_color + .contrast-indicator:last-child,
-.form-row.field-hero_bg_color + .contrast-indicator:last-child,
 .form-row.field-footer_bg_color + .contrast-indicator:last-child {
     clear: both;
 }
@@ -6736,7 +6688,6 @@ function initializeColorScheme() {
             background_color: '#F3F0E9',
             header_footer_bg_color: '#F5F1E7',
             header_footer_text_color: '#1E2B26',
-            hero_bg_color: '#DFD9CE',
             border_color: '#D4C5B0'
         },
         'coffee': {
@@ -6747,7 +6698,6 @@ function initializeColorScheme() {
             background_color: '#FCF5E8',
             header_footer_bg_color: '#F7EFE2',
             header_footer_text_color: '#342015',
-            hero_bg_color: '#F0E2D3',
             border_color: '#E6D5C3'
         },
         'flower': {
@@ -6758,7 +6708,6 @@ function initializeColorScheme() {
             background_color: '#FEF6F9',
             header_footer_bg_color: '#FDF2F5',
             header_footer_text_color: '#2D232E',
-            hero_bg_color: '#FCE4E4',
             border_color: '#F5D5E0'
         },
         'vintage': {
@@ -6769,7 +6718,6 @@ function initializeColorScheme() {
             background_color: '#EEE7DF',
             header_footer_bg_color: '#F0E6D8',
             header_footer_text_color: '#31261D',
-            hero_bg_color: '#DBCFC2',
             border_color: '#D5C5B5'
         },
         'pastel': {
@@ -6780,7 +6728,6 @@ function initializeColorScheme() {
             background_color: '#F9F6F0',
             header_footer_bg_color: '#F4F9F5',
             header_footer_text_color: '#202A33',
-            hero_bg_color: '#E2F0F0',
             border_color: '#D8E0E0'
         },
         'custom': null
@@ -6857,7 +6804,6 @@ function initializeColorScheme() {
                 <div class="color-scheme-color" style="background: linear-gradient(135deg, #f093fb, #f5576c);" title="Accent"></div>
                 <div class="color-scheme-color" style="background: linear-gradient(135deg, #4facfe, #00f2fe);" title="Header/Footer BG"></div>
                 <div class="color-scheme-color" style="background: linear-gradient(135deg, #f5af19, #f12711);" title="Header/Footer Text"></div>
-                <div class="color-scheme-color" style="background: linear-gradient(135deg, #a8edea, #fed6e3);" title="Hero BG"></div>
             `;
         } else if (colors) {
             colorsHtml = `
@@ -6866,7 +6812,6 @@ function initializeColorScheme() {
                 <div class="color-scheme-color" style="background: ${colors.accent_color};" title="Accent"></div>
                 <div class="color-scheme-color" style="background: ${colors.header_footer_bg_color}; border: 1px solid #ddd;" title="Header/Footer BG"></div>
                 <div class="color-scheme-color" style="background: ${colors.header_footer_text_color};" title="Header/Footer Text"></div>
-                <div class="color-scheme-color" style="background: ${colors.hero_bg_color};" title="Hero BG"></div>
             `;
         }
 
@@ -8138,7 +8083,6 @@ module.exports = {
         primary: 'var(--color-primary, #3b82f6)',
         secondary: 'var(--color-secondary, #8b5cf6)',
         accent: 'var(--color-accent, #10b981)',
-        'hero-bg': 'var(--color-hero-bg, #eff6ff)',
         'header-bg': 'var(--color-header-bg, #ffffff)',
         'footer-bg': 'var(--color-footer-bg, #111827)',
         'text-default': 'var(--color-text, #1f2937)',
@@ -8151,7 +8095,6 @@ module.exports = {
         accent: 'var(--color-accent, #10b981)',
         'header-bg': 'var(--color-header-bg, #ffffff)',
         'footer-bg': 'var(--color-footer-bg, #111827)',
-        'hero-bg': 'var(--color-hero-bg, #eff6ff)',
         'default': 'var(--color-background, #f9fafb)',
       },
       textColor: {
@@ -8191,12 +8134,12 @@ module.exports = {
   ],
   safelist: [
     // Динамические классы для цветов
-    { pattern: /bg-(primary|secondary|accent|header-bg|footer-bg|hero-bg|default)/ },
+    { pattern: /bg-(primary|secondary|accent|header-bg|footer-bg|default)/ },
     { pattern: /text-(primary|secondary|accent|default)/ },
     { pattern: /border-(primary|secondary|accent|default)/ },
-    { pattern: /from-(primary|secondary|accent|hero-bg)/ },
-    { pattern: /to-(primary|secondary|accent|hero-bg)/ },
-    { pattern: /hover:bg-(primary|secondary|accent|header-bg|footer-bg|hero-bg|default)/ },
+    { pattern: /from-(primary|secondary|accent)/ },
+    { pattern: /to-(primary|secondary|accent)/ },
+    { pattern: /hover:bg-(primary|secondary|accent|header-bg|footer-bg|default)/ },
     { pattern: /hover:text-(primary|secondary|accent|default)/ },
     { pattern: /hover:border-(primary|secondary|accent|default)/ },
 
@@ -8410,16 +8353,14 @@ FILE: ./templates/admin/content/sitesettings/change_form.html
 
 /* Поля изображений */
 .field-logo .file-upload,
-.field-favicon .file-upload,
-.field-hero_image .file-upload {
+.field-favicon .file-upload {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
 .field-logo img,
-.field-favicon img,
-.field-hero_image img {
+.field-favicon img {
     max-width: 200px;
     max-height: 200px;
     border-radius: 8px;
@@ -8584,8 +8525,8 @@ FILE: ./templates/base.html
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 
-    {% if site_settings.hero_image %}
-    <link rel="preload" href="{{ site_settings.hero_image.url }}" as="image">
+    {% if site_settings.logo %}
+    <link rel="preload" href="{{ site_settings.logo.url }}" as="image">
     {% endif %}
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -8615,7 +8556,6 @@ FILE: ./templates/base.html
         --color-header-bg: {{ site_settings.header_footer_bg_color|default:'#ffffff' }};
         --color-header-text: {{ site_settings.header_footer_text_color|default:'#1f2937' }};
         --color-footer-bg: {{ site_settings.header_footer_bg_color|default:'#111827' }};
-        --color-hero-bg: {{ site_settings.hero_bg_color|default:'#eff6ff' }};
         --color-border: {{ site_settings.border_color|default:'#e5e7eb' }};
 
         --primary-color: var(--color-primary);
@@ -8776,45 +8716,12 @@ FILE: ./templates/home.html
 <meta property="og:title" content="{{ site_settings.site_name|striptags }} - {{ site_settings.site_tagline|striptags }}">
 <meta property="og:description" content="{{ site_settings.meta_description|default:'Добро пожаловать в наш интернет-магазин'|striptags }}">
 <meta property="og:url" content="{{ request.build_absolute_uri }}">
-{% if site_settings.hero_image %}
-<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ site_settings.hero_image.url }}">
+{% if site_settings.logo %}
+<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ site_settings.logo.url }}">
 {% endif %}
 {% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="relative overflow-hidden bg-gradient-to-br from-hero-bg to-default dark:from-gray-900 dark:to-gray-800">
-    <div class="container mx-auto px-4 py-12 md:py-24 relative z-10">
-        <div class="max-w-4xl mx-auto text-center">
-            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-default dark:text-white mb-6 leading-tight">
-                <span class="block">{{ site_settings.hero_heading_prefix|striptags }}</span>
-                <span class="text-gradient">
-                    {{ site_settings.site_name|striptags }}
-                </span>
-            </h1>
-            <p class="text-xl md:text-2xl text-default/80 dark:text-gray-300 font-medium mb-8">
-                {{ site_settings.hero_subtitle|default:site_settings.site_tagline|striptags }}
-            </p>
-            <p class="text-lg text-default/60 dark:text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-                {{ site_settings.welcome_text|striptags }}
-            </p>
-
-            <!-- Hero image -->
-            {% if site_settings.hero_image %}
-            <div class="mt-16 max-w-5xl mx-auto relative">
-                <div class="absolute -inset-4 rounded-3xl blur-xl opacity-50 bg-gradient-to-r from-primary to-secondary"></div>
-                <img src="{{ site_settings.hero_image.url }}"
-                     alt="{{ site_settings.site_name|striptags }} - {{ site_settings.site_tagline|striptags|default:'Главный баннер' }}"
-                     class="relative w-full h-auto max-h-[600px] object-cover rounded-2xl shadow-2xl"
-                     loading="lazy"
-                     width="1200"
-                     height="630">
-            </div>
-            {% endif %}
-        </div>
-    </div>
-</section>
-
 <!-- Promotions -->
 {% if promotions %}
 <section class="py-16 md:py-24 bg-default/80 dark:bg-gray-900">
