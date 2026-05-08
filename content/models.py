@@ -212,7 +212,7 @@ class SiteSettings(models.Model):
                 old_scheme = None
         else:
             old_scheme = None
-        
+
         if not self.pk and SiteSettings.objects.exists():
             existing = SiteSettings.objects.first()
             if existing:
@@ -288,10 +288,10 @@ class SiteSettings(models.Model):
             'wood': {
                 'primary_color': '#2E5C44',
                 'secondary_color': '#4F3A2B',
-                'accent_color': '#D9734C',
+                'accent_color': '#A04030',            # новый кирпичный
                 'text_color': '#1E2B26',
                 'background_color': '#F3F0E9',
-                'header_footer_bg_color': '#FFFFFF',
+                'header_footer_bg_color': '#F5F1E7',
                 'header_footer_text_color': '#1E2B26',
                 'hero_bg_color': '#DFD9CE',
                 'border_color': '#D4C5B0',
@@ -299,10 +299,10 @@ class SiteSettings(models.Model):
             'coffee': {
                 'primary_color': '#87492E',
                 'secondary_color': '#684E39',
-                'accent_color': '#E6B17E',
+                'accent_color': '#B5651D',            # новый терракотовый
                 'text_color': '#342015',
                 'background_color': '#FCF5E8',
-                'header_footer_bg_color': '#FFFFFF',
+                'header_footer_bg_color': '#F7EFE2',
                 'header_footer_text_color': '#342015',
                 'hero_bg_color': '#F0E2D3',
                 'border_color': '#E6D5C3',
@@ -310,10 +310,10 @@ class SiteSettings(models.Model):
             'flower': {
                 'primary_color': '#8F2E55',
                 'secondary_color': '#624766',
-                'accent_color': '#F9A26C',
+                'accent_color': '#B8475E',            # новый малиновый
                 'text_color': '#2D232E',
                 'background_color': '#FEF6F9',
-                'header_footer_bg_color': '#FFFFFF',
+                'header_footer_bg_color': '#FDF2F5',
                 'header_footer_text_color': '#2D232E',
                 'hero_bg_color': '#FCE4E4',
                 'border_color': '#F5D5E0',
@@ -321,10 +321,10 @@ class SiteSettings(models.Model):
             'vintage': {
                 'primary_color': '#5F4F3F',
                 'secondary_color': '#5F4A3A',
-                'accent_color': '#B95C3C',
+                'accent_color': '#A04030',            # новый кирпичный
                 'text_color': '#31261D',
                 'background_color': '#EEE7DF',
-                'header_footer_bg_color': '#F8F1E8',
+                'header_footer_bg_color': '#F0E6D8',
                 'header_footer_text_color': '#31261D',
                 'hero_bg_color': '#DBCFC2',
                 'border_color': '#D5C5B5',
@@ -332,10 +332,10 @@ class SiteSettings(models.Model):
             'pastel': {
                 'primary_color': '#2E5454',
                 'secondary_color': '#7A4F4F',
-                'accent_color': '#5E4563',
+                'accent_color': '#5E4563',            # без изменений
                 'text_color': '#202A33',
                 'background_color': '#F9F6F0',
-                'header_footer_bg_color': '#FFFFFF',
+                'header_footer_bg_color': '#F4F9F5',
                 'header_footer_text_color': '#202A33',
                 'hero_bg_color': '#E2F0F0',
                 'border_color': '#D8E0E0',

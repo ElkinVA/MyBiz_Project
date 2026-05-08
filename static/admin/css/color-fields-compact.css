@@ -1,7 +1,6 @@
 /* static/admin/css/color-fields-compact.css */
-/* Компактное отображение полей цвета в админке с выравниванием меток по центру */
 
-/* Группы полей в секции "Цвета и схемы" */
+/* Базовые стили для каждого поля */
 .form-row.field-primary_color,
 .form-row.field-secondary_color,
 .form-row.field-accent_color,
@@ -14,17 +13,16 @@
     display: inline-block !important;
     width: 32% !important;
     margin-right: 1% !important;
-    margin-bottom: 15px !important;
+    margin-bottom: 12px !important;    /* синхронизировано с color-picker.css */
     vertical-align: top !important;
     background: transparent !important;
-    /* padding не переопределяем - используется значение из color-picker.css (8px 12px 0 12px) */
+    padding: 8px 12px 0 12px !important;
     border: none !important;
     box-sizing: border-box !important;
     float: none !important;
     clear: none !important;
 }
 
-/* Каждое третье поле (последнее в ряду) без правого отступа */
 .form-row.field-accent_color,
 .form-row.field-border_color,
 .form-row.field-header_footer_text_color,
@@ -32,7 +30,7 @@
     margin-right: 0 !important;
 }
 
-/* Метки полей */
+/* Метки */
 .form-row.field-primary_color label,
 .form-row.field-secondary_color label,
 .form-row.field-accent_color label,
@@ -43,17 +41,16 @@
 .form-row.field-header_footer_text_color label,
 .form-row.field-hero_bg_color label {
     display: block !important;
-    margin-bottom: 6px !important;
+    margin-bottom: 2px !important;      /* ← одинаково с color-picker.css */
     font-size: 13px !important;
     line-height: 1.4 !important;
     color: #333 !important;
     font-weight: 600 !important;
     text-align: left !important;
     width: 100% !important;
-    min-height: 40px !important; /* Фиксированная высота для выравнивания при длинных заголовках */
 }
 
-/* Контейнер виджета выбора цвета - не переопределяем padding, используем значение из color-picker.css */
+/* Контейнер виджета */
 .form-row.field-primary_color .color-picker-widget,
 .form-row.field-secondary_color .color-picker-widget,
 .form-row.field-accent_color .color-picker-widget,
@@ -67,7 +64,7 @@
     box-sizing: border-box !important;
 }
 
-/* Адаптивность для планшетов */
+/* Адаптивность */
 @media (max-width: 1024px) {
     .form-row.field-primary_color,
     .form-row.field-secondary_color,
@@ -81,8 +78,7 @@
         width: 49% !important;
         margin-right: 2% !important;
     }
-    
-    /* Каждое второе поле без правого отступа */
+
     .form-row.field-secondary_color,
     .form-row.field-border_color,
     .form-row.field-header_footer_text_color {
@@ -90,7 +86,6 @@
     }
 }
 
-/* Адаптивность для мобильных */
 @media (max-width: 767px) {
     .form-row.field-primary_color,
     .form-row.field-secondary_color,

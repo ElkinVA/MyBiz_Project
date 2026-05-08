@@ -193,3 +193,6 @@ html {
     flex: 1;
     min-width: 0;
 }
+.text-header-footer {
+    color: var(--color-header-text);
+}

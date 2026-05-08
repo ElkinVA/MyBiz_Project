@@ -1,6 +1,6 @@
-/* Принудительное размещение цветовых полей в три колонки для секции "Цвета и схемы" */
+/* static/admin/css/color-picker.css */
 
-/* Базовые стили - отменяем любые конфликтующие стили */
+/* Три колонки (float) */
 .form-row.field-primary_color,
 .form-row.field-secondary_color,
 .form-row.field-accent_color,
@@ -13,14 +13,13 @@
     width: 32% !important;
     float: left !important;
     clear: none !important;
-    margin: 0 1% 15px 0 !important;
-    padding: 8px 12px 0 12px !important; /* Добавлены отступы слева и справа (12px) */
+    margin: 0 1% 12px 0 !important;    /* отступ между блоками – 12px снизу */
+    padding: 8px 12px 0 12px !important;
     box-sizing: border-box !important;
     background: transparent !important;
     border: none !important;
 }
 
-/* Каждое третье поле (последнее в ряду) без правого отступа */
 .form-row.field-accent_color,
 .form-row.field-border_color,
 .form-row.field-header_footer_text_color,
@@ -28,7 +27,7 @@
     margin-right: 0 !important;
 }
 
-/* Контейнер строки внутри поля */
+/* Контейнер строки */
 .form-row.field-primary_color .row,
 .form-row.field-secondary_color .row,
 .form-row.field-accent_color .row,
@@ -43,7 +42,22 @@
     padding: 0 !important;
 }
 
-/* Метка (label) над полем */
+/* === ВЕРТИКАЛЬНАЯ РАСКЛАДКА === */
+.form-row.field-primary_color .flex-container,
+.form-row.field-secondary_color .flex-container,
+.form-row.field-accent_color .flex-container,
+.form-row.field-text_color .flex-container,
+.form-row.field-background_color .flex-container,
+.form-row.field-border_color .flex-container,
+.form-row.field-header_footer_bg_color .flex-container,
+.form-row.field-header_footer_text_color .flex-container,
+.form-row.field-hero_bg_color .flex-container {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0 !important;
+}
+
+/* Метка (вплотную к виджету) */
 .form-row.field-primary_color label,
 .form-row.field-secondary_color label,
 .form-row.field-accent_color label,
@@ -56,7 +70,7 @@
     display: block !important;
     width: 100% !important;
     padding: 0 !important;
-    margin: 0 0 6px 0 !important;
+    margin: 0 0 2px 0 !important;      /* ← ОЧЕНЬ МАЛЕНЬКИЙ отступ до пикера */
     text-align: left !important;
     font-size: 13px !important;
     line-height: 1.3 !important;
@@ -65,7 +79,7 @@
     color: #333 !important;
 }
 
-/* Правая колонка с виджетом */
+/* Виджет */
 .form-row.field-primary_color .col-sm-9,
 .form-row.field-secondary_color .col-sm-9,
 .form-row.field-accent_color .col-sm-9,
@@ -82,7 +96,7 @@
     flex: none !important;
 }
 
-/* Горизонтальное расположение: квадрат слева, HEX-поле справа */
+/* Виджет выбора цвета */
 .color-picker-container {
     display: flex !important;
     flex-direction: row !important;
@@ -97,7 +111,6 @@
     cursor: pointer !important;
 }
 
-/* Поле ввода HEX-кода */
 .color-picker-container input.color-hex-input {
     flex: 1 1 auto !important;
     width: 160px !important;
@@ -121,7 +134,7 @@
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
 }
 
-/* Скрываем пустые блоки help-block */
+/* Скрываем вспомогательные блоки */
 .form-row.field-primary_color .help-block,
 .form-row.field-secondary_color .help-block,
 .form-row.field-accent_color .help-block,
@@ -134,7 +147,6 @@
     display: none !important;
 }
 
-/* Убираем звёздочки обязательных полей */
 .form-row.field-primary_color .text-red,
 .form-row.field-secondary_color .text-red,
 .form-row.field-accent_color .text-red,
@@ -147,12 +159,11 @@
     display: none !important;
 }
 
-/* Убираем нижние отступы у родительских контейнеров */
 .form-horizontal .form-group {
     margin-bottom: 0 !important;
 }
 
-/* Адаптация для планшетов - две колонки */
+/* Адаптивность */
 @media (max-width: 1024px) {
     .form-row.field-primary_color,
     .form-row.field-secondary_color,
@@ -166,8 +177,7 @@
         width: 49% !important;
         margin-right: 2% !important;
     }
-    
-    /* Каждое второе поле без правого отступа */
+
     .form-row.field-secondary_color,
     .form-row.field-border_color,
     .form-row.field-header_footer_text_color {
@@ -175,7 +185,6 @@
     }
 }
 
-/* Адаптация для узких экранов - одна колонка */
 @media (max-width: 768px) {
     .form-row.field-primary_color,
     .form-row.field-secondary_color,
