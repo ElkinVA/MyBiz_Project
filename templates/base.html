@@ -45,8 +45,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 
-    {% if site_settings.hero_image %}
-    <link rel="preload" href="{{ site_settings.hero_image.url }}" as="image">
+    {% if site_settings.logo %}
+    <link rel="preload" href="{{ site_settings.logo.url }}" as="image">
     {% endif %}
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -76,7 +76,6 @@
         --color-header-bg: {{ site_settings.header_footer_bg_color|default:'#ffffff' }};
         --color-header-text: {{ site_settings.header_footer_text_color|default:'#1f2937' }};
         --color-footer-bg: {{ site_settings.header_footer_bg_color|default:'#111827' }};
-        --color-hero-bg: {{ site_settings.hero_bg_color|default:'#eff6ff' }};
         --color-border: {{ site_settings.border_color|default:'#e5e7eb' }};
 
         --primary-color: var(--color-primary);

@@ -16,35 +16,19 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="relative overflow-hidden bg-gradient-to-br from-hero-bg to-default dark:from-gray-900 dark:to-gray-800">
-    <div class="container mx-auto px-4 py-12 md:py-24 relative z-10">
-        <div class="max-w-4xl mx-auto text-center">
-            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-default dark:text-white mb-6 leading-tight">
-                <span class="block">{{ site_settings.hero_heading_prefix|striptags }}</span>
-                <span class="text-gradient">
-                    {{ site_settings.site_name|striptags }}
-                </span>
-            </h1>
-            <p class="text-xl md:text-2xl text-default/80 dark:text-gray-300 font-medium mb-8">
-                {{ site_settings.hero_subtitle|default:site_settings.site_tagline|striptags }}
-            </p>
-            <p class="text-lg text-default/60 dark:text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-                {{ site_settings.welcome_text|striptags }}
-            </p>
-
-            <!-- Hero image -->
-            {% if site_settings.hero_image %}
-            <div class="mt-16 max-w-5xl mx-auto relative">
-                <div class="absolute -inset-4 rounded-3xl blur-xl opacity-50 bg-gradient-to-r from-primary to-secondary"></div>
-                <img src="{{ site_settings.hero_image.url }}"
-                     alt="{{ site_settings.site_name|striptags }} - {{ site_settings.site_tagline|striptags|default:'Главный баннер' }}"
-                     class="relative w-full h-auto max-h-[600px] object-cover rounded-2xl shadow-2xl"
-                     loading="lazy"
-                     width="1200"
-                     height="630">
-            </div>
-            {% endif %}
+<section class="py-16 md:py-24 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+    <div class="container mx-auto px-4 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+            {{ site_settings.site_name|striptags }}
+        </h1>
+        {% if site_settings.site_tagline %}
+        <p class="text-xl text-gray-600 dark:text-gray-300">{{ site_settings.site_tagline|striptags }}</p>
+        {% endif %}
+        {% if site_settings.welcome_text %}
+        <div class="mt-6 prose prose-lg mx-auto text-gray-500 dark:text-gray-400">
+            {{ site_settings.welcome_text|safe }}
         </div>
+        {% endif %}
     </div>
 </section>
 

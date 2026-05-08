@@ -122,13 +122,6 @@ class SiteSettings(models.Model):
         help_text="Краткий слоган (поддерживает простое форматирование)",
         config_name='extends'
     )
-    hero_heading_prefix = models.CharField(
-        max_length=100,
-        blank=True,
-        default="Добро пожаловать в",
-        verbose_name="Префикс заголовка (hero)",
-        help_text="Текст перед названием сайта в главном баннере"
-    )
 
     favicon = models.ImageField(
         upload_to='site/',
@@ -144,13 +137,6 @@ class SiteSettings(models.Model):
         verbose_name="Логотип",
         validators=[validate_image_extension, validate_image_size, validate_image_dimensions]
     )
-    hero_image = models.ImageField(
-        upload_to='site/',
-        blank=True,
-        null=True,
-        verbose_name="Главное изображение",
-        validators=[validate_image_extension, validate_image_size, validate_image_dimensions]
-    )
 
     primary_color = models.CharField(max_length=7, default='#3b82f6', verbose_name="Основной цвет")
     secondary_color = models.CharField(max_length=7, default='#8b5cf6', verbose_name="Вторичный цвет")
@@ -158,7 +144,6 @@ class SiteSettings(models.Model):
     text_color = models.CharField(max_length=7, default='#1f2937', verbose_name="Цвет текста")
     background_color = models.CharField(max_length=7, default='#f9fafb', verbose_name="Цвет фона")
     header_footer_bg_color = models.CharField(max_length=7, default='#ffffff', verbose_name="Фон шапки и подвала")
-    hero_bg_color = models.CharField(max_length=7, default='#eff6ff', verbose_name="Фон герой-секции")
     border_color = models.CharField(max_length=7, default='#e5e7eb', verbose_name="Цвет границ")
 
     header_footer_text_color = models.CharField(max_length=7, default='#1f2937', verbose_name="Цвет текста шапки и подвала")
@@ -169,7 +154,6 @@ class SiteSettings(models.Model):
         verbose_name='Приветственный текст',
         config_name='extends'
     )
-    hero_subtitle = models.CharField(max_length=200, blank=True, default='Лучшие товары по доступным ценам', verbose_name='Подзаголовок Hero')
     promotions_title = models.CharField(max_length=200, blank=True, default='Специальные предложения', verbose_name='Заголовок блока акций')
     promotions_subtitle = models.CharField(max_length=300, blank=True, default='Не упустите возможность...', verbose_name='Подзаголовок блока акций')
     featured_products_title = models.CharField(max_length=200, blank=True, default='Популярные товары', verbose_name='Заголовок блока популярных товаров')
@@ -238,7 +222,7 @@ class SiteSettings(models.Model):
         hex_fields = [
             'primary_color', 'secondary_color', 'accent_color',
             'text_color', 'background_color', 'header_footer_bg_color',
-            'hero_bg_color', 'border_color',
+            'border_color',
             'header_footer_text_color'
         ]
         for field_name in hex_fields:
@@ -293,7 +277,6 @@ class SiteSettings(models.Model):
                 'background_color': '#F3F0E9',
                 'header_footer_bg_color': '#F5F1E7',
                 'header_footer_text_color': '#1E2B26',
-                'hero_bg_color': '#DFD9CE',
                 'border_color': '#D4C5B0',
             },
             'coffee': {
@@ -304,7 +287,6 @@ class SiteSettings(models.Model):
                 'background_color': '#FCF5E8',
                 'header_footer_bg_color': '#F7EFE2',
                 'header_footer_text_color': '#342015',
-                'hero_bg_color': '#F0E2D3',
                 'border_color': '#E6D5C3',
             },
             'flower': {
@@ -315,7 +297,6 @@ class SiteSettings(models.Model):
                 'background_color': '#FEF6F9',
                 'header_footer_bg_color': '#FDF2F5',
                 'header_footer_text_color': '#2D232E',
-                'hero_bg_color': '#FCE4E4',
                 'border_color': '#F5D5E0',
             },
             'vintage': {
@@ -326,7 +307,6 @@ class SiteSettings(models.Model):
                 'background_color': '#EEE7DF',
                 'header_footer_bg_color': '#F0E6D8',
                 'header_footer_text_color': '#31261D',
-                'hero_bg_color': '#DBCFC2',
                 'border_color': '#D5C5B5',
             },
             'pastel': {
@@ -337,7 +317,6 @@ class SiteSettings(models.Model):
                 'background_color': '#F9F6F0',
                 'header_footer_bg_color': '#F4F9F5',
                 'header_footer_text_color': '#202A33',
-                'hero_bg_color': '#E2F0F0',
                 'border_color': '#D8E0E0',
             },
             'custom': {}

@@ -1,24 +1,43 @@
 ```
-# Build artifacts
-staticfiles/
-*.css.map
-
-# Cache directories
+# Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Database
+db.sqlite3
 
 # Environment
 .env
 .env.local
 .env.*
+.env.local.*
+
+# IDE
+.vscode/
+.idea/
 
 # Logs
 *.log
 
-# Dependencies
-node_modules/
-venv/
-.venv/
+# OS
+.DS_Store
+Thumbs.db
 ```

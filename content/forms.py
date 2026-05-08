@@ -12,8 +12,6 @@ class SiteSettingsForm(forms.ModelForm):
         widgets = {
             'site_name': CKEditor5Widget(config_name='extends'),
             'site_tagline': CKEditor5Widget(config_name='extends'),
-            'hero_heading_prefix': forms.TextInput(attrs={'class': 'vTextField'}),
-            'hero_subtitle': forms.TextInput(attrs={'class': 'vTextField'}),
             'featured_products_title': forms.TextInput(attrs={'class': 'vTextField'}),
             'featured_products_subtitle': forms.TextInput(attrs={'class': 'vTextField'}),
             'promotions_title': forms.TextInput(attrs={'class': 'vTextField'}),
@@ -28,12 +26,10 @@ class SiteSettingsForm(forms.ModelForm):
             'background_color': ColorPickerWidget(),
             'header_footer_bg_color': ColorPickerWidget(),
             'header_footer_text_color': ColorPickerWidget(),
-            'hero_bg_color': ColorPickerWidget(),
             'border_color': ColorPickerWidget(),
 
             'logo': ImagePreviewWidget(),
             'favicon': ImagePreviewWidget(),
-            'hero_image': ImagePreviewWidget(),
 
             'contact_phone': forms.TextInput(attrs={'placeholder': '+7 (XXX) XXX-XX-XX', 'class': 'vTextField'}),
             'contact_email': forms.EmailInput(attrs={'placeholder': 'example@domain.com', 'class': 'vTextField'}),

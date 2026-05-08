@@ -36,7 +36,6 @@ def site_settings(request):
                 background_color='#f9fafb',
                 header_bg_color='#ffffff',
                 footer_bg_color='#111827',
-                hero_bg_color='#eff6ff',
                 border_color='#e5e7eb',
             )
     return {'site_settings': settings}

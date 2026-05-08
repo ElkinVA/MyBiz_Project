@@ -8,8 +8,7 @@
 .form-row.field-background_color,
 .form-row.field-border_color,
 .form-row.field-header_footer_bg_color,
-.form-row.field-header_footer_text_color,
-.form-row.field-hero_bg_color {
+.form-row.field-header_footer_text_color {
     width: 32% !important;
     float: left !important;
     clear: none !important;
@@ -22,8 +21,7 @@
 
 .form-row.field-accent_color,
 .form-row.field-border_color,
-.form-row.field-header_footer_text_color,
-.form-row.field-hero_bg_color {
+.form-row.field-header_footer_text_color {
     margin-right: 0 !important;
 }
 
@@ -35,8 +33,7 @@
 .form-row.field-background_color .row,
 .form-row.field-border_color .row,
 .form-row.field-header_footer_bg_color .row,
-.form-row.field-header_footer_text_color .row,
-.form-row.field-hero_bg_color .row {
+.form-row.field-header_footer_text_color .row {
     display: block !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -50,8 +47,7 @@
 .form-row.field-background_color .flex-container,
 .form-row.field-border_color .flex-container,
 .form-row.field-header_footer_bg_color .flex-container,
-.form-row.field-header_footer_text_color .flex-container,
-.form-row.field-hero_bg_color .flex-container {
+.form-row.field-header_footer_text_color .flex-container {
     flex-direction: column !important;
     align-items: stretch !important;
     gap: 0 !important;
@@ -65,8 +61,7 @@
 .form-row.field-background_color label,
 .form-row.field-border_color label,
 .form-row.field-header_footer_bg_color label,
-.form-row.field-header_footer_text_color label,
-.form-row.field-hero_bg_color label {
+.form-row.field-header_footer_text_color label {
     display: block !important;
     width: 100% !important;
     padding: 0 !important;
@@ -87,8 +82,7 @@
 .form-row.field-background_color .col-sm-9,
 .form-row.field-border_color .col-sm-9,
 .form-row.field-header_footer_bg_color .col-sm-9,
-.form-row.field-header_footer_text_color .col-sm-9,
-.form-row.field-hero_bg_color .col-sm-9 {
+.form-row.field-header_footer_text_color .col-sm-9 {
     display: block !important;
     width: 100% !important;
     padding: 0 !important;
@@ -142,8 +136,7 @@
 .form-row.field-background_color .help-block,
 .form-row.field-border_color .help-block,
 .form-row.field-header_footer_bg_color .help-block,
-.form-row.field-header_footer_text_color .help-block,
-.form-row.field-hero_bg_color .help-block {
+.form-row.field-header_footer_text_color .help-block {
     display: none !important;
 }
 
@@ -154,8 +147,7 @@
 .form-row.field-background_color .text-red,
 .form-row.field-border_color .text-red,
 .form-row.field-header_footer_bg_color .text-red,
-.form-row.field-header_footer_text_color .text-red,
-.form-row.field-hero_bg_color .text-red {
+.form-row.field-header_footer_text_color .text-red {
     display: none !important;
 }
 
@@ -172,8 +164,7 @@
     .form-row.field-background_color,
     .form-row.field-border_color,
     .form-row.field-header_footer_bg_color,
-    .form-row.field-header_footer_text_color,
-    .form-row.field-hero_bg_color {
+    .form-row.field-header_footer_text_color {
         width: 49% !important;
         margin-right: 2% !important;
     }
@@ -193,8 +184,7 @@
     .form-row.field-background_color,
     .form-row.field-border_color,
     .form-row.field-header_footer_bg_color,
-    .form-row.field-header_footer_text_color,
-    .form-row.field-hero_bg_color {
+    .form-row.field-header_footer_text_color {
         width: 100% !important;
         float: none !important;
         margin-right: 0 !important;

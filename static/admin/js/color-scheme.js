@@ -73,7 +73,6 @@ function initializeColorScheme() {
             background_color: '#F3F0E9',
             header_footer_bg_color: '#F5F1E7',
             header_footer_text_color: '#1E2B26',
-            hero_bg_color: '#DFD9CE',
             border_color: '#D4C5B0'
         },
         'coffee': {
@@ -84,7 +83,6 @@ function initializeColorScheme() {
             background_color: '#FCF5E8',
             header_footer_bg_color: '#F7EFE2',
             header_footer_text_color: '#342015',
-            hero_bg_color: '#F0E2D3',
             border_color: '#E6D5C3'
         },
         'flower': {
@@ -95,7 +93,6 @@ function initializeColorScheme() {
             background_color: '#FEF6F9',
             header_footer_bg_color: '#FDF2F5',
             header_footer_text_color: '#2D232E',
-            hero_bg_color: '#FCE4E4',
             border_color: '#F5D5E0'
         },
         'vintage': {
@@ -106,7 +103,6 @@ function initializeColorScheme() {
             background_color: '#EEE7DF',
             header_footer_bg_color: '#F0E6D8',
             header_footer_text_color: '#31261D',
-            hero_bg_color: '#DBCFC2',
             border_color: '#D5C5B5'
         },
         'pastel': {
@@ -117,7 +113,6 @@ function initializeColorScheme() {
             background_color: '#F9F6F0',
             header_footer_bg_color: '#F4F9F5',
             header_footer_text_color: '#202A33',
-            hero_bg_color: '#E2F0F0',
             border_color: '#D8E0E0'
         },
         'custom': null
@@ -194,7 +189,6 @@ function initializeColorScheme() {
                 <div class="color-scheme-color" style="background: linear-gradient(135deg, #f093fb, #f5576c);" title="Accent"></div>
                 <div class="color-scheme-color" style="background: linear-gradient(135deg, #4facfe, #00f2fe);" title="Header/Footer BG"></div>
                 <div class="color-scheme-color" style="background: linear-gradient(135deg, #f5af19, #f12711);" title="Header/Footer Text"></div>
-                <div class="color-scheme-color" style="background: linear-gradient(135deg, #a8edea, #fed6e3);" title="Hero BG"></div>
             `;
         } else if (colors) {
             colorsHtml = `
@@ -203,7 +197,6 @@ function initializeColorScheme() {
                 <div class="color-scheme-color" style="background: ${colors.accent_color};" title="Accent"></div>
                 <div class="color-scheme-color" style="background: ${colors.header_footer_bg_color}; border: 1px solid #ddd;" title="Header/Footer BG"></div>
                 <div class="color-scheme-color" style="background: ${colors.header_footer_text_color};" title="Header/Footer Text"></div>
-                <div class="color-scheme-color" style="background: ${colors.hero_bg_color};" title="Hero BG"></div>
             `;
         }
 
