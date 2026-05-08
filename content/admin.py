@@ -64,14 +64,6 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             'classes': ('collapse',),
             'description': 'Название, слоган, логотип шапки'
         }),
-        ('🖼️ Hero-секция', {
-            'fields': (
-                ('hero_image', 'hero_bg_color'),
-                ('hero_heading_prefix', 'hero_subtitle'),
-            ),
-            'classes': ('collapse',),
-            'description': 'Главный баннер и его фон'
-        }),
         ('📝 Тексты главной страницы', {
             'fields': ('welcome_text',),
             'classes': ('collapse',)
@@ -96,11 +88,6 @@ class SiteSettingsAdmin(admin.ModelAdmin):
                 ('max_url', 'max_visible'),
             ),
             'classes': ('collapse',)
-        }),
-        ('🦶 Подвал сайта (Footer)', {
-            'fields': (),
-            'classes': ('collapse',),
-            'description': 'Цвета подвала теперь настраиваются в разделе «Цвета и схемы»'
         }),
         ('📊 SEO настройки', {
             'fields': ('meta_title', 'meta_description', 'meta_keywords'),
