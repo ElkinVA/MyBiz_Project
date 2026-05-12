@@ -13,7 +13,7 @@ header {
     height: 40px;
     border-radius: 10px;
     overflow: hidden;
-    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    background: linear-gradient(135deg, var(--color-primary, #3b82f6), var(--color-secondary, #8b5cf6));
     padding: 2px;
 }
 
@@ -29,7 +29,7 @@ header {
     color: var(--color-header-text);
 }
 
-/* Навигационные ссылки для десктопа */
+/* ========== ДЕСКТОПНАЯ НАВИГАЦИЯ ========== */
 .nav-link {
     position: relative;
     padding: 8px 12px;
@@ -41,26 +41,30 @@ header {
 }
 
 .nav-link:hover {
-    color: var(--color-primary);
-    background: rgba(var(--color-primary-rgb), 0.1);
+    background: rgba(var(--color-header-text-rgb, 31, 41, 55), 0.25);
 }
 
 .nav-link-active {
-    color: var(--color-primary);
-    background: rgba(var(--color-primary-rgb), 0.15);
+    background: rgba(var(--color-header-text-rgb, 31, 41, 55), 0.35);
     font-weight: 600;
 }
 
-/* Мега-меню категорий */
-.category-mega-item {
-    transition: transform 0.2s ease;
+/* ========== ВЕРХНЯЯ КОНТАКТНАЯ ПОЛОСА ========== */
+.contact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 4px 10px;
+    border-radius: 8px;
+    color: var(--color-header-text);
+    transition: all 0.2s ease;
 }
 
-.category-mega-item:hover {
-    transform: translateY(-2px);
+.contact-link:hover {
+    background: rgba(var(--color-header-text-rgb, 31, 41, 55), 0.25);
 }
 
-/* Поиск */
+/* ========== ПОИСК ========== */
 .search-toggle-btn {
     width: 40px;
     height: 40px;
@@ -73,14 +77,13 @@ header {
 }
 
 .search-toggle-btn:hover {
-    background: rgba(var(--color-primary-rgb), 0.1);
-    color: var(--color-primary);
+    background: rgba(var(--color-header-text-rgb, 31, 41, 55), 0.25);
 }
 
 .search-input {
     width: 100%;
     padding: 12px 48px 12px 16px;
-    border: 2px solid var(--color-border);
+    border: 2px solid var(--color-border, #e5e7eb);
     border-radius: 12px;
     transition: all 0.2s ease;
     background: var(--color-header-bg);
@@ -89,8 +92,8 @@ header {
 
 .search-input:focus {
     outline: none;
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+    border-color: var(--color-primary, #3b82f6);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb, 59, 130, 246), 0.1);
 }
 
 .search-input::placeholder {
@@ -103,7 +106,7 @@ header {
     right: 8px;
     top: 50%;
     transform: translateY(-50%);
-    background: var(--color-primary);
+    background: var(--color-primary, #3b82f6);
     color: white;
     width: 32px;
     height: 32px;
@@ -115,10 +118,10 @@ header {
 }
 
 .search-submit-btn:hover {
-    background: color-mix(in srgb, var(--color-primary) 85%, black);
+    background: color-mix(in srgb, var(--color-primary, #3b82f6) 85%, black);
 }
 
-/* Социальные иконки в шапке */
+/* ========== СОЦИАЛЬНЫЕ ИКОНКИ В ШАПКЕ ========== */
 .social-header-icon {
     width: 36px;
     height: 36px;
@@ -127,17 +130,17 @@ header {
     justify-content: center;
     border-radius: 10px;
     color: var(--color-header-text);
-    background: rgba(var(--color-primary-rgb), 0.1);
+    background: rgba(var(--color-header-text-rgb, 31, 41, 55), 0.1);
     transition: all 0.2s ease;
 }
 
 .social-header-icon:hover {
     color: white;
-    background: var(--color-primary);
+    background: var(--color-primary, #3b82f6);
     transform: translateY(-2px);
 }
 
-/* Мобильная навигация */
+/* ========== МОБИЛЬНАЯ НАВИГАЦИЯ ========== */
 #mobile-navigation {
     max-height: calc(100vh - 64px);
     background-color: var(--color-header-bg);
@@ -147,7 +150,7 @@ header {
 .mobile-search-input {
     width: 100%;
     padding: 14px 48px 14px 16px;
-    border: 2px solid var(--color-border);
+    border: 2px solid var(--color-border, #e5e7eb);
     border-radius: 12px;
     background: var(--color-header-bg);
     color: var(--color-header-text);
@@ -156,8 +159,8 @@ header {
 
 .mobile-search-input:focus {
     outline: none;
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+    border-color: var(--color-primary, #3b82f6);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb, 59, 130, 246), 0.1);
 }
 
 .mobile-search-input::placeholder {
@@ -170,7 +173,7 @@ header {
     right: 8px;
     top: 50%;
     transform: translateY(-50%);
-    background: var(--color-primary);
+    background: var(--color-primary, #3b82f6);
     color: white;
     width: 36px;
     height: 36px;
@@ -182,7 +185,7 @@ header {
 }
 
 .mobile-search-submit-btn:hover {
-    background: color-mix(in srgb, var(--color-primary) 85%, black);
+    background: color-mix(in srgb, var(--color-primary, #3b82f6) 85%, black);
 }
 
 .mobile-nav-link {
@@ -198,13 +201,11 @@ header {
 
 .mobile-nav-link:hover,
 .mobile-nav-link:focus {
-    background: rgba(var(--color-primary-rgb), 0.1);
-    color: var(--color-primary);
+    background: rgba(var(--color-header-text-rgb, 31, 41, 55), 0.25);
 }
 
 .mobile-nav-link-active {
-    background: rgba(var(--color-primary-rgb), 0.15);
-    color: var(--color-primary);
+    background: rgba(var(--color-header-text-rgb, 31, 41, 55), 0.35);
     font-weight: 600;
 }
 
@@ -217,8 +218,7 @@ header {
 }
 
 .mobile-nav-sublink:hover {
-    color: var(--color-primary);
-    background: rgba(var(--color-primary-rgb), 0.05);
+    background: rgba(var(--color-header-text-rgb, 31, 41, 55), 0.2);
     opacity: 1;
 }
 
@@ -229,76 +229,39 @@ header {
     align-items: center;
     justify-content: center;
     border-radius: 12px;
-    background: rgba(var(--color-primary-rgb), 0.1);
+    background: rgba(var(--color-header-text-rgb, 31, 41, 55), 0.1);
     color: var(--color-header-text);
     transition: all 0.2s ease;
 }
 
 .social-mobile-icon:hover {
-    background: var(--color-primary);
+    background: var(--color-primary, #3b82f6);
     color: white;
     transform: translateY(-2px);
 }
 
-/* Анимации и переходы */
-@media (prefers-reduced-motion: reduce) {
-    .search-toggle-btn,
-    .nav-link,
-    .mobile-nav-link,
-    .social-header-icon,
-    .social-mobile-icon,
-    .category-mega-item {
-        transition: none !important;
-    }
-    html {
-        scroll-behavior: auto !important;
-    }
+/* ========== БРЕНД: ОСВЕТЛЕНИЕ ЦВЕТА ШРИФТА ПРИ НАВЕДЕНИИ ========== */
+.brand-text a:hover h1,
+.brand-text a:hover p {
+    color: color-mix(in srgb, var(--color-header-text, #1f2937) 60%, white);
 }
 
-/* Адаптивность */
-@media (max-width: 768px) {
-    #mobile-navigation {
-        max-height: calc(100vh - 64px);
-    }
+/* Убираем переходы при активном состоянии (клике) */
+.brand-text a:active h1,
+.brand-text a:active p {
+    transition: none;
+    color: inherit;
+}
 
-    .brand-text h1 {
-        font-size: 18px;
+/* Fallback для браузеров без поддержки color-mix */
+@supports not (color: color-mix(in srgb, black 60%, white)) {
+    .brand-text a:hover h1,
+    .brand-text a:hover p {
+        opacity: 0.8;
     }
 }
 
-@media (max-width: 640px) {
-    .logo-container {
-        width: 36px;
-        height: 36px;
-    }
-
-    .brand-text h1 {
-        font-size: 16px;
-    }
-}
-
-/* Альпин-специфичные стили */
-[x-cloak] {
-    display: none !important;
-}
-
-/* Анимации для мобильного меню */
-#mobile-navigation {
-    transition-property: opacity, transform;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 300ms;
-}
-
-/* Плавная анимация для мега-меню */
-.group:hover .group-hover\:opacity-100 {
-    opacity: 1 !important;
-}
-
-.group:hover .group-hover\:scale-100 {
-    transform: scale(1) !important;
-}
-
-/* Улучшенные стили для мега-меню категорий */
+/* ========== МЕГА-МЕНЮ КАТЕГОРИЙ ========== */
 .category-mega-item {
     display: block;
     text-decoration: none;
@@ -308,18 +271,31 @@ header {
 
 .category-mega-item:hover {
     transform: translateY(-2px);
-    background-color: rgba(var(--color-primary-rgb), 0.05);
+    background-color: rgba(var(--color-text-rgb, 31, 41, 55), 0.08);
 }
 
 .category-mega-item h3 {
     line-height: 1.4;
     font-size: 0.95rem;
-    color: var(--color-header-text);
+    color: var(--color-text, #1f2937);
+    transition: color 0.2s ease;
+}
+
+/* Осветление цвета текста при наведении */
+.category-mega-item:hover h3 {
+    color: color-mix(in srgb, var(--color-text, #1f2937) 60%, white);
+}
+
+/* Fallback без color-mix */
+@supports not (color: color-mix(in srgb, black 60%, white)) {
+    .category-mega-item:hover h3 {
+        opacity: 0.8;
+    }
 }
 
 .category-mega-item p {
     line-height: 1.5;
-    color: var(--color-header-text);
+    color: var(--color-text);
     opacity: 0.7;
 }
 
@@ -336,7 +312,6 @@ header {
         grid-template-columns: 1fr !important;
         gap: 1rem;
     }
-
     .category-mega-item {
         min-width: 100%;
     }
@@ -353,3 +328,48 @@ header {
         grid-template-columns: repeat(3, minmax(280px, 1fr)) !important;
     }
 }
+
+/* ========== ПРОЧИЕ СТИЛИ ========== */
+@media (prefers-reduced-motion: reduce) {
+    .search-toggle-btn,
+    .nav-link,
+    .mobile-nav-link,
+    .social-header-icon,
+    .social-mobile-icon,
+    .category-mega-item {
+        transition: none !important;
+    }
+    html {
+        scroll-behavior: auto !important;
+    }
+}
+
+@media (max-width: 768px) {
+    #mobile-navigation {
+        max-height: calc(100vh - 64px);
+    }
+    .brand-text h1 {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 640px) {
+    .logo-container {
+        width: 36px;
+        height: 36px;
+    }
+    .brand-text h1 {
+        font-size: 16px;
+    }
+}
+
+[x-cloak] { display: none !important; }
+
+#mobile-navigation {
+    transition-property: opacity, transform;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+}
+
+.group:hover .group-hover\:opacity-100 { opacity: 1 !important; }
+.group:hover .group-hover\:scale-100 { transform: scale(1) !important; }

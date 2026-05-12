@@ -86,6 +86,9 @@
         --color-secondary-rgb: {{ site_settings.secondary_color|hex_to_rgb|default:'139, 92, 246' }};
         --color-accent-rgb: {{ site_settings.accent_color|hex_to_rgb|default:'16, 185, 129' }};
         --primary-color-rgb: var(--color-primary-rgb);
+
+        --color-header-text-rgb: {{ site_settings.header_footer_text_color|hex_to_rgb|default:'31, 41, 55' }};
+        --color-text-rgb: {{ site_settings.text_color|hex_to_rgb|default:'31, 41, 55' }};
     }
 
     .dark {
@@ -93,6 +96,7 @@
         --color-background: #111827;
         --color-header-bg: #1f2937;
         --color-header-text: #f3f4f6;
+        --color-text-rgb: 243, 244, 246;  /* gray-100 */
     }
 
     body {

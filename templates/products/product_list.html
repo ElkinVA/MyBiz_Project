@@ -39,32 +39,7 @@
 </li>
 </ol>
 </nav>
-<!-- Заголовок и описание -->
-<header class="page-header mb-10">
-<h1 class="text-3xl md:text-4xl font-bold text-default mb-4 break-words hyphens-auto">
-{% if category %}
-{{ category.name }}
-{% else %}
-Каталог товаров
-{% endif %}
-</h1>
-{% if category and category.description %}
-<div class="prose prose-lg text-default/60 max-w-3xl mb-4">
-{{ category.description|safe|truncatewords_html:100 }}
-</div>
-{% else %}
-<p class="text-lg text-default/80 max-w-3xl mb-4">
-Широкий выбор качественных товаров по доступным ценам. Используйте фильтры для быстрого поиска.
-</p>
-{% endif %}
-<!-- Информация о количестве -->
-<div class="mt-4 text-default/80">
-<p>Найдено: <strong class="text-default">{{ products.paginator.count|default:0 }}</strong> товаров</p>
-{% if category %}
-<p class="text-sm text-default/50 mt-1">В категории: <strong>{{ category.products_count|default:0 }}</strong> товаров</p>
-{% endif %}
-</div>
-</header>
+
 <!-- Кнопка мобильных фильтров -->
 <div class="lg:hidden mb-6">
 <button type="button"
