@@ -9905,12 +9905,12 @@ FILE: ./templates/products/product_list.html
 {{ category.description|safe|truncatewords_html:100 }}
 </div>
 {% else %}
-<p class="text-lg text-default/60 max-w-3xl">
+<p class="text-lg text-default/80 max-w-3xl mb-4">
 Широкий выбор качественных товаров по доступным ценам. Используйте фильтры для быстрого поиска.
 </p>
 {% endif %}
 <!-- Информация о количестве -->
-<div class="mt-4 text-default/60">
+<div class="mt-4 text-default/80">
 <p>Найдено: <strong class="text-default">{{ products.paginator.count|default:0 }}</strong> товаров</p>
 {% if category %}
 <p class="text-sm text-default/50 mt-1">В категории: <strong>{{ category.products_count|default:0 }}</strong> товаров</p>
